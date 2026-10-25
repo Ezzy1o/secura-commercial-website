@@ -1138,6 +1138,15 @@ textarea:focus-visible {
   width: min(100%, 58rem);
   height: 35rem;
   margin: var(--space-8) auto var(--space-6);
+  padding: var(--space-5);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  /* Faint schematic grid — reads as a network diagram, themed via tokens */
+  background:
+    radial-gradient(color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 1.5px);
+  background-size: 1.5rem 1.5rem;
+  background-position: center;
+  box-shadow: var(--shadow-2);
 }
 
 .topology > div:not(.network-lines) {
@@ -1336,6 +1345,25 @@ textarea:focus-visible {
   gap: var(--space-9);
 }
 
+/* Hairline separators between the three role showcases — consistent
+   vertical rhythm and a quiet structural cue. */
+.interface-showcase + .interface-showcase {
+  position: relative;
+  padding-top: var(--space-9);
+}
+
+.interface-showcase + .interface-showcase::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 40rem);
+  height: var(--border-thin);
+  background: linear-gradient(90deg, transparent, var(--color-border-strong) 30%, var(--color-border-strong) 70%, transparent);
+  opacity: 0.55;
+}
+
 .interface-showcase {
   display: grid;
   grid-template-columns: minmax(0, 1.18fr) minmax(22rem, 0.82fr);
@@ -1370,15 +1398,18 @@ textarea:focus-visible {
 .feature-row {
   padding-block: var(--space-4);
   display: grid;
-  grid-template-columns: var(--space-7) 1fr;
-  gap: var(--space-3);
+  grid-template-columns: 2.4rem 1fr;
+  gap: var(--space-4);
   border-top: var(--border-thin) solid var(--color-border);
 }
 
 .feature-row > span {
-  color: var(--color-purple-muted);
-  font-size: 0.75rem;
+  /* Darkened from muted lavender for legibility on light surfaces. */
+  color: var(--color-primary);
+  opacity: 0.85;
+  font-size: 0.78rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .feature-row h3,
@@ -1403,15 +1434,26 @@ textarea:focus-visible {
   border: var(--border-thin) solid var(--color-border-strong);
   border-radius: var(--radius-xl);
   background: var(--color-white);
-  box-shadow: var(--shadow-card), 0 0 0 1px rgba(255,255,255,0.6);
+  box-shadow: 0 20px 40px rgba(13, 13, 20, 0.08), 0 0 0 1px rgba(255,255,255,0.6);
   transition:
     transform var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
+/* All dashboard mockups share one aspect ratio so every showcase
+   renders the same height regardless of source resolution. */
+.browser-frame .dashboard-screenshot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  object-fit: cover;
+  object-position: top center;
+}
+
 .browser-frame:hover {
-  transform: translateY(-10px) scale(1.01);
-  box-shadow: var(--shadow-card-hover), 0 0 2.5rem var(--color-glow);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 48px rgba(13, 13, 20, 0.14), 0 0 2.5rem var(--color-glow);
 }
 
 .browser-toolbar {
@@ -1439,13 +1481,6 @@ textarea:focus-visible {
   color: var(--color-text-muted);
   background: var(--color-white);
   font-size: 0.68rem;
-}
-
-.dashboard-screenshot {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
 }
 
 .team-section {
