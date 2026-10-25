@@ -206,6 +206,48 @@ const useReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light"
+    const stored = window.localStorage.getItem("secura-theme")
+    if (stored === "light" || stored === "dark") return stored
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
+  })
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    window.localStorage.setItem("secura-theme", theme)
+  }, [theme])
+
+  return { theme, toggleTheme: () => setTheme(t => t === "light" ? "dark" : "light") }
+}
+
+function ThemeToggle({ theme, onToggle }: { theme: "light" | "dark"; onToggle: () => void }) {
+  return (
+    <button
+      className="theme-toggle"
+      type="button"
+      onClick={onToggle}
+      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+      aria-pressed={theme === "dark"}
+    >
+      <span className="theme-toggle-track" aria-hidden="true">
+        <span className="theme-toggle-thumb">
+          <span className="theme-toggle-icon theme-toggle-icon-sun">☀</span>
+          <span className="theme-toggle-icon theme-toggle-icon-moon">☾</span>
+        </span>
+        <span className="theme-toggle-stars" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+      </span>
+    </button>
+  )
+}
+
 function useLenis() {
   useEffect(() => {
     if (useReducedMotion()) return
@@ -514,9 +556,13 @@ function ActionButton({
 function Header({
   page,
   onNavigate,
+  theme,
+  onToggleTheme,
 }: {
   page: Page
   onNavigate: (page: Page) => void
+  theme: "light" | "dark"
+  onToggleTheme: () => void
 }) {
   const [open, setOpen] = useState(false)
 
@@ -547,18 +593,21 @@ function Header({
         >
           <Brand />
         </button>
-        <button
-          className="menu-button"
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          aria-label="Toggle navigation menu"
-          aria-expanded={open}
-          aria-controls="primary-menu"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        <div className="header-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <button
+            className="menu-button"
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={open}
+            aria-controls="primary-menu"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
         <div
           id="primary-menu"
           className={`nav-links ${open ? "nav-links-open" : ""}`}
@@ -576,7 +625,7 @@ function Header({
               }}
               aria-current={page === item.id ? "page" : undefined}
             >
-              {item.label}
+              <span className="nav-link-text">{item.label}</span>
             </button>
           ))}
         </div>
@@ -1389,6 +1438,7 @@ function scrollToPageTop() {
 
 export default function App() {
   const [page, setPage] = useState<Page>(getPageFromHash)
+  const { theme, toggleTheme } = useTheme()
 
   useLenis()
 
@@ -1450,8 +1500,13 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <div className="aurora" aria-hidden="true">
+        <i className="aurora-blob aurora-blob-one" />
+        <i className="aurora-blob aurora-blob-two" />
+        <i className="aurora-blob aurora-blob-three" />
+      </div>
       <ScrollProgress />
-      <Header page={page} onNavigate={navigate} />
+      <Header page={page} onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} />
       <div className="page-transition" key={page}>
         {page === "about" && <AboutPage onNavigate={navigate} />}
         {page === "documentation" && (
