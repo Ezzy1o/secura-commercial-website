@@ -286,12 +286,12 @@ textarea:focus-visible {
 }
 
 .nav-link-active {
-  color: var(--color-white);
+  color: #ffffff;
   background: var(--color-primary);
 }
 
 .nav-link-active:hover {
-  color: var(--color-white);
+  color: #ffffff;
   background: var(--color-primary-hover);
 }
 
@@ -712,9 +712,9 @@ textarea:focus-visible {
   height: var(--space-6);
   display: grid;
   place-items: center;
-  border: var(--border-medium) solid var(--color-white);
+  border: var(--border-medium) solid #ffffff;
   border-radius: 50%;
-  color: var(--color-white);
+  color: #ffffff;
   background: var(--color-success);
   font-weight: 700;
 }
@@ -751,7 +751,7 @@ textarea:focus-visible {
 .section-heading-light h2,
 .section-heading-light .section-description,
 .section-heading-light .eyebrow {
-  color: var(--color-white);
+  color: #ffffff;
 }
 
 .section-heading-light .section-description {
@@ -800,7 +800,7 @@ textarea:focus-visible {
   place-items: center;
   flex: none;
   border-radius: 50%;
-  color: var(--color-white);
+  color: #ffffff;
   background: var(--color-success);
   font-size: 0.72rem;
 }
@@ -848,7 +848,7 @@ textarea:focus-visible {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: var(--color-white);
+  color: #ffffff;
   background: var(--color-primary);
   font-style: normal;
   transform: translateY(-50%);
@@ -857,7 +857,7 @@ textarea:focus-visible {
 .problem-section {
   position: relative;
   overflow: hidden;
-  color: var(--color-white);
+  color: #ffffff;
   background: linear-gradient(160deg, var(--color-surface-strong-from), var(--color-surface-strong-to));
 }
 
@@ -900,7 +900,7 @@ textarea:focus-visible {
 
 .feature-card-dark {
   border-color: color-mix(in srgb, var(--color-white) 22%, transparent);
-  color: var(--color-white);
+  color: #ffffff;
   background: color-mix(in srgb, var(--color-white) 9%, transparent);
   backdrop-filter: blur(0.5rem);
 }
@@ -946,7 +946,7 @@ textarea:focus-visible {
   display: grid;
   place-items: center;
   border-radius: var(--radius-md);
-  color: var(--color-white);
+  color: #ffffff;
   background: var(--color-primary);
   font-size: 0.8rem;
   font-weight: 700;
@@ -965,7 +965,7 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: var(--space-6);
   border-radius: var(--radius-2xl);
-  color: var(--color-white);
+  color: #ffffff;
   background: linear-gradient(135deg, var(--color-surface-strong-from) 0%, var(--color-surface-strong-mid) 50%, var(--color-surface-strong-to) 100%);
   box-shadow: var(--shadow-card), 0 0 3rem var(--color-glow);
 }
@@ -1000,7 +1000,7 @@ textarea:focus-visible {
 .documentation-hero {
   position: relative;
   overflow: hidden;
-  color: var(--color-white);
+  color: #ffffff;
   background: linear-gradient(160deg, var(--color-surface-strong-from), var(--color-surface-strong-to));
 }
 
@@ -1501,7 +1501,7 @@ textarea:focus-visible {
   align-items: center;
   justify-content: initial;
   gap: var(--space-6);
-  color: var(--color-white);
+  color: #ffffff;
   background: linear-gradient(135deg, var(--color-surface-strong-from), var(--color-surface-strong-mid) 50%, var(--color-surface-strong-to));
   border-color: transparent;
   box-shadow: var(--shadow-card), 0 0 2rem var(--color-glow);
@@ -1570,7 +1570,7 @@ textarea:focus-visible {
 }
 
 .inquiries-section {
-  color: var(--color-white);
+  color: #ffffff;
   background: linear-gradient(160deg, var(--color-surface-strong-from), var(--color-surface-strong-to));
 }
 
@@ -1733,7 +1733,7 @@ textarea:focus-visible {
 
 .site-footer {
   padding-block: var(--space-8) var(--space-5);
-  color: var(--color-white);
+  color: #ffffff;
   background: linear-gradient(170deg, var(--color-surface-strong-to) 0%, var(--color-surface-strong-mid) 100%);
   border-top: 1px solid color-mix(in srgb, var(--color-primary-hover) 60%, transparent);
 }
@@ -1745,7 +1745,7 @@ textarea:focus-visible {
 }
 
 .footer-brand .brand-lockup {
-  color: var(--color-white);
+  color: #ffffff;
 }
 
 .footer-brand > p {
@@ -1757,9 +1757,9 @@ textarea:focus-visible {
 
 .academic-label {
   padding: var(--space-1) var(--space-3);
-  border: var(--border-thin) solid color-mix(in srgb, var(--color-white) 24%, transparent);
+  border: var(--border-thin) solid rgba(255, 255, 255, 0.28);
   border-radius: var(--radius-pill);
-  color: var(--color-lavender);
+  color: #d6c9f7;
   font-size: 0.72rem;
   font-weight: 650;
 }
@@ -1786,7 +1786,7 @@ textarea:focus-visible {
 }
 
 .footer-navigation button:hover {
-  color: var(--color-white);
+  color: #ffffff;
 }
 
 .footer-bottom {
