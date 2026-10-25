@@ -435,23 +435,6 @@ function TiltCard({
   )
 }
 
-function WordReveal({ text, className = "" }: { text: string; className?: string }) {
-  const words = text.split(" ")
-  return (
-    <span className={`word-reveal ${className}`} aria-label={text}>
-      {words.map((word, index) => (
-        <span
-          className="word-reveal-word"
-          key={`${word}-${index}`}
-          style={{ "--word-index": index } as React.CSSProperties}
-        >
-          {word}
-        </span>
-      ))}
-    </span>
-  )
-}
-
 function CountUpStat({
   value,
   suffix,
@@ -807,7 +790,7 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
               AI-assisted privacy protection
             </p>
             <h1>
-              <WordReveal text="Secure Web Platform for Automated AI Document Anonymization" />
+              Secure Web Platform for Automated AI Document Anonymization
             </h1>
             <p className="hero-tagline">
               Cross-Department Collaboration, Fortified for Your Safety
