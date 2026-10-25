@@ -223,7 +223,6 @@ function useTheme() {
 
   const toggleTheme = (event?: React.MouseEvent) => {
     const next = theme === "light" ? "dark" : "light"
-    // Circle-wipe view transition anchored on the toggle button.
     const root = document.documentElement
     type Doc = Document & {
       startViewTransition?: (cb: () => void) => {
@@ -231,8 +230,17 @@ function useTheme() {
       }
     }
     const doc = document as Doc
-    if (!doc.startViewTransition || useReducedMotion()) {
+    const applyTheme = () => {
       setTheme(next)
+      root.dataset.theme = next
+      window.localStorage.setItem("secura-theme", next)
+    }
+    if (!doc.startViewTransition || useReducedMotion()) {
+      // Cross-fade fallback: tag the root for 300ms so only paint
+      // properties transition, then remove the tag.
+      root.classList.add("theme-transition")
+      applyTheme()
+      window.setTimeout(() => root.classList.remove("theme-transition"), 350)
       return
     }
     const x = event?.clientX ?? window.innerWidth - 48
@@ -241,11 +249,7 @@ function useTheme() {
       Math.max(x, window.innerWidth - x),
       Math.max(y, window.innerHeight - y),
     )
-    const transition = doc.startViewTransition(() => {
-      setTheme(next)
-      root.dataset.theme = next
-      window.localStorage.setItem("secura-theme", next)
-    })
+    const transition = doc.startViewTransition(applyTheme)
     transition.ready.then(() => {
       root.animate(
         {

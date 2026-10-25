@@ -389,9 +389,11 @@ textarea:focus-visible {
   max-width: 49rem;
   margin: 0;
   font-size: var(--text-3xl);
-  line-height: var(--leading-tight);
-  letter-spacing: -0.045em;
+  line-height: 1.16;
+  letter-spacing: -0.04em;
   font-weight: 650;
+  /* Gradient text paints per-box; give each line breathing room so
+     word-span animations never visually overlap adjacent lines. */
   background: linear-gradient(145deg, var(--color-text) 40%, var(--color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -908,7 +910,7 @@ textarea:focus-visible {
 }
 
 .feature-card-dark p {
-  color: color-mix(in srgb, var(--color-white) 82%, transparent);
+  color: color-mix(in srgb, var(--color-text) 85%, transparent);
 }
 
 .objectives-section {
@@ -1044,7 +1046,7 @@ textarea:focus-visible {
 
 .workflow-step p {
   margin: var(--space-3) 0 0;
-  color: color-mix(in srgb, var(--color-white) 78%, transparent);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
   font-size: 0.92rem;
   line-height: 1.6;
 }
@@ -1534,7 +1536,7 @@ textarea:focus-visible {
 }
 
 .team-card-supervisor p {
-  color: color-mix(in srgb, var(--color-white) 78%, transparent);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
 }
 
 .supervisor-badge {
@@ -1572,7 +1574,7 @@ textarea:focus-visible {
 
 .inquiry-copy p:not(.eyebrow) {
   margin: var(--space-4) 0 0;
-  color: color-mix(in srgb, var(--color-white) 82%, transparent);
+  color: color-mix(in srgb, var(--color-text) 85%, transparent);
   font-size: 1.02rem;
   line-height: 1.7;
 }
@@ -1731,7 +1733,7 @@ textarea:focus-visible {
 .footer-brand > p {
   max-width: 34rem;
   margin: var(--space-4) 0;
-  color: color-mix(in srgb, var(--color-white) 74%, transparent);
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
   line-height: 1.65;
 }
 
@@ -1760,7 +1762,7 @@ textarea:focus-visible {
 .footer-navigation button {
   padding: var(--space-1) 0;
   border: 0;
-  color: color-mix(in srgb, var(--color-white) 76%, transparent);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
   background: transparent;
   transition: color var(--transition-fast);
 }
@@ -1780,7 +1782,7 @@ textarea:focus-visible {
 
 .footer-bottom p {
   margin: 0;
-  color: color-mix(in srgb, var(--color-white) 62%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
   font-size: 0.74rem;
 }
 
@@ -2024,7 +2026,10 @@ textarea:focus-visible {
   }
 }
 
-/* Word-by-word hero title reveal */
+/* Word-by-word hero title reveal — plain fade/slide only.
+   No rotation and no gradient-clip during animation: animated words each
+   clip the gradient separately, which renders as overlapping/glitching
+   text layers while the title is mid-animation. */
 .word-reveal {
   display: inline;
 }
@@ -2032,18 +2037,18 @@ textarea:focus-visible {
 .word-reveal-word {
   display: inline-block;
   opacity: 0;
-  animation: word-pop 600ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
-  animation-delay: calc(90ms * var(--word-index, 0));
+  animation: word-pop 520ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(80ms * var(--word-index, 0));
 }
 
 @keyframes word-pop {
   from {
     opacity: 0;
-    transform: translateY(0.8em) rotate(4deg);
+    transform: translateY(0.35em);
   }
   to {
     opacity: 1;
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0);
   }
 }
 
@@ -2304,6 +2309,7 @@ textarea:focus-visible {
 
   .hero-copy h1 {
     font-size: clamp(2.6rem, 11vw, 4rem);
+    line-height: 1.22;
   }
 
   .hero-visual {
@@ -2485,32 +2491,33 @@ textarea:focus-visible {
    Accent = muted electric cyan, used sparingly for emphasis. */
 
 :root[data-theme="dark"] {
-  /* Base ramp: #0c0f16 → #10141d → #151a26 → #1b2130 */
-  --color-white: #0c0f16;            /* base surface */
-  --color-lavender-soft: #131826;   /* raised surface */
-  --color-lavender-mid: #1b2130;    /* overlay surface */
-  --color-lavender: #2a3247;        /* interactive surface */
-  --color-purple-muted: #8b95ad;    /* muted foreground */
-  --color-text: #dfe4ee;
-  --color-text-muted: #9aa4ba;
-  --color-border: #232b3d;
-  --color-border-strong: #354057;
-  --color-primary: #7dd3fc;         /* muted electric cyan */
-  --color-primary-hover: #a5e2f9;
-  --color-primary-deep: #10141d;
-  --color-success: #34d399;
+  /* Base ramp: violet-tinted charcoals — purple identity, zero pure black */
+  --color-white: #0d0b16;            /* base surface */
+  --color-lavender-soft: #14111f;   /* raised surface */
+  --color-lavender-mid: #1b1730;    /* overlay surface */
+  --color-lavender: #292244;        /* interactive surface */
+  --color-purple-muted: #a78bfa;    /* muted violet foreground */
+  --color-text: #e6e1f2;
+  --color-text-muted: #b4aecb;
+  --color-border: #2e2846;
+  --color-border-strong: #453a68;
+  --color-primary: #a78bfa;         /* soft neon violet */
+  --color-primary-hover: #c4b0fd;
+  --color-primary-deep: #1b1730;
+  --color-success: #4ade80;
   --color-error: #f87171;
   --color-shadow: rgba(2, 4, 10, 0.5);
   --color-shadow-strong: rgba(2, 4, 10, 0.7);
-  --color-glow: rgba(125, 211, 252, 0.14);
-  --color-grid: rgba(125, 211, 252, 0.05);
-  --color-accent: #7dd3fc;
-  --color-accent-soft: rgba(125, 211, 252, 0.08);
-  --color-accent-glow: rgba(125, 211, 252, 0.2);
-  /* Brand surface: deep navy-charcoal, calm — cyan stays as accent only */
-  --color-surface-strong-from: #141926;
-  --color-surface-strong-mid: #10141d;
-  --color-surface-strong-to: #0c0f16;
+  --color-glow: rgba(167, 139, 250, 0.16);
+  --color-grid: rgba(167, 139, 250, 0.06);
+  --color-accent: #a78bfa;
+  --color-accent-soft: rgba(167, 139, 250, 0.09);
+  --color-accent-glow: rgba(167, 139, 250, 0.22);
+
+  /* Brand surface: deep violet-navy — purple identity, calm depth */
+  --color-surface-strong-from: #17132b;
+  --color-surface-strong-mid: #120f22;
+  --color-surface-strong-to: #0d0b19;
 
   /* Elevation: shadows alone vanish on dark; pair with lighter tints. */
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -2576,12 +2583,14 @@ textarea:focus-visible {
   background: var(--color-lavender-soft);
 }
 
+/* Logo keeps its original neon-purple gradient in dark mode — high
+   visibility against the navy base. Only boost contrast slightly. */
 :root[data-theme="dark"] .brand-logo {
-  filter: brightness(0) invert(1) opacity(0.95);
+  filter: saturate(1.15) brightness(1.08);
 }
 
 :root[data-theme="dark"] .footer-brand .brand-logo {
-  filter: none;
+  filter: saturate(1.15) brightness(1.08);
 }
 
 :root[data-theme="dark"] .form-field input,
@@ -2595,7 +2604,7 @@ textarea:focus-visible {
 }
 
 :root[data-theme="dark"] .hero-section {
-  background: linear-gradient(145deg, var(--color-white) 48%, var(--color-lavender-soft) 78%, var(--color-lavender-mid) 100%);
+  background: linear-gradient(145deg, var(--color-white) 48%, #131022 78%, #1a1530 100%);
 }
 
 :root[data-theme="dark"] .trust-note,
@@ -2716,35 +2725,28 @@ textarea:focus-visible {
   z-index: 9999;
 }
 
-/* Smooth global color transition for sections outside the wipe fallback. */
-*,
-*::before,
-*::after {
+/* Theme color transition — scoped fallback for browsers without the
+   View Transition API. Only paint properties; no transforms, no
+   pseudo-elements, so it stays cheap even on large DOMs. */
+html.theme-transition,
+html.theme-transition body,
+html.theme-transition .app-shell,
+html.theme-transition .site-header,
+html.theme-transition main,
+html.theme-transition section,
+html.theme-transition footer,
+html.theme-transition .feature-card,
+html.theme-transition .stat-item,
+html.theme-transition .nav-links,
+html.theme-transition .mini-step,
+html.theme-transition .browser-frame,
+html.theme-transition .inquiry-form,
+html.theme-transition .team-card,
+html.theme-transition .marquee {
   transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    fill var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-/* Elements that own their own transition timing keep it. */
-.action-button,
-.nav-link,
-.theme-toggle-thumb,
-.theme-toggle-track,
-.tilt-card,
-.feature-card,
-.browser-frame,
-.team-card,
-.stat-item {
-  transition:
-    transform 260ms cubic-bezier(0.2, 0.8, 0.3, 1),
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    opacity var(--transition-base);
+    background-color 300ms ease,
+    border-color 300ms ease,
+    color 300ms ease;
 }
 
 /* ===== Theme toggle ===== */
