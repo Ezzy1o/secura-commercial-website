@@ -1,0 +1,10 @@
+{
+  "description": "Secura is a secure web platform designed for automated AI document anonymization, enabling organizations to protect sensitive information while facilitating safe collaboration.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
