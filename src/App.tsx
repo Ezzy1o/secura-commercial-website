@@ -221,10 +221,51 @@ function useTheme() {
     window.localStorage.setItem("secura-theme", theme)
   }, [theme])
 
-  return { theme, toggleTheme: () => setTheme(t => t === "light" ? "dark" : "light") }
+  const toggleTheme = (event?: React.MouseEvent) => {
+    const next = theme === "light" ? "dark" : "light"
+    // Circle-wipe view transition anchored on the toggle button.
+    const root = document.documentElement
+    type Doc = Document & {
+      startViewTransition?: (cb: () => void) => {
+        ready: Promise<void>
+      }
+    }
+    const doc = document as Doc
+    if (!doc.startViewTransition || useReducedMotion()) {
+      setTheme(next)
+      return
+    }
+    const x = event?.clientX ?? window.innerWidth - 48
+    const y = event?.clientY ?? 48
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    )
+    const transition = doc.startViewTransition(() => {
+      setTheme(next)
+      root.dataset.theme = next
+      window.localStorage.setItem("secura-theme", next)
+    })
+    transition.ready.then(() => {
+      root.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${radius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 650,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+        },
+      )
+    }).catch(() => {})
+  }
+
+  return { theme, toggleTheme }
 }
 
-function ThemeToggle({ theme, onToggle }: { theme: "light" | "dark"; onToggle: () => void }) {
+function ThemeToggle({ theme, onToggle }: { theme: "light" | "dark"; onToggle: (event: React.MouseEvent) => void }) {
   return (
     <button
       className="theme-toggle"
@@ -593,21 +634,6 @@ function Header({
         >
           <Brand />
         </button>
-        <div className="header-actions">
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <button
-            className="menu-button"
-            type="button"
-            onClick={() => setOpen((value) => !value)}
-            aria-label="Toggle navigation menu"
-            aria-expanded={open}
-            aria-controls="primary-menu"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        </div>
         <div
           id="primary-menu"
           className={`nav-links ${open ? "nav-links-open" : ""}`}
@@ -628,6 +654,21 @@ function Header({
               <span className="nav-link-text">{item.label}</span>
             </button>
           ))}
+        </div>
+        <div className="header-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <button
+            className="menu-button"
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={open}
+            aria-controls="primary-menu"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
       </nav>
     </header>

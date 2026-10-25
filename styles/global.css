@@ -149,7 +149,18 @@ textarea:focus-visible {
   margin-inline: auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* Center the links; keep brand left and toggle/menu right. */
+.nav-links {
+  margin-inline: auto;
+}
+
+@media (max-width: 48rem) {
+  .nav-links {
+    margin-inline: 0;
+  }
 }
 
 .brand-button {
@@ -2600,6 +2611,44 @@ textarea:focus-visible {
   100% {
     transform: translate(2rem, 2rem) scale(1.05);
   }
+}
+
+/* ===== Theme view transition (circle wipe) ===== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+/* Smooth global color transition for sections outside the wipe fallback. */
+body,
+.app-shell,
+.site-header,
+.hero-section,
+.overview-section,
+.problem-section,
+.objectives-section,
+.closing-section,
+.stats-section,
+.marquee,
+.footer-brand,
+.team-section,
+.inquiries-section,
+.interfaces-section,
+.topology-section,
+.documentation-hero {
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
 }
 
 /* ===== Theme toggle ===== */
