@@ -1,4 +1,5 @@
-import { type FormEvent, useEffect, useState } from "react"
+import { type FormEvent, useEffect, useRef, useState } from "react"
+import Lenis from "lenis"
 
 type Page = "about" | "documentation" | "contact"
 type FormField = "name" | "email" | "subject" | "message"
@@ -182,6 +183,278 @@ const team = [
     role: "Frontend Developer",
   },
 ]
+
+const marqueeItems = [
+  "AI Anonymization",
+  "Cross-Department Collaboration",
+  "NLP Detection",
+  "Controlled Sharing",
+  "Private Network",
+  "Role-Based Access",
+  "Data Privacy",
+  "Secure Workflows",
+]
+
+const stats = [
+  { value: 4, suffix: "", label: "Workflow Stages" },
+  { value: 3, suffix: "", label: "Role-Based Interfaces" },
+  { value: 100, suffix: "%", label: "Local Processing" },
+  { value: 5, suffix: "", label: "Project Members" },
+]
+
+const useReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+function useLenis() {
+  useEffect(() => {
+    if (useReducedMotion()) return
+    const lenis = new Lenis({
+      duration: 1.4,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.4,
+    })
+    ;(window as any).__lenis = lenis
+    let frame: number
+    const raf = (time: number) => {
+      lenis.raf(time)
+      frame = requestAnimationFrame(raf)
+    }
+    frame = requestAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(frame)
+      lenis.destroy()
+      ;(window as any).__lenis = undefined
+    }
+  }, [])
+}
+
+function ScrollProgress() {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(max > 0 ? window.scrollY / max : 0)
+    }
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  return (
+    <div
+      className="scroll-progress"
+      style={{ transform: `scaleX(${progress})` }}
+      aria-hidden="true"
+    />
+  )
+}
+
+function MagneticButton({
+  children,
+  onClick,
+  variant = "primary",
+  type = "button",
+  disabled,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+  variant?: "primary" | "secondary" | "light"
+  type?: "button" | "submit"
+  disabled?: boolean
+}) {
+  const ref = useRef<HTMLButtonElement>(null)
+
+  const handleMove = (event: React.MouseEvent) => {
+    const el = ref.current
+    if (!el || useReducedMotion()) return
+    const rect = el.getBoundingClientRect()
+    const x = event.clientX - rect.left - rect.width / 2
+    const y = event.clientY - rect.top - rect.height / 2
+    el.style.transform = `translate(${x * 0.18}px, ${y * 0.18}px)`
+  }
+
+  const handleLeave = () => {
+    const el = ref.current
+    if (el) el.style.transform = ""
+  }
+
+  return (
+    <button
+      ref={ref}
+      className={`action-button action-button-${variant}`}
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+    >
+      {children}
+      <span className="button-arrow" aria-hidden="true">
+        →
+      </span>
+    </button>
+  )
+}
+
+function TiltCard({
+  children,
+  className = "",
+  delay = 0,
+  glare = true,
+}: {
+  children: React.ReactNode
+  className?: string
+  delay?: number
+  glare?: boolean
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  const handleMove = (event: React.MouseEvent) => {
+    const el = ref.current
+    if (!el || useReducedMotion()) return
+    const rect = el.getBoundingClientRect()
+    const px = (event.clientX - rect.left) / rect.width
+    const py = (event.clientY - rect.top) / rect.height
+    const rotateX = (py - 0.5) * -7
+    const rotateY = (px - 0.5) * 7
+    el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`
+    el.style.setProperty("--glare-x", `${px * 100}%`)
+    el.style.setProperty("--glare-y", `${py * 100}%`)
+    el.classList.add("tilt-active")
+  }
+
+  const handleLeave = () => {
+    const el = ref.current
+    if (!el) return
+    el.style.transform = ""
+    el.classList.remove("tilt-active")
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={`reveal tilt-card ${className}`}
+      style={{ "--reveal-delay": `${delay}ms` } as React.CSSProperties}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+    >
+      {children}
+      {glare && <span className="tilt-glare" aria-hidden="true" />}
+    </div>
+  )
+}
+
+function WordReveal({ text, className = "" }: { text: string; className?: string }) {
+  const words = text.split(" ")
+  return (
+    <span className={`word-reveal ${className}`} aria-label={text}>
+      {words.map((word, index) => (
+        <span
+          className="word-reveal-word"
+          key={`${word}-${index}`}
+          style={{ "--word-index": index } as React.CSSProperties}
+        >
+          {word}
+        </span>
+      ))}
+    </span>
+  )
+}
+
+function CountUpStat({
+  value,
+  suffix,
+  label,
+}: {
+  value: number
+  suffix: string
+  label: string
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [display, setDisplay] = useState(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (useReducedMotion()) {
+      setDisplay(value)
+      return
+    }
+    let observer: IntersectionObserver | undefined
+    let frame: number
+    try {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries[0].isIntersecting) return
+          observer?.disconnect()
+          const duration = 1400
+          const start = performance.now()
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / duration)
+            const eased = 1 - Math.pow(1 - t, 3)
+            setDisplay(Math.round(eased * value))
+            if (t < 1) frame = requestAnimationFrame(tick)
+          }
+          frame = requestAnimationFrame(tick)
+        },
+        { threshold: 0.4 },
+      )
+      observer.observe(el)
+    } catch {
+      setDisplay(value)
+    }
+    return () => {
+      observer?.disconnect()
+      cancelAnimationFrame(frame)
+    }
+  }, [value])
+
+  return (
+    <div className="stat-item" ref={ref}>
+      <span className="stat-value">
+        {display}
+        {suffix}
+      </span>
+      <span className="stat-label">{label}</span>
+    </div>
+  )
+}
+
+function MarqueeBand() {
+  return (
+    <div className="marquee" aria-hidden="true">
+      <div className="marquee-track">
+        {[...marqueeItems, ...marqueeItems].map((item, index) => (
+          <span className="marquee-item" key={`${item}-${index}`}>
+            {item}
+            <i>◆</i>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function useHeroSpotlight() {
+  const ref = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const section = ref.current
+    if (!section || useReducedMotion()) return
+    const onMove = (event: MouseEvent) => {
+      section.style.setProperty("--spotlight-x", `${event.clientX}px`)
+      section.style.setProperty("--spotlight-y", `${event.clientY}px`)
+    }
+    window.addEventListener("mousemove", onMove, { passive: true })
+    return () => window.removeEventListener("mousemove", onMove)
+  }, [])
+
+  return ref
+}
 
 function Brand() {
   return (
@@ -418,15 +691,30 @@ function SecureExchangeIllustration({
 }
 
 function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const heroRef = useHeroSpotlight()
+
   return (
     <main className="page page-about">
-      <section className="hero-section">
+      <section className="hero-section" ref={heroRef}>
         <div className="hero-grid-pattern" aria-hidden="true" />
         <div className="hero-glow" aria-hidden="true" />
+        <div className="hero-particles" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </div>
         <div className="content-shell hero-layout">
           <div className="hero-copy">
-            <p className="eyebrow">AI-assisted privacy protection</p>
-            <h1>Secure Web Platform for Automated AI Document Anonymization</h1>
+            <p className="eyebrow">
+              <span className="eyebrow-dot" aria-hidden="true" />
+              AI-assisted privacy protection
+            </p>
+            <h1>
+              <WordReveal text="Secure Web Platform for Automated AI Document Anonymization" />
+            </h1>
             <p className="hero-tagline">
               Cross-Department Collaboration, Fortified for Your Safety
             </p>
@@ -436,15 +724,15 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
               departments.
             </p>
             <div className="hero-actions">
-              <ActionButton onClick={() => onNavigate("documentation")}>
+              <MagneticButton onClick={() => onNavigate("documentation")}>
                 Explore SECURA
-              </ActionButton>
-              <ActionButton
+              </MagneticButton>
+              <MagneticButton
                 variant="secondary"
                 onClick={() => onNavigate("contact")}
               >
                 Contact the Team
-              </ActionButton>
+              </MagneticButton>
             </div>
           </div>
           <div className="hero-visual">
@@ -454,6 +742,25 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
             </div>
             <SecureExchangeIllustration />
           </div>
+        </div>
+        <div className="hero-scroll-hint" aria-hidden="true">
+          <span />
+          Scroll to explore
+        </div>
+      </section>
+
+      <MarqueeBand />
+
+      <section className="stats-section">
+        <div className="content-shell stats-grid">
+          {stats.map((stat) => (
+            <CountUpStat
+              key={stat.label}
+              value={stat.value}
+              suffix={stat.suffix}
+              label={stat.label}
+            />
+          ))}
         </div>
       </section>
 
@@ -509,7 +816,7 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
           </Reveal>
           <div className="card-grid">
             {problemCards.map((card, index) => (
-              <Reveal
+              <TiltCard
                 className="feature-card feature-card-dark"
                 delay={index * 80}
                 key={card.title}
@@ -517,7 +824,7 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
                 <span className="card-number">{card.number}</span>
                 <h3>{card.title}</h3>
                 <p>{card.description}</p>
-              </Reveal>
+              </TiltCard>
             ))}
           </div>
         </div>
@@ -534,7 +841,7 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
           </Reveal>
           <div className="card-grid objectives-grid">
             {objectives.map((objective, index) => (
-              <Reveal
+              <TiltCard
                 className="feature-card objective-card"
                 delay={index * 80}
                 key={objective.title}
@@ -544,7 +851,7 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
                 </div>
                 <h3>{objective.title}</h3>
                 <p>{objective.description}</p>
-              </Reveal>
+              </TiltCard>
             ))}
           </div>
         </div>
@@ -560,12 +867,12 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
               role-based interface concepts.
             </p>
           </div>
-          <ActionButton
+          <MagneticButton
             variant="light"
             onClick={() => onNavigate("documentation")}
           >
             Explore Documentation
-          </ActionButton>
+          </MagneticButton>
         </Reveal>
       </section>
     </main>
@@ -1067,11 +1374,32 @@ function scrollToPageTop() {
   const reducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches
-  window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" })
+  if (reducedMotion) {
+    window.scrollTo({ top: 0, behavior: "instant" })
+    return
+  }
+  // Lenis instance lives on window when active; fall back to native smooth.
+  const lenis = (window as any).__lenis
+  if (lenis?.scrollTo) {
+    lenis.scrollTo(0, { duration: 1.2 })
+  } else {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 }
 
 export default function App() {
   const [page, setPage] = useState<Page>(getPageFromHash)
+
+  useLenis()
+
+  useEffect(() => {
+    // Expose the Lenis instance for scrollToPageTop.
+    const probe = () => {
+      const lenis = (window as any).__lenis
+      if (!lenis) setTimeout(probe, 100)
+    }
+    probe()
+  }, [])
 
   useEffect(() => {
     const handleHashChange = () => setPage(getPageFromHash())
@@ -1122,6 +1450,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <ScrollProgress />
       <Header page={page} onNavigate={navigate} />
       <div className="page-transition" key={page}>
         {page === "about" && <AboutPage onNavigate={navigate} />}
