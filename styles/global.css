@@ -719,10 +719,16 @@ textarea:focus-visible {
   font-weight: 700;
 }
 
+/* Centered section label blocks — eyebrow, heading, description all
+   centered together so the section reads as one aligned unit. */
 .section-heading {
   max-width: 46rem;
   margin: 0 auto var(--space-7);
   text-align: center;
+}
+
+.section-heading .eyebrow {
+  justify-content: center;
 }
 
 .section-heading-left {
@@ -876,12 +882,12 @@ textarea:focus-visible {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 .feature-card {
   min-height: 19rem;
-  padding: var(--space-6);
+  padding: var(--space-7);
   border: var(--border-thin) solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-white);
@@ -893,7 +899,7 @@ textarea:focus-visible {
 }
 
 .feature-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   border-color: var(--color-primary);
   box-shadow: var(--shadow-card-hover), 0 0 0 1px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
@@ -928,7 +934,9 @@ textarea:focus-visible {
 }
 
 .feature-card-dark p {
-  color: color-mix(in srgb, var(--color-text) 85%, transparent);
+  /* Card sits on the always-dark brand surface — text stays white
+     in both themes; --color-text flips to black in light mode. */
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .objectives-section {
@@ -1064,7 +1072,8 @@ textarea:focus-visible {
 
 .workflow-step p {
   margin: var(--space-3) 0 0;
-  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  /* Workflow steps live on the always-dark documentation hero. */
+  color: rgba(255, 255, 255, 0.82);
   font-size: 0.92rem;
   line-height: 1.6;
 }
@@ -1554,7 +1563,8 @@ textarea:focus-visible {
 }
 
 .team-card-supervisor p {
-  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  /* Supervisor card is an always-dark gradient surface. */
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .supervisor-badge {
@@ -1592,7 +1602,8 @@ textarea:focus-visible {
 
 .inquiry-copy p:not(.eyebrow) {
   margin: var(--space-4) 0 0;
-  color: color-mix(in srgb, var(--color-text) 85%, transparent);
+  /* Inquiries section is an always-dark brand surface. */
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1.02rem;
   line-height: 1.7;
 }
@@ -1751,7 +1762,8 @@ textarea:focus-visible {
 .footer-brand > p {
   max-width: 34rem;
   margin: var(--space-4) 0;
-  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  /* Footer is an always-dark gradient surface. */
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.65;
 }
 
@@ -1780,7 +1792,7 @@ textarea:focus-visible {
 .footer-navigation button {
   padding: var(--space-1) 0;
   border: 0;
-  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+  color: rgba(255, 255, 255, 0.8);
   background: transparent;
   transition: color var(--transition-fast);
 }
@@ -1800,7 +1812,7 @@ textarea:focus-visible {
 
 .footer-bottom p {
   margin: 0;
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  color: rgba(255, 255, 255, 0.66);
   font-size: 0.74rem;
 }
 
@@ -2213,6 +2225,10 @@ textarea:focus-visible {
 }
 
 @media (max-width: 64rem) {
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-layout,
   .overview-layout,
   .interface-showcase,
