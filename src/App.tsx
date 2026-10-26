@@ -1129,6 +1129,14 @@ function DocumentationPage({
     <main className="page page-documentation">
       <section className="documentation-hero section-pad">
         <div className="documentation-pattern" aria-hidden="true" />
+        <div className="hero-particles" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </div>
         <div className="content-shell">
           <Reveal>
             <SectionHeading
@@ -1154,6 +1162,8 @@ function DocumentationPage({
           </Reveal>
         </div>
       </section>
+
+      <MarqueeBand />
 
       <section className="topology-section section-pad">
         <div className="content-shell">
@@ -1217,7 +1227,7 @@ function TeamCard({
   index: number
 }) {
   return (
-    <Reveal
+    <TiltCard
       className={`team-card ${member.supervisor ? "team-card-supervisor" : ""}`}
       delay={index * 70}
     >
@@ -1234,7 +1244,7 @@ function TeamCard({
         <h3>{member.name}</h3>
         <p>{member.role}</p>
       </div>
-    </Reveal>
+    </TiltCard>
   )
 }
 
@@ -1416,6 +1426,8 @@ function ContactPage() {
         </div>
       </section>
 
+      <MarqueeBand />
+
       <section className="inquiries-section section-pad">
         <div className="content-shell inquiry-layout">
           <Reveal className="inquiry-copy">
@@ -1439,6 +1451,29 @@ function ContactPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+function BackToTop() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 640)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  return (
+    <button
+      className={`back-to-top ${visible ? "back-to-top-visible" : ""}`}
+      type="button"
+      aria-label="Back to top"
+      tabIndex={visible ? 0 : -1}
+      onClick={() => scrollToPageTop()}
+    >
+      <span aria-hidden="true">↑</span>
+    </button>
   )
 }
 
@@ -1542,6 +1577,7 @@ export default function App() {
         )}
         {page === "contact" && <ContactPage />}
       </div>
+      <BackToTop />
       <Footer onNavigate={navigate} />
     </div>
   )
