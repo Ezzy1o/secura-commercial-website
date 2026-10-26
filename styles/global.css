@@ -97,6 +97,15 @@
 html {
   scroll-behavior: smooth;
   background: var(--color-white);
+  color-scheme: light dark;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 /* Hide native scrollbar — Lenis owns the scroll feel. */
@@ -1138,15 +1147,6 @@ textarea:focus-visible {
   width: min(100%, 58rem);
   height: 35rem;
   margin: var(--space-8) auto var(--space-6);
-  padding: var(--space-5);
-  border: var(--border-thin) solid var(--color-border);
-  border-radius: var(--radius-xl);
-  /* Faint schematic grid — reads as a network diagram, themed via tokens */
-  background:
-    radial-gradient(color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 1.5px);
-  background-size: 1.5rem 1.5rem;
-  background-position: center;
-  box-shadow: var(--shadow-2);
 }
 
 .topology > div:not(.network-lines) {
@@ -1371,6 +1371,13 @@ textarea:focus-visible {
   gap: var(--space-8);
 }
 
+/* Preview frames render at one consistent width in both layouts so
+   every screenshot shows at the same size across showcases. */
+.interface-preview-wrap {
+  width: min(100%, 40rem);
+  margin-inline: auto;
+}
+
 .interface-showcase-reverse .interface-preview-wrap {
   order: 2;
 }
@@ -1440,12 +1447,12 @@ textarea:focus-visible {
     box-shadow var(--transition-fast);
 }
 
-/* All dashboard mockups share one aspect ratio so every showcase
-   renders the same height regardless of source resolution. */
+/* All dashboard mockups share the source's native ratio (1853x993)
+   so nothing is cropped and every showcase shows the same height. */
 .browser-frame .dashboard-screenshot {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1853 / 993;
   height: auto;
   object-fit: cover;
   object-position: top center;
@@ -2782,6 +2789,9 @@ textarea:focus-visible {
 
 /* ===== Theme view transition (circle wipe) ===== */
 
+/* Theme view transition — new theme expands over the old as a circle
+   wipe anchored on the toggle button. The old snapshot is faded out
+   underneath so no white frame ever shows through. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -2789,12 +2799,17 @@ textarea:focus-visible {
 }
 
 ::view-transition-old(root) {
+  opacity: 1;
   z-index: 1;
 }
 
 ::view-transition-new(root) {
   z-index: 9999;
 }
+
+/* Root canvas always paints the active theme — the <html> element itself
+   never shows a default white frame during theme swaps or loads.
+   (html background is set in the base rules above.) */
 
 /* Theme color transition — scoped fallback for browsers without the
    View Transition API. Only paint properties; no transforms, no
