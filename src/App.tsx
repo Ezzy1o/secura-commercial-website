@@ -1054,22 +1054,21 @@ interface TopologyEdgeSpec {
   id: string
   from: string
   to: string
-  /** Orthogonal path inside the Internal LAN coordinate space (928x580). */
-  lanPath: string
+  /** Orthogonal path in the logical-diagram coordinate space (1000x760). */
+  d: string
   label: string
   /** Seconds for one particle traversal. Lower = busier. */
   duration: number
-  hideIn?: TopologyViewMode[]
 }
 
 const topologyEdges: TopologyEdgeSpec[] = [
-  // LAN-local coordinates (928x580): switch card bottom ~172, trunk rail
-  // y=260 crosses open space, bottom-row icon tops y=448, centers
-  // server x=170, client1 x=464, client2 x=758.
-  { id: "pc-switch", from: "pc", to: "switch", lanPath: "M 464 40 L 464 90", label: "Gi0/8", duration: 2.2 },
-  { id: "switch-server", from: "switch", to: "server", lanPath: "M 464 172 L 464 260 L 170 260 L 170 448", label: "Gi0/1", duration: 2.6 },
-  { id: "switch-user1", from: "switch", to: "user1", lanPath: "M 464 172 L 464 448", label: "Gi0/2", duration: 2.0 },
-  { id: "switch-user2", from: "switch", to: "user2", lanPath: "M 464 172 L 464 260 L 758 260 L 758 448", label: "Gi0/3", duration: 2.8 },
+  // Wrapper-space coordinates (~1000x760): PC bottom 108, blue box top 172,
+  // switch 212-280, trunk rail y=320, grid icon tops 360. Centers:
+  // web app x=212, client1 x=500, client2 x=788.
+  { id: "pc-switch", from: "pc", to: "switch", d: "M 500 108 L 500 212", label: "Gi0/8", duration: 2.2 },
+  { id: "switch-server", from: "switch", to: "server", d: "M 500 280 L 500 320 L 212 320 L 212 360", label: "Gi0/1", duration: 2.6 },
+  { id: "switch-user1", from: "switch", to: "user1", d: "M 500 280 L 500 360", label: "Gi0/2", duration: 2.0 },
+  { id: "switch-user2", from: "switch", to: "user2", d: "M 500 280 L 500 320 L 788 320 L 788 360", label: "Gi0/3", duration: 2.8 },
 ]
 
 const viewModeLabels: Record<TopologyViewMode, string> = {
@@ -1077,12 +1076,12 @@ const viewModeLabels: Record<TopologyViewMode, string> = {
   logical: "Logical Data Flow",
 }
 
-/** Pre-computed label anchors near each edge midpoint (LAN space 928x580). */
+/** Port-label anchors (1000x760 space) — exactly where the labels belong. */
 const edgeLabelPositions: Record<string, { x: number; y: number }> = {
-  "pc-switch": { x: 464, y: 65 },
-  "switch-server": { x: 285, y: 260 },
-  "switch-user1": { x: 464, y: 360 },
-  "switch-user2": { x: 614, y: 260 },
+  "pc-switch": { x: 514, y: 165 },
+  "switch-server": { x: 330, y: 313 },
+  "switch-user1": { x: 514, y: 330 },
+  "switch-user2": { x: 650, y: 313 },
 }
 
 function TopologyNodeButton({
@@ -1090,16 +1089,18 @@ function TopologyNodeButton({
   tipOpen,
   onHover,
   onOpen,
+  orientation = "vertical",
 }: {
   node: TopologyNodeSpec
   tipOpen: boolean
   onHover: (id: string | null) => void
   onOpen: (id: string) => void
+  orientation?: "vertical" | "horizontal"
 }) {
   return (
     <button
       type="button"
-      className={`topo-node network-device network-device-${node.type}`}
+      className={`topo-node topo-node-${orientation} network-device network-device-${node.type}`}
       onMouseEnter={() => onHover(node.id)}
       onMouseLeave={() => onHover(null)}
       onFocus={() => onHover(node.id)}
@@ -1159,7 +1160,8 @@ function Topology() {
   const nodeSpec = (id: string) => topologyNodes.find((n) => n.id === id)!
 
   return (
-    <div className={`topology-wrap topo-mode-${mode}`}>
+    <div className="topology-wrap topo-mode-logical">
+      {/* Navigation — isolated far above the diagram */}
       <div className="topo-mode-toggle" role="tablist" aria-label="Topology view mode">
         {(Object.keys(viewModeLabels) as TopologyViewMode[]).map((m) => (
           <button
@@ -1175,107 +1177,95 @@ function Topology() {
         ))}
       </div>
 
-      {/* Diagram canvas — isolated below the toggle by the toggle's margin */}
+      {/* Main wrapper — flow layout, everything positions naturally */}
       <div
-        className="topology"
+        className="logical-topology"
         role="img"
-        aria-label="Network topology: a mini PC IDS sits outside an Internal LAN zone containing a network switch connected to a web application and two client nodes"
+        aria-label="Logical network diagram: a mini PC connects to a network switch inside the Internal LAN, which serves a web application and two client nodes"
       >
-        {/* Tier 1 — outside the LAN boundary */}
-        <div className="topology-anchor topology-pc">
+        {/* SVG spanning the whole component — behind everything */}
+        <svg className="logical-edges" viewBox="0 0 1000 760" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <radialGradient id="topo-particle" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="40%" stopColor="var(--color-primary)" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          {topologyEdges.map((edge) => {
+            const mid = edgeLabelPositions[edge.id]
+            return (
+              <g key={edge.id}>
+                <path d={edge.d} className="topo-edge-track" />
+                <path
+                  d={edge.d}
+                  className="topo-edge-flow"
+                  style={{ animationDuration: `${edge.duration}s` }}
+                />
+                {mid && (
+                  <text x={mid.x} y={mid.y} className="topo-edge-label">
+                    {edge.label}
+                  </text>
+                )}
+              </g>
+            )
+          })}
+          <g className="topo-particle-group" aria-hidden="true">
+            {topologyEdges.map((edge) => (
+              <circle key={`p-${edge.id}`} r="5" fill="url(#topo-particle)">
+                <animateMotion dur={`${edge.duration}s`} repeatCount="indefinite" path={edge.d} />
+                <animate
+                  attributeName="opacity"
+                  values="0;1;1;0"
+                  keyTimes="0;0.08;0.92;1"
+                  dur={`${edge.duration}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            ))}
+          </g>
+        </svg>
+
+        {/* Tier 1 — Mini PC, horizontal node: icon left, text right */}
+        <div className="logical-node logical-node-pc">
           <TopologyNodeButton
             node={nodeSpec("pc")}
             tipOpen={hoverTip === "pc"}
             onHover={setHoverTip}
             onOpen={setActiveNode}
+            orientation="horizontal"
           />
         </div>
 
-        {/* Tier 2 + 3 — inside the Internal LAN zone */}
-        <div className="topology-lan">
-          <span className="topology-lan-label" aria-hidden="true">Internal LAN</span>
+        {/* Blue box — Internal LAN */}
+        <div className="logical-lan">
+          <span className="logical-lan-label">Internal LAN</span>
 
-          <svg
-            className="topo-edges"
-            viewBox="0 0 928 580"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <defs>
-              <radialGradient id="topo-particle" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                <stop offset="40%" stopColor="var(--color-primary)" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            {topologyEdges.map((edge) => {
-              const hidden = edge.hideIn?.includes(mode)
-              const mid = edgeLabelPositions[edge.id]
-              return (
-                <g key={edge.id} className={hidden ? "topo-edge-hidden" : undefined}>
-                  <path d={edge.lanPath} className="topo-edge-track" />
-                  <path
-                    d={edge.lanPath}
-                    className="topo-edge-flow"
-                    style={{ animationDuration: `${edge.duration}s` }}
-                  />
-                  {mid && (
-                    <text x={mid.x + 8} y={mid.y - 6} className="topo-edge-label">
-                      {edge.label}
-                    </text>
-                  )}
-                </g>
-              )
-            })}
-            <g className="topo-particle-group" aria-hidden="true">
-              {topologyEdges.map((edge) => {
-                const hidden = edge.hideIn?.includes(mode)
-                return (
-                  <g key={`p-${edge.id}`} className={hidden ? "topo-edge-hidden" : undefined}>
-                    <circle r="5" fill="url(#topo-particle)">
-                      <animateMotion dur={`${edge.duration}s`} repeatCount="indefinite" path={edge.lanPath} />
-                      <animate
-                        attributeName="opacity"
-                        values="0;1;1;0"
-                        keyTimes="0;0.08;0.92;1"
-                        dur={`${edge.duration}s`}
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                  </g>
-                )
-              })}
-            </g>
-          </svg>
-
-          {/* Tier 2 — switch, centered inside the LAN */}
-          <div className="topology-anchor topology-switch">
+          {/* Tier 2 — switch centered near the top, horizontal node */}
+          <div className="logical-node logical-node-switch">
             <TopologyNodeButton
               node={nodeSpec("switch")}
               tipOpen={hoverTip === "switch"}
               onHover={setHoverTip}
               onOpen={setActiveNode}
+              orientation="horizontal"
             />
           </div>
 
-          {/* Tier 3 — three evenly spaced endpoints */}
-          <div className="topology-anchor topology-server">
+          {/* Tier 3 — 3-column grid, text centered below icons */}
+          <div className="logical-grid">
             <TopologyNodeButton
               node={nodeSpec("server")}
               tipOpen={hoverTip === "server"}
               onHover={setHoverTip}
               onOpen={setActiveNode}
             />
-          </div>
-          <div className="topology-anchor topology-user">
             <TopologyNodeButton
               node={nodeSpec("user1")}
               tipOpen={hoverTip === "user1"}
               onHover={setHoverTip}
               onOpen={setActiveNode}
             />
-          </div>
-          <div className="topology-anchor topology-user-two">
             <TopologyNodeButton
               node={nodeSpec("user2")}
               tipOpen={hoverTip === "user2"}

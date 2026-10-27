@@ -3682,6 +3682,126 @@ html.theme-transition .marquee {
   stroke: var(--color-lavender-mid);
 }
 
+/* ===== Logical network diagram — flow layout per reference ===== */
+
+.logical-topology {
+  position: relative;
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* SVG spans the whole component, behind nodes */
+.logical-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.logical-node {
+  position: relative;
+  z-index: 2;
+}
+
+/* Horizontal node — icon left, text strictly right */
+.topo-node-horizontal {
+  flex-direction: row;
+  gap: var(--space-4);
+}
+
+.topo-node-horizontal .topo-node-icon {
+  margin: 0;
+  flex: none;
+}
+
+.topo-node-horizontal .topo-node-meta {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* Blue box — Internal LAN */
+.logical-lan {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 56rem);
+  margin-top: var(--space-8);
+  padding: var(--space-8);
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-lavender-soft) 55%, transparent);
+}
+
+.logical-lan-label {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+}
+
+.logical-node-switch {
+  display: flex;
+  justify-content: center;
+}
+
+/* Bottom row — 3 columns, generous gaps */
+.logical-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-9);
+  margin-top: var(--space-9);
+}
+
+.logical-grid .topo-node {
+  width: 100%;
+}
+
+@media (max-width: 64rem) {
+  .logical-grid {
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 48rem) {
+  .logical-topology {
+    padding-top: 0;
+  }
+
+  .logical-edges {
+    display: none;
+  }
+
+  .logical-lan {
+    padding: var(--space-6) var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  .logical-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .topo-node-horizontal {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .topo-node-horizontal .topo-node-meta {
+    align-items: center;
+    text-align: center;
+  }
+}
+
 /* Hide SMIL particles if motion is reduced */
 @media (prefers-reduced-motion: reduce) {
   .topo-particle-group {
