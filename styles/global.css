@@ -1171,7 +1171,12 @@ textarea:focus-visible {
 .topology-user { left: 50%; transform: translateX(-50%); }
 .topology-user-two { right: clamp(1rem, 4%, 4rem); }
 
+/* Atomic node: icon + info card are one cohesive flex column unit */
 .topo-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
   padding: 0;
   border: 0;
   background: transparent;
@@ -1179,6 +1184,30 @@ textarea:focus-visible {
   font: inherit;
   transition: transform var(--transition-fast), filter var(--transition-fast);
   will-change: transform;
+}
+
+/* Info card — visually attached to its icon, never floating */
+.topo-node-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  box-shadow: var(--shadow-1);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.topo-node:hover .topo-node-meta,
+.topo-node:focus-visible .topo-node-meta {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-2);
+}
+
+.topo-node-alert .topo-node-meta {
+  border-color: var(--color-error);
 }
 
 .topo-node:hover,
@@ -1328,13 +1357,16 @@ textarea:focus-visible {
   to { offset-distance: 100%; opacity: 0; }
 }
 
-/* View-mode toggle tabs */
+/* View-mode toggle tabs — isolated above the diagram with generous
+   bottom margin so buttons never overlap the top node */
 .topo-mode-toggle {
+  position: relative;
+  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .topo-tab {
@@ -3553,16 +3585,11 @@ html.theme-transition .marquee {
   background: color-mix(in srgb, var(--color-error) 10%, var(--color-lavender-soft));
 }
 
-.topo-node-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .topo-node-meta strong {
   color: var(--color-primary);
   font-size: 0.9rem;
   font-weight: 700;
+  text-align: center;
 }
 
 .topo-node-meta span {

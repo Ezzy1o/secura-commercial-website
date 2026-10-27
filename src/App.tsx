@@ -1064,12 +1064,13 @@ interface TopologyEdgeSpec {
 
 const topologyEdges: TopologyEdgeSpec[] = [
   // Orthogonal routing in a 928x800 coordinate space (container 58rem x 50rem).
-  // Rows: IDS top center (visual bottom ~96), switch top 200 (bottom 248),
-  // trunk rail y=420, bottom-row device tops y=560. Routes never cross nodes.
-  { id: "ids-switch", from: "ids", to: "switch", d: "M 464 96 L 464 200", label: "SPAN", duration: 2.2, hideIn: ["logical"] },
-  { id: "switch-server", from: "switch", to: "server", d: "M 464 248 L 464 420 L 170 420 L 170 560", label: "HTTPS", duration: 2.6 },
-  { id: "switch-user1", from: "switch", to: "user1", d: "M 464 248 L 464 560", label: "HTTPS", duration: 2.0 },
-  { id: "switch-user2", from: "switch", to: "user2", d: "M 464 248 L 464 420 L 758 420 L 758 560", label: "HTTPS", duration: 2.8 },
+  // Node groups are flex columns: icon (~68px) + gap + meta card (~52px).
+  // Bottom-row icon tops sit at y=668 (800 - 132). The trunk rail (y=420)
+  // runs through empty space between switch (248) and bottom row (668).
+  { id: "ids-switch", from: "ids", to: "switch", d: "M 464 160 L 464 200", label: "SPAN", duration: 2.2, hideIn: ["logical"] },
+  { id: "switch-server", from: "switch", to: "server", d: "M 464 332 L 464 420 L 170 420 L 170 668", label: "HTTPS", duration: 2.6 },
+  { id: "switch-user1", from: "switch", to: "user1", d: "M 464 332 L 464 668", label: "HTTPS", duration: 2.0 },
+  { id: "switch-user2", from: "switch", to: "user2", d: "M 464 332 L 464 420 L 758 420 L 758 668", label: "HTTPS", duration: 2.8 },
 ]
 
 const viewModeLabels: Record<TopologyViewMode, string> = {
@@ -1080,9 +1081,9 @@ const viewModeLabels: Record<TopologyViewMode, string> = {
 
 /** Pre-computed label anchors near each edge midpoint (928x800 space). */
 const edgeLabelPositions: Record<string, { x: number; y: number }> = {
-  "ids-switch": { x: 464, y: 150 },
+  "ids-switch": { x: 464, y: 180 },
   "switch-server": { x: 300, y: 420 },
-  "switch-user1": { x: 464, y: 500 },
+  "switch-user1": { x: 464, y: 510 },
   "switch-user2": { x: 628, y: 420 },
 }
 
@@ -1112,6 +1113,7 @@ function Topology() {
         ))}
       </div>
 
+      {/* Diagram canvas — isolated below the toggle by the toggle's margin */}
       <div
         className="topology"
         role="img"
@@ -1239,9 +1241,6 @@ function Topology() {
                     </svg>
                   )}
                 </span>
-                <div className="device-visual" aria-hidden="true">
-                  <div className="device-base" />
-                </div>
                 <span className="topo-node-meta">
                   <strong>{node.label}</strong>
                   <span>{node.ip}</span>
