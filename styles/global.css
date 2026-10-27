@@ -1163,13 +1163,70 @@ textarea:focus-visible {
   z-index: 2;
 }
 
-/* Generous breathing room — 800px canvas, rows well separated */
-.topology-monitor { top: 1.5rem; left: 50%; transform: translateX(-50%); }
-.topology-switch { top: 12.5rem; left: 50%; transform: translateX(-50%); }
-.topology-server, .topology-user, .topology-user-two { bottom: 0; }
-.topology-server { left: clamp(1rem, 4%, 4rem); }
-.topology-user { left: 50%; transform: translateX(-50%); }
-.topology-user-two { right: clamp(1rem, 4%, 4rem); }
+/* Tier 1 — mini PC / IDS, outside the LAN boundary */
+.topology-pc {
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Internal LAN zone — light surface with dashed boundary */
+.topology-lan {
+  position: absolute;
+  inset: 14rem 0 0;
+  z-index: 1;
+  border: var(--border-medium) dashed var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--color-lavender-soft) 55%, var(--color-white));
+}
+
+:root[data-theme="dark"] .topology-lan {
+  background: color-mix(in srgb, var(--color-lavender-mid) 30%, var(--color-white));
+}
+
+.topology-lan-label {
+  position: absolute;
+  z-index: 3;
+  top: var(--space-4);
+  left: var(--space-5);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--color-white);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: var(--border-thin) solid var(--color-border);
+}
+
+/* Tier 2 — switch, centered inside the LAN */
+.topology-switch {
+  top: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Tier 3 — endpoints along the LAN bottom, spread evenly */
+.topology-server,
+.topology-user,
+.topology-user-two {
+  bottom: 1rem;
+}
+
+.topology-server {
+  left: clamp(1rem, 4%, 4rem);
+}
+
+.topology-user {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.topology-user-two {
+  right: clamp(1rem, 4%, 4rem);
+}
 
 /* Atomic node: icon + info card are one cohesive flex column unit */
 .topo-node {
@@ -3641,6 +3698,20 @@ html.theme-transition .marquee {
   .topology-anchor {
     position: static !important;
     transform: none !important;
+  }
+
+  .topology-lan {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-4);
+    width: 100%;
+  }
+
+  .topology-lan-label {
+    position: static;
   }
 
   .topology {
