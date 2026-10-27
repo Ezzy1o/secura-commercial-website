@@ -979,83 +979,321 @@ function Workflow() {
   )
 }
 
-function NetworkDevice({
-  type,
-  label,
-  detail,
-}: {
+type TopologyViewMode = "physical" | "logical" | "security"
+
+interface TopologyNodeSpec {
+  id: string
   type: "monitor" | "switch" | "server" | "user"
   label: string
+  role: string
+  ip: string
+  protocol: string
   detail: string
-}) {
-  return (
-    <div className={`network-device network-device-${type}`}>
-      <div className="device-visual" aria-hidden="true">
-        <div className="device-face">
-          <span />
-          <span />
-          <span />
-        </div>
-        {(type === "server" || type === "user") && (
-          <div className="device-base" />
-        )}
-      </div>
-      <p className="device-title">{label}</p>
-      <p className="device-detail">{detail}</p>
-    </div>
-  )
+  documentation: string
+}
+
+const topologyNodes: TopologyNodeSpec[] = [
+  {
+    id: "ids",
+    type: "monitor",
+    label: "Mini PC / IDS",
+    role: "Monitoring & visibility",
+    ip: "192.168.10.2",
+    protocol: "SPAN port, Syslog",
+    detail: "Monitors relevant network activity",
+    documentation:
+      "A dedicated monitoring host fed by a SPAN (mirror) port on the managed switch. It observes traffic patterns for anomaly detection without sitting in the forwarding path — passive visibility, zero impact on latency.",
+  },
+  {
+    id: "switch",
+    type: "switch",
+    label: "Managed Switch",
+    role: "Local connectivity core",
+    ip: "192.168.10.1",
+    protocol: "VLAN, port mirroring",
+    detail: "Local network connectivity",
+    documentation:
+      "The connectivity core of the private network. Every endpoint and the web server attach here. Port mirroring forwards a copy of all traffic to the IDS, and VLANs can segment user, server, and monitoring traffic.",
+  },
+  {
+    id: "server",
+    type: "server",
+    label: "Local Web Server",
+    role: "Application host",
+    ip: "192.168.10.10",
+    protocol: "HTTPS :443",
+    detail: "Hosts the SECURA application",
+    documentation:
+      "Hosts the SECURA web application on an isolated LAN segment. Users reach it only through the managed switch — it has no direct internet exposure. TLS termination happens here with local certificate trust.",
+  },
+  {
+    id: "user1",
+    type: "user",
+    label: "User 1",
+    role: "Authorized endpoint",
+    ip: "192.168.10.21",
+    protocol: "HTTPS client",
+    detail: "Authorized endpoint",
+    documentation:
+      "An authorized workstation inside the private network. Access to SECURA follows role-based permissions, and requests for original documents go through the controlled approval workflow.",
+  },
+  {
+    id: "user2",
+    type: "user",
+    label: "User 2",
+    role: "Authorized endpoint",
+    ip: "192.168.10.22",
+    protocol: "HTTPS client",
+    detail: "Authorized endpoint",
+    documentation:
+      "A second authorized workstation. Both endpoints operate under the same role-based access model; sessions are logged for review by the security officer role.",
+  },
+]
+
+interface TopologyEdgeSpec {
+  id: string
+  from: string
+  to: string
+  /** CSS height/width offsets matching the absolute line positions. */
+  d: string
+  label: string
+  /** Seconds for one particle traversal. Lower = busier. */
+  duration: number
+  hideIn?: TopologyViewMode[]
+}
+
+const topologyEdges: TopologyEdgeSpec[] = [
+  // Orthogonal routing in 928x560 px space — matches legacy line anchors:
+  // IDS center x=464, switch x=464, server x=102, user1 x=464, user2 x=826,
+  // switch bottom 272px (17rem), trunk rail y=328 (20.5rem), device tops 408.
+  { id: "ids-switch", from: "ids", to: "switch", d: "M 464 125 L 464 176", label: "SPAN", duration: 2.2, hideIn: ["logical"] },
+  { id: "switch-server", from: "switch", to: "server", d: "M 464 272 L 464 328 L 102 328 L 102 408", label: "HTTPS", duration: 2.6 },
+  { id: "switch-user1", from: "switch", to: "user1", d: "M 464 272 L 464 408", label: "HTTPS", duration: 2.0 },
+  { id: "switch-user2", from: "switch", to: "user2", d: "M 464 272 L 464 328 L 826 328 L 826 408", label: "HTTPS", duration: 2.8 },
+]
+
+const viewModeLabels: Record<TopologyViewMode, string> = {
+  physical: "Physical Topology",
+  logical: "Logical Data Flow",
+  security: "Security Alert Simulation",
+}
+
+/** Pre-computed label anchors near each edge midpoint (928x560 space). */
+const edgeLabelPositions: Record<string, { x: number; y: number }> = {
+  "ids-switch": { x: 464, y: 150 },
+  "switch-server": { x: 260, y: 328 },
+  "switch-user1": { x: 464, y: 360 },
+  "switch-user2": { x: 620, y: 328 },
 }
 
 function Topology() {
+  const [mode, setMode] = useState<TopologyViewMode>("physical")
+  const [activeNode, setActiveNode] = useState<string | null>(null)
+  const [hoverTip, setHoverTip] = useState<string | null>(null)
+
+  const activeSpec = topologyNodes.find((n) => n.id === activeNode) ?? null
+  const alertedId = mode === "security" ? "server" : null
+  const dimmedId = mode === "logical" ? "ids" : null
+
   return (
-    <div
-      className="topology"
-      role="img"
-      aria-label="Private network topology connecting an IDS monitoring device, managed switch, local SECURA web server, and two authorized user endpoints"
-    >
-      <div className="network-lines" aria-hidden="true">
-        <i className="network-line line-monitor" />
-        <i className="network-line line-trunk" />
-        <i className="network-line line-horizontal" />
-        <i className="network-line line-server" />
-        <i className="network-line line-user-one" />
-        <i className="network-line line-user-two" />
+    <div className={`topology-wrap topo-mode-${mode}`}>
+      <div className="topo-mode-toggle" role="tablist" aria-label="Topology view mode">
+        {(Object.keys(viewModeLabels) as TopologyViewMode[]).map((m) => (
+          <button
+            key={m}
+            role="tab"
+            aria-selected={mode === m}
+            className={`topo-tab ${mode === m ? "topo-tab-active" : ""}`}
+            type="button"
+            onClick={() => setMode(m)}
+          >
+            {viewModeLabels[m]}
+          </button>
+        ))}
       </div>
-      <div className="topology-monitor">
-        <NetworkDevice
-          type="monitor"
-          label="Mini PC / IDS"
-          detail="Monitors relevant network activity"
+
+      <div
+        className="topology"
+        role="img"
+        aria-label="Private network topology connecting an IDS monitoring device, managed switch, local SECURA web server, and two authorized user endpoints"
+      >
+        <svg
+          className="topo-edges"
+          viewBox="0 0 928 560"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <radialGradient id="topo-particle" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="40%" stopColor="var(--color-primary)" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          {topologyEdges.map((edge) => {
+            const hidden = edge.hideIn?.includes(mode)
+            const alert = mode === "security" && (edge.from === "server" || edge.to === "server")
+            // Label anchored at the path midpoint (cheap, stable, no overlap)
+            const mid = edgeLabelPositions[edge.id]
+            return (
+              <g key={edge.id} className={hidden ? "topo-edge-hidden" : undefined}>
+                <path d={edge.d} className={`topo-edge-track ${alert ? "topo-edge-alert" : ""}`} />
+                <path
+                  d={edge.d}
+                  className="topo-edge-flow"
+                  style={{ animationDuration: `${edge.duration}s` }}
+                />
+                {mid && (
+                  <text x={mid.x + 8} y={mid.y - 6} className={`topo-edge-label ${alert ? "topo-edge-alert" : ""}`}>
+                    {edge.label}
+                  </text>
+                )}
+              </g>
+            )
+          })}
+          {/* Glowing particles travel each edge via SMIL — GPU-cheap, no JS */}
+          <g className="topo-particle-group" aria-hidden="true">
+            {topologyEdges.map((edge) => {
+              const hidden = edge.hideIn?.includes(mode)
+              const alert = mode === "security" && (edge.from === "server" || edge.to === "server")
+              return (
+                <g key={`p-${edge.id}`} className={hidden ? "topo-edge-hidden" : undefined}>
+                  <circle r="5" fill={alert ? "var(--color-error)" : "url(#topo-particle)"}>
+                    <animateMotion dur={`${edge.duration}s`} repeatCount="indefinite" path={edge.d} />
+                    <animate
+                      attributeName="opacity"
+                      values="0;1;1;0"
+                      keyTimes="0;0.08;0.92;1"
+                      dur={`${edge.duration}s`}
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                </g>
+              )
+            })}
+          </g>
+        </svg>
+
+        {topologyEdges.map((edge) => {
+          const hidden = edge.hideIn?.includes(mode)
+          return (
+            <span
+              key={`p-${edge.id}`}
+              className={`topo-particle ${hidden ? "topo-edge-hidden" : ""}`}
+              aria-hidden="true"
+              style={{
+                offsetPath: `path("${edge.d}")`,
+                animationDuration: `${edge.duration}s`,
+                offsetRotate: "0deg",
+              } as React.CSSProperties}
+            />
+          )
+        })}
+
+        {topologyNodes.map((node) => {
+          const tipOpen = hoverTip === node.id
+          return (
+            <div key={node.id} className={`topology-anchor topology-${node.type}${node.id === "user2" ? "-two" : ""}`}>
+              <button
+                type="button"
+                className={[
+                  "topo-node",
+                  `network-device network-device-${node.type}`,
+                  alertedId === node.id ? "topo-node-alert" : "",
+                  dimmedId === node.id ? "topo-node-dim" : "",
+                ].filter(Boolean).join(" ")}
+                onMouseEnter={() => setHoverTip(node.id)}
+                onMouseLeave={() => setHoverTip(null)}
+                onFocus={() => setHoverTip(node.id)}
+                onBlur={() => setHoverTip(null)}
+                onClick={() => setActiveNode(node.id)}
+                aria-haspopup="dialog"
+                aria-describedby={tipOpen ? `tip-${node.id}` : undefined}
+              >
+                <span className={`topo-node-icon topo-icon-${node.type}`} aria-hidden="true">
+                  {/* Minimalist vector icons — single-path, currentColor */}
+                  {node.type === "monitor" && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                      <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4h15A1.5 1.5 0 0 1 21 5.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 14.5z" />
+                      <path d="M9 20h6M12 16.5V20" />
+                      <path d="M7 8.5l2.5 2.5L7 13.5" />
+                    </svg>
+                  )}
+                  {node.type === "switch" && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                      <rect x="3" y="7" width="18" height="10" rx="1.5" />
+                      <path d="M6.5 10.5v3M10 10.5v3M13.5 10.5v3M17 10.5v3" />
+                    </svg>
+                  )}
+                  {node.type === "server" && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                      <rect x="4" y="3.5" width="16" height="7" rx="1.5" />
+                      <rect x="4" y="13.5" width="16" height="7" rx="1.5" />
+                      <path d="M7.5 7h.01M7.5 17h.01M11 7h6M11 17h6" />
+                    </svg>
+                  )}
+                  {node.type === "user" && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                      <rect x="4" y="4" width="16" height="11" rx="1.5" />
+                      <path d="M2.5 19h19M12 15v4" />
+                    </svg>
+                  )}
+                </span>
+                <div className="device-visual" aria-hidden="true">
+                  <div className="device-base" />
+                </div>
+                <span className="topo-node-meta">
+                  <strong>{node.label}</strong>
+                  <span>{node.ip}</span>
+                </span>
+                <span className="topo-tip" id={`tip-${node.id}`} role="tooltip" data-open={tipOpen}>
+                  <strong>{node.label}</strong>
+                  <span>{node.ip} · {node.protocol}</span>
+                  <span className="topo-tip-role">{node.role}</span>
+                  <em>Click for details</em>
+                </span>
+              </button>
+            </div>
+          )
+        })}
+      </div>
+
+      <div
+        className={`topo-drawer ${activeSpec ? "topo-drawer-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={activeSpec ? `${activeSpec.label} details` : undefined}
+        hidden={!activeSpec}
+      >
+        {activeSpec && (
+          <>
+            <button
+              className="topo-drawer-close"
+              type="button"
+              aria-label="Close details"
+              onClick={() => setActiveNode(null)}
+            >
+              ✕
+            </button>
+            <p className="eyebrow">{activeSpec.role}</p>
+            <h3>{activeSpec.label}</h3>
+            <dl className="topo-spec-list">
+              <div><dt>IP address</dt><dd>{activeSpec.ip}</dd></div>
+              <div><dt>Protocol</dt><dd>{activeSpec.protocol}</dd></div>
+              <div><dt>Segment</dt><dd>Private LAN 192.168.10.0/24</dd></div>
+            </dl>
+            <p className="topo-drawer-doc">{activeSpec.documentation}</p>
+          </>
+        )}
+      </div>
+      {activeSpec && (
+        <button
+          className="topo-drawer-backdrop"
+          type="button"
+          aria-label="Close details"
+          onClick={() => setActiveNode(null)}
         />
-      </div>
-      <div className="topology-switch">
-        <NetworkDevice
-          type="switch"
-          label="Managed Switch"
-          detail="Local network connectivity"
-        />
-      </div>
-      <div className="topology-server">
-        <NetworkDevice
-          type="server"
-          label="Local Web Server"
-          detail="Hosts the SECURA application"
-        />
-      </div>
-      <div className="topology-user-one">
-        <NetworkDevice
-          type="user"
-          label="User 1"
-          detail="Authorized endpoint"
-        />
-      </div>
-      <div className="topology-user-two">
-        <NetworkDevice
-          type="user"
-          label="User 2"
-          detail="Authorized endpoint"
-        />
-      </div>
+      )}
     </div>
   )
 }
