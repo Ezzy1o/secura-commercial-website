@@ -1145,7 +1145,9 @@ textarea:focus-visible {
 .topology {
   position: relative;
   width: min(100%, 58rem);
-  height: 35rem;
+  /* Large canvas so nodes, labels, and edges never compress together */
+  min-height: 50rem;
+  height: 50rem;
   margin: var(--space-8) auto var(--space-6);
 }
 
@@ -1161,12 +1163,13 @@ textarea:focus-visible {
   z-index: 2;
 }
 
-.topology-monitor { top: 0; left: 50%; transform: translateX(-50%); }
-.topology-switch { top: 11rem; left: 50%; transform: translateX(-50%); }
+/* Generous breathing room — 800px canvas, rows well separated */
+.topology-monitor { top: 1.5rem; left: 50%; transform: translateX(-50%); }
+.topology-switch { top: 12.5rem; left: 50%; transform: translateX(-50%); }
 .topology-server, .topology-user, .topology-user-two { bottom: 0; }
-.topology-server { left: 0; }
+.topology-server { left: clamp(1rem, 4%, 4rem); }
 .topology-user { left: 50%; transform: translateX(-50%); }
-.topology-user-two { right: 0; }
+.topology-user-two { right: clamp(1rem, 4%, 4rem); }
 
 .topo-node {
   padding: 0;
@@ -3615,6 +3618,7 @@ html.theme-transition .marquee {
 
   .topology {
     height: auto !important;
+    min-height: 0 !important;
     display: flex;
     flex-direction: column;
     align-items: center;

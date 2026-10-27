@@ -1063,13 +1063,13 @@ interface TopologyEdgeSpec {
 }
 
 const topologyEdges: TopologyEdgeSpec[] = [
-  // Orthogonal routing in 928x560 px space — matches legacy line anchors:
-  // IDS center x=464, switch x=464, server x=102, user1 x=464, user2 x=826,
-  // switch bottom 272px (17rem), trunk rail y=328 (20.5rem), device tops 408.
-  { id: "ids-switch", from: "ids", to: "switch", d: "M 464 125 L 464 176", label: "SPAN", duration: 2.2, hideIn: ["logical"] },
-  { id: "switch-server", from: "switch", to: "server", d: "M 464 272 L 464 328 L 102 328 L 102 408", label: "HTTPS", duration: 2.6 },
-  { id: "switch-user1", from: "switch", to: "user1", d: "M 464 272 L 464 408", label: "HTTPS", duration: 2.0 },
-  { id: "switch-user2", from: "switch", to: "user2", d: "M 464 272 L 464 328 L 826 328 L 826 408", label: "HTTPS", duration: 2.8 },
+  // Orthogonal routing in a 928x800 coordinate space (container 58rem x 50rem).
+  // Rows: IDS top center (visual bottom ~96), switch top 200 (bottom 248),
+  // trunk rail y=420, bottom-row device tops y=560. Routes never cross nodes.
+  { id: "ids-switch", from: "ids", to: "switch", d: "M 464 96 L 464 200", label: "SPAN", duration: 2.2, hideIn: ["logical"] },
+  { id: "switch-server", from: "switch", to: "server", d: "M 464 248 L 464 420 L 170 420 L 170 560", label: "HTTPS", duration: 2.6 },
+  { id: "switch-user1", from: "switch", to: "user1", d: "M 464 248 L 464 560", label: "HTTPS", duration: 2.0 },
+  { id: "switch-user2", from: "switch", to: "user2", d: "M 464 248 L 464 420 L 758 420 L 758 560", label: "HTTPS", duration: 2.8 },
 ]
 
 const viewModeLabels: Record<TopologyViewMode, string> = {
@@ -1078,12 +1078,12 @@ const viewModeLabels: Record<TopologyViewMode, string> = {
   security: "Security Alert Simulation",
 }
 
-/** Pre-computed label anchors near each edge midpoint (928x560 space). */
+/** Pre-computed label anchors near each edge midpoint (928x800 space). */
 const edgeLabelPositions: Record<string, { x: number; y: number }> = {
   "ids-switch": { x: 464, y: 150 },
-  "switch-server": { x: 260, y: 328 },
-  "switch-user1": { x: 464, y: 360 },
-  "switch-user2": { x: 620, y: 328 },
+  "switch-server": { x: 300, y: 420 },
+  "switch-user1": { x: 464, y: 500 },
+  "switch-user2": { x: 628, y: 420 },
 }
 
 function Topology() {
@@ -1119,7 +1119,7 @@ function Topology() {
       >
         <svg
           className="topo-edges"
-          viewBox="0 0 928 560"
+          viewBox="0 0 928 800"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
