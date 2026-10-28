@@ -52,7 +52,7 @@
   --paragraph-gap: 1.15em;
 
   /* — 8pt spatial grid — */
-  --content-width: 78rem;
+  --content-width: 100rem;   /* 1600px — fills 1920px desktop with breathing room */
   --copy-width: 45rem;
   --header-height: 4.75rem;
   --space-1: 0.25rem;  /* 4 — fine alignment */
@@ -1030,25 +1030,84 @@ textarea:focus-visible {
   position: relative;
 }
 
+.documentation-hero .doc-toc {
+  max-width: 46rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.documentation-hero .doc-toc-title {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.documentation-hero .doc-toc-link {
+  border-color: rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.documentation-hero .doc-toc-link:hover,
+.documentation-hero .doc-toc-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.72);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.documentation-hero .doc-toc-link-active {
+  border-color: #ffffff;
+  color: var(--color-primary-deep);
+  background: #ffffff;
+}
+
 .workflow-grid {
-  margin-top: var(--space-8);
+  margin-top: var(--space-6);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .workflow-step {
   position: relative;
-  min-height: 19rem;
+  min-height: 17rem;
   padding: var(--space-5);
-  border: var(--border-thin) solid color-mix(in srgb, var(--color-white) 22%, transparent);
+  border: var(--border-thin) solid var(--color-border);
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--color-white) 9%, transparent);
-  backdrop-filter: blur(0.6rem);
+  background: var(--color-white);
+  box-shadow: var(--shadow-1);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.workflow-step:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-3);
+}
+
+.workflow-step-top {
+  position: relative;
+  min-height: 4.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.workflow-step-line {
+  position: absolute;
+  top: 2rem;
+  left: 3.5rem;
+  right: -1.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-border-strong), transparent);
 }
 
 .workflow-number {
-  color: var(--color-lavender);
+  color: var(--color-primary);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1056,56 +1115,98 @@ textarea:focus-visible {
 
 .workflow-icon {
   width: 3.5rem;
-  height: 4rem;
-  margin-block: var(--space-6);
-  padding: var(--space-4) var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--color-white);
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  background: var(--color-lavender-soft);
+  transition: transform var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+  animation: workflow-icon-breathe 4s ease-in-out infinite;
 }
 
-.workflow-icon span {
-  height: var(--border-medium);
-  margin-bottom: var(--space-2);
-  display: block;
-  background: var(--color-purple-muted);
+.workflow-icon svg {
+  width: 1.65rem;
+  height: 1.65rem;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.workflow-icon span:last-child {
-  width: 65%;
+.workflow-step:hover .workflow-icon {
+  transform: translateY(-2px) scale(1.05);
+  color: #ffffff;
+  background: var(--color-primary);
 }
 
 .workflow-step h3 {
   margin: 0;
-  font-size: 1.1rem;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  line-height: 1.35;
 }
 
 .workflow-step p {
   margin: var(--space-3) 0 0;
-  /* Workflow steps live on the always-dark documentation hero. */
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.92rem;
-  line-height: 1.6;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: var(--leading-body);
 }
 
 .workflow-connector {
   position: absolute;
   z-index: 2;
-  top: 50%;
-  right: calc(var(--space-5) * -1);
-  width: var(--space-6);
-  height: var(--border-medium);
-  background: var(--color-lavender);
+  top: 2rem;
+  right: calc(var(--space-5) * -1 - 0.5rem);
+  width: var(--space-5);
+  height: 1px;
+  background: var(--color-border-strong);
 }
 
 .workflow-connector i {
   position: absolute;
   top: 50%;
-  right: 0;
-  width: var(--space-2);
-  height: var(--space-2);
+  left: 0;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 50%;
-  background: var(--color-white);
+  background: var(--color-primary);
   transform: translateY(-50%);
+  animation: workflow-progress 2.4s ease-in-out infinite;
+}
+
+.workflow-step:nth-child(2) .workflow-icon {
+  animation-delay: 350ms;
+}
+
+.workflow-step:nth-child(3) .workflow-icon {
+  animation-delay: 700ms;
+}
+
+.workflow-step:nth-child(4) .workflow-icon {
+  animation-delay: 1050ms;
+}
+
+@keyframes workflow-icon-breathe {
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-primary) 7%, transparent);
+  }
+}
+
+@keyframes workflow-progress {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  20%, 80% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 0.4rem);
+    opacity: 0;
+  }
 }
 
 .approval-note {
@@ -1779,10 +1880,9 @@ textarea:focus-visible {
   gap: var(--space-8);
 }
 
-/* Preview frames render at one consistent width in both layouts so
-   every screenshot shows at the same size across showcases. */
+/* Use one shared preview width so each interface screenshot has equal weight. */
 .interface-preview-wrap {
-  width: min(100%, 40rem);
+  width: min(100%, 46rem);
   margin-inline: auto;
 }
 
@@ -2716,6 +2816,14 @@ textarea:focus-visible {
     display: none;
   }
 
+  .workflow-step-line {
+    display: none;
+  }
+
+  .workflow-step {
+    min-height: 15rem;
+  }
+
   .interface-showcase-reverse .interface-preview-wrap,
   .interface-showcase-reverse .interface-copy {
     order: initial;
@@ -2840,7 +2948,7 @@ textarea:focus-visible {
   }
 
   .workflow-icon {
-    margin-block: var(--space-4);
+    margin: 0;
   }
 
   .topology {
@@ -3105,6 +3213,11 @@ textarea:focus-visible {
   background: var(--color-lavender-mid);
 }
 
+:root[data-theme="dark"] .workflow-step {
+  border-color: var(--color-border);
+  background: var(--color-lavender-soft);
+}
+
 :root[data-theme="dark"] .endpoint-screen::after {
   background: var(--color-lavender-soft);
 }
@@ -3195,37 +3308,13 @@ textarea:focus-visible {
   }
 }
 
-/* ===== Theme view transition (circle wipe) ===== */
-
-/* Theme view transition — new theme expands over the old as a circle
-   wipe anchored on the toggle button. The old snapshot is faded out
-   underneath so no white frame ever shows through. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-::view-transition-old(root) {
-  opacity: 1;
-  z-index: 1;
-}
-
-::view-transition-new(root) {
-  z-index: 9999;
-}
-
-/* Root canvas always paints the active theme — the <html> element itself
-   never shows a default white frame during theme swaps or loads.
-   (html background is set in the base rules above.) */
-
-/* Theme color transition — scoped fallback for browsers without the
-   View Transition API. Only paint properties; no transforms, no
-   pseudo-elements, so it stays cheap even on large DOMs. */
+/* Use paint-only transitions for theme changes; avoid full-page snapshot
+   wipes that can flash the browser's default canvas on larger pages. */
 html.theme-transition,
 html.theme-transition body,
 html.theme-transition .app-shell,
 html.theme-transition .site-header,
+html.theme-transition .documentation-hero,
 html.theme-transition main,
 html.theme-transition section,
 html.theme-transition footer,
@@ -3234,13 +3323,43 @@ html.theme-transition .stat-item,
 html.theme-transition .nav-links,
 html.theme-transition .mini-step,
 html.theme-transition .browser-frame,
+html.theme-transition .workflow-step,
+html.theme-transition .workflow-icon,
+html.theme-transition .doc-toc-link,
+html.theme-transition .topo-node,
 html.theme-transition .inquiry-form,
 html.theme-transition .team-card,
 html.theme-transition .marquee {
   transition:
-    background-color 300ms ease,
-    border-color 300ms ease,
-    color 300ms ease;
+    background-color 260ms ease,
+    border-color 260ms ease,
+    color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.theme-transition,
+    html.theme-transition body,
+    html.theme-transition .app-shell,
+    html.theme-transition .site-header,
+    html.theme-transition .documentation-hero,
+    html.theme-transition main,
+    html.theme-transition section,
+    html.theme-transition footer,
+    html.theme-transition .feature-card,
+    html.theme-transition .stat-item,
+    html.theme-transition .nav-links,
+    html.theme-transition .mini-step,
+    html.theme-transition .browser-frame,
+    html.theme-transition .workflow-step,
+    html.theme-transition .workflow-icon,
+    html.theme-transition .doc-toc-link,
+    html.theme-transition .topo-node,
+    html.theme-transition .inquiry-form,
+    html.theme-transition .team-card,
+    html.theme-transition .marquee {
+      transition-duration: 0.01ms;
+    }
 }
 
 /* ===== Theme toggle ===== */
@@ -3682,20 +3801,114 @@ html.theme-transition .marquee {
   stroke: var(--color-lavender-mid);
 }
 
+/* ===== Documentation on-page TOC ===== */
+
+.doc-toc {
+  margin: var(--space-7) auto 0;
+  max-width: 34rem;
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-white) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.doc-toc-title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.doc-toc ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doc-toc-link {
+  padding: var(--space-1) var(--space-3);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.doc-toc-link:hover,
+.doc-toc-link:focus-visible {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.doc-toc-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.doc-toc-link-active {
+  color: #ffffff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.interface-anchor {
+  scroll-margin-top: 6rem;
+}
+
+.topology-section {
+  scroll-margin-top: 4rem;
+}
+
+.workflow-anchor-section {
+  scroll-margin-top: 4rem;
+}
+
 /* ===== Logical network diagram — flow layout per reference ===== */
+
+/* Per-mode description under the tabs */
+.topo-mode-description {
+  margin: calc(-1 * var(--space-6)) auto var(--space-7);
+  max-width: 34rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
 
 .logical-topology {
   position: relative;
   width: 100%;
   max-width: 64rem;
   margin-inline: auto;
-  padding-top: var(--space-6);
+  padding-top: var(--space-7);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* SVG spans the whole component, behind nodes */
+/* Small mono caption above the IDS node */
+.topo-tier-label {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
 .logical-edges {
   position: absolute;
   inset: 0;
@@ -3726,26 +3939,50 @@ html.theme-transition .marquee {
   text-align: left;
 }
 
-/* Blue box — Internal LAN */
+.topo-node-horizontal .topo-node-meta strong,
+.topo-node-horizontal .topo-node-meta span {
+  text-align: left;
+}
+
+/* Internal LAN — dashed boundary box */
 .logical-lan {
   position: relative;
   z-index: 1;
   width: min(100%, 56rem);
   margin-top: var(--space-8);
-  padding: var(--space-8);
-  border: var(--border-thin) solid color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
-  border-radius: var(--radius-sm);
+  padding: var(--space-9) var(--space-8) var(--space-8);
+  border: var(--border-medium) dashed var(--color-border-strong);
+  border-radius: var(--radius-xl);
   background: color-mix(in srgb, var(--color-lavender-soft) 55%, transparent);
 }
 
+:root[data-theme="dark"] .logical-lan {
+  background: color-mix(in srgb, var(--color-lavender-mid) 30%, transparent);
+}
+
+/* LAN label pill — sits on the dashed border like the reference */
 .logical-lan-label {
   position: absolute;
-  top: var(--space-4);
-  left: var(--space-4);
+  top: calc(-1 * var(--space-3));
+  left: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-4);
+  border: var(--border-thin) solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
   color: var(--color-text-muted);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+}
+
+.logical-lan-label svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-primary);
 }
 
 .logical-node-switch {
@@ -3757,12 +3994,84 @@ html.theme-transition .marquee {
 .logical-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-9);
+  gap: var(--space-8);
   margin-top: var(--space-9);
 }
 
 .logical-grid .topo-node {
   width: 100%;
+}
+
+/* ===== Node card details — port, role, status dot ===== */
+
+.topo-node {
+  position: relative;
+  padding: var(--space-2);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  box-shadow: var(--shadow-1);
+}
+
+.topo-node:hover,
+.topo-node:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-3);
+}
+
+.topo-node-active {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-3), 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.topo-node-status {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 18%, transparent);
+}
+
+.topo-node-meta strong {
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.topo-node-meta span {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.topo-node-port {
+  color: var(--color-accent) !important;
+}
+
+.topo-node-role {
+  color: var(--color-primary);
+  font-family: var(--font-body) !important;
+  font-size: 0.72rem !important;
+  font-weight: 650;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+:root[data-theme="dark"] .topo-node-role {
+  color: #c4b0fd;
+  background: rgba(167, 139, 250, 0.12);
+}
+
+/* Root-cause note: keep the SMIL particle group hidden when motion is reduced */
+@media (prefers-reduced-motion: reduce) {
+  .topo-particle-group {
+    display: none;
+  }
 }
 
 @media (max-width: 64rem) {
@@ -3781,14 +4090,20 @@ html.theme-transition .marquee {
   }
 
   .logical-lan {
-    padding: var(--space-6) var(--space-4);
+    padding: var(--space-8) var(--space-4) var(--space-6);
     margin-top: var(--space-6);
+  }
+
+  .logical-lan-label {
+    left: var(--space-4);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
   }
 
   .logical-grid {
     grid-template-columns: 1fr;
-    gap: var(--space-6);
-    margin-top: var(--space-6);
+    gap: var(--space-5);
+    margin-top: var(--space-7);
   }
 
   .topo-node-horizontal {
@@ -3799,6 +4114,16 @@ html.theme-transition .marquee {
   .topo-node-horizontal .topo-node-meta {
     align-items: center;
     text-align: center;
+  }
+
+  .topo-node-horizontal .topo-node-meta strong,
+  .topo-node-horizontal .topo-node-meta span {
+    text-align: center;
+  }
+
+  .topo-mode-description {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-6);
   }
 }
 
@@ -3855,5 +4180,278 @@ html.theme-transition .marquee {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Keep the topology SVG and its nodes on one shared, fixed-ratio canvas. */
+.logical-topology {
+  width: min(100%, 56.5rem);
+  aspect-ratio: 301 / 200;
+  height: auto;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0;
+  overflow: visible;
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-white);
+  box-shadow: var(--shadow-2);
+  isolation: isolate;
+}
+
+.logical-edges {
+  z-index: 3;
+}
+
+.logical-node {
+  z-index: 4;
+}
+
+.logical-node-pc {
+  position: absolute;
+  top: 3.2%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  transform: translateX(-50%);
+}
+
+.logical-node-pc .topo-tier-label {
+  margin-bottom: var(--space-2);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.logical-lan {
+  position: absolute;
+  inset: 25% 6.2% 8%;
+  z-index: 2;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--color-lavender-soft) 64%, transparent);
+}
+
+.logical-lan-label {
+  z-index: 5;
+  top: var(--space-3);
+  left: var(--space-4);
+  max-width: calc(100% - var(--space-8));
+  font-size: clamp(0.55rem, 1vw, 0.72rem);
+  letter-spacing: 0.07em;
+}
+
+.logical-node-switch {
+  position: absolute;
+  top: 12.2%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.logical-grid {
+  position: absolute;
+  top: 61.6%;
+  left: 1%;
+  width: 98%;
+  margin: 0;
+  gap: 0;
+}
+
+.logical-grid .topo-node {
+  width: min(100%, 13.5rem);
+  justify-self: center;
+}
+
+.logical-node-pc .topo-node,
+.logical-node-switch .topo-node {
+  width: 14rem;
+}
+
+.topo-node {
+  z-index: 1;
+  min-width: 0;
+  padding: var(--space-1);
+  transform: none;
+}
+
+.topo-node-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  flex: none;
+}
+
+.topo-node-horizontal {
+  width: max-content;
+  max-width: 100%;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.topo-node-horizontal .topo-node-meta {
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+}
+
+.logical-grid .topo-node-horizontal .topo-node-meta {
+  flex: 1;
+}
+
+.topo-node-meta strong {
+  font-size: 0.62rem;
+  line-height: 1.15;
+}
+
+.topo-node-meta {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.topo-node:hover .topo-node-meta,
+.topo-node:focus-visible .topo-node-meta {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.topo-node-meta span {
+  font-size: 0.625rem;
+  line-height: 1.35;
+}
+
+.topo-node-port {
+  font-size: 0.5rem !important;
+  line-height: 1.2;
+}
+
+.topo-node-role {
+  padding: 0 0.3rem;
+  font-size: 0.57rem !important;
+  line-height: 1.25;
+}
+
+.topo-node-icon {
+  border-radius: var(--radius-sm);
+  background: var(--color-lavender-soft);
+}
+
+.topo-edge-label {
+  text-anchor: middle;
+  letter-spacing: 0;
+  fill: var(--color-primary);
+  font-size: 10px;
+  font-weight: 600;
+  stroke: none;
+  paint-order: normal;
+}
+
+.topo-edge-label-bg {
+  fill: var(--color-white);
+  stroke: var(--color-border-strong);
+  stroke-width: 1;
+}
+
+.topo-mode-description {
+  margin: 0 auto var(--space-6);
+  max-width: 42rem;
+}
+
+.topology-caption {
+  max-width: 52rem;
+  margin: var(--space-4) auto 0;
+  text-align: center;
+}
+
+@media (max-width: 48rem) {
+  .approval-note {
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .approval-icon {
+    width: 3.5rem;
+  }
+
+  .logical-topology {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-5);
+    aspect-ratio: auto;
+    padding: var(--space-5);
+    overflow: hidden;
+  }
+
+  .logical-edges {
+    display: none;
+  }
+
+  .logical-node-pc,
+  .logical-node-switch,
+  .logical-grid {
+    position: relative;
+    inset: auto;
+    top: auto;
+    left: auto;
+    width: 100%;
+    transform: none;
+  }
+
+  .logical-node-pc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logical-topology .network-device::after {
+    display: none;
+  }
+
+  .logical-lan {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-5);
+    width: 100%;
+    padding: var(--space-7) var(--space-3) var(--space-4);
+  }
+
+  .logical-lan-label {
+    position: static;
+    align-self: flex-start;
+    top: var(--space-2);
+    left: var(--space-3);
+    max-width: 100%;
+  }
+
+  .logical-node-switch {
+    justify-content: center;
+  }
+
+  .logical-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .logical-grid .topo-node-horizontal {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .topo-node-meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .topo-node-meta strong,
+  .topo-node-meta span {
+    text-align: left;
   }
 }

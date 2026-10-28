@@ -221,55 +221,20 @@ function useTheme() {
     window.localStorage.setItem("secura-theme", theme)
   }, [theme])
 
-  const toggleTheme = (event?: React.MouseEvent) => {
+  const toggleTheme = () => {
     const next = theme === "light" ? "dark" : "light"
     const root = document.documentElement
-    type Doc = Document & {
-      startViewTransition?: (cb: () => void) => {
-        ready: Promise<void>
-      }
-    }
-    const doc = document as Doc
-    const applyTheme = () => {
-      setTheme(next)
-      root.dataset.theme = next
-      window.localStorage.setItem("secura-theme", next)
-    }
-    if (!doc.startViewTransition || useReducedMotion()) {
-      // Cross-fade fallback: tag the root for 300ms so only paint
-      // properties transition, then remove the tag.
-      root.classList.add("theme-transition")
-      applyTheme()
-      window.setTimeout(() => root.classList.remove("theme-transition"), 350)
-      return
-    }
-    const x = event?.clientX ?? window.innerWidth - 48
-    const y = event?.clientY ?? 48
-    const radius = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y),
-    )
-    const transition = doc.startViewTransition(applyTheme)
-    transition.ready.then(() => {
-      root.animate(
-        {
-          clipPath: [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${radius}px at ${x}px ${y}px)`,
-          ],
-        },
-        {
-          duration: 650,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        },
-      )
-    }).catch(() => {})
+    root.classList.add("theme-transition")
+    root.dataset.theme = next
+    setTheme(next)
+    window.localStorage.setItem("secura-theme", next)
+    window.setTimeout(() => root.classList.remove("theme-transition"), 320)
   }
 
   return { theme, toggleTheme }
 }
 
-function ThemeToggle({ theme, onToggle }: { theme: "light" | "dark"; onToggle: (event: React.MouseEvent) => void }) {
+function ThemeToggle({ theme, onToggle }: { theme: "light" | "dark"; onToggle: () => void }) {
   return (
     <button
       className="theme-toggle"
@@ -961,10 +926,33 @@ function Workflow() {
     <div className="workflow-grid">
       {workflow.map((step, index) => (
         <Reveal className="workflow-step" delay={index * 70} key={step.title}>
-          <div className="workflow-number">{step.number}</div>
-          <div className="workflow-icon" aria-hidden="true">
-            <span />
-            <span />
+          <div className="workflow-step-top">
+            <span className="workflow-number">{step.number}</span>
+            <span className="workflow-icon" aria-hidden="true">
+              {index === 0 && (
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+                </svg>
+              )}
+              {index === 1 && (
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5zM8 9h8M8 12h5M8 15h3" />
+                  <circle cx="17" cy="16" r="3" />
+                </svg>
+              )}
+              {index === 2 && (
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3 19 6v5c0 4.5-2.9 8.2-7 10-4.1-1.8-7-5.5-7-10V6z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              )}
+              {index === 3 && (
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5M3 12l7-7m0 0H5m5 0v5" />
+                </svg>
+              )}
+            </span>
+            <span className="workflow-step-line" aria-hidden="true" />
           </div>
           <h3>{step.title}</h3>
           <p>{step.description}</p>
@@ -988,6 +976,7 @@ interface TopologyNodeSpec {
   role: string
   ip: string
   protocol: string
+  port?: string
   detail: string
   documentation: string
 }
@@ -1000,7 +989,7 @@ const topologyNodes: TopologyNodeSpec[] = [
     role: "Monitoring & visibility",
     ip: "192.168.10.254",
     protocol: "SPAN port, Syslog",
-    detail: "Monitors relevant network activity",
+    detail: "External monitoring appliance (passive tap)",
     documentation:
       "A dedicated monitoring host outside the Internal LAN boundary, fed by a SPAN (mirror) port on the managed switch. It observes traffic patterns for anomaly detection without sitting in the forwarding path — passive visibility, zero impact on latency.",
   },
@@ -1022,6 +1011,7 @@ const topologyNodes: TopologyNodeSpec[] = [
     role: "Application host",
     ip: "192.168.10.10",
     protocol: "HTTPS :443",
+    port: "Port: Gi0/1 · HTTPS :443",
     detail: "Hosts the SECURA application",
     documentation:
       "Hosts the SECURA web application on an isolated LAN segment behind switch port Gi0/1. It has no direct internet exposure — users reach it only through the managed switch. TLS termination happens here with local certificate trust.",
@@ -1029,10 +1019,11 @@ const topologyNodes: TopologyNodeSpec[] = [
   {
     id: "user1",
     type: "user",
-    label: "Client Node",
+    label: "Client Node (Workstation 1)",
     role: "Authorized endpoint",
     ip: "192.168.10.20",
-    protocol: "HTTPS client",
+    protocol: "HTTPS Client",
+    port: "Port: Gi0/2 · HTTPS Client",
     detail: "Authorized endpoint · Gi0/2",
     documentation:
       "An authorized workstation inside the private network on switch port Gi0/2. Access to SECURA follows role-based permissions, and requests for original documents go through the controlled approval workflow.",
@@ -1040,13 +1031,77 @@ const topologyNodes: TopologyNodeSpec[] = [
   {
     id: "user2",
     type: "user",
-    label: "Client Node",
+    label: "Client Node (Workstation 2)",
     role: "Authorized endpoint",
     ip: "192.168.10.30",
-    protocol: "HTTPS client",
+    protocol: "HTTPS Client",
+    port: "Port: Gi0/3 · HTTPS Client",
     detail: "Authorized endpoint · Gi0/3",
     documentation:
       "A second authorized workstation on switch port Gi0/3. Both endpoints operate under the same role-based access model; sessions are logged for review by the security officer role.",
+  },
+]
+
+/** Logical Data Flow — same hosts, flow semantics instead of cabling. */
+const logicalNodes: TopologyNodeSpec[] = [
+  {
+    id: "pc",
+    type: "monitor",
+    label: "IDS / SIEM Telemetry",
+    role: "Observes, never forwards",
+    ip: "192.168.10.254",
+    protocol: "Mirrored copies only",
+    detail: "Passive analysis of traffic copies",
+    documentation:
+      "At the logical layer the monitoring host consumes mirrored traffic and log streams. It never sits in the request path — application traffic between clients and the web application is unaffected by monitoring.",
+  },
+  {
+    id: "switch",
+    type: "switch",
+    label: "Transport & Segmentation",
+    role: "Logical boundary",
+    ip: "192.168.10.1",
+    protocol: "VLAN segmentation",
+    port: "SPAN replication",
+    detail: "Segments user, server, and monitoring flows",
+    documentation:
+      "Logically, the switch is the boundary that keeps flows separated: user-to-server traffic stays inside the LAN, while monitoring receives only copies. Requests to original documents traverse this boundary under the approval workflow.",
+  },
+  {
+    id: "server",
+    type: "server",
+    label: "SECURA Application",
+    role: "Processes documents",
+    ip: "192.168.10.10",
+    protocol: "HTTPS request/response",
+    port: "Flow: upload → anonymize → share",
+    detail: "Terminates TLS, applies workflow",
+    documentation:
+      "Logical destination for authorized sessions: upload, NLP-based detection, anonymization, and controlled sharing. Every step validates the caller's role before proceeding.",
+  },
+  {
+    id: "user1",
+    type: "user",
+    label: "Authorized User Flow",
+    role: "Initiates requests",
+    ip: "192.168.10.20",
+    protocol: "HTTPS Client",
+    port: "Flow: authenticate → upload/share",
+    detail: "Request origin · role-based",
+    documentation:
+      "Logical view of a user session: authenticate, upload or process documents, and share protected files. Original-file requests pause until a security officer approves them.",
+  },
+  {
+    id: "user2",
+    type: "user",
+    label: "Authorized User Flow",
+    role: "Initiates requests",
+    ip: "192.168.10.30",
+    protocol: "HTTPS Client",
+    port: "Flow: authenticate → upload/share",
+    detail: "Request origin · role-based",
+    documentation:
+      "A second logical user flow with the same guarantees. Both endpoints see only protected documents unless an original-file request is explicitly approved.",
   },
 ]
 
@@ -1054,7 +1109,7 @@ interface TopologyEdgeSpec {
   id: string
   from: string
   to: string
-  /** Orthogonal path in the logical-diagram coordinate space (1000x760). */
+  /** Orthogonal path in the shared topology canvas (1000x600). */
   d: string
   label: string
   /** Seconds for one particle traversal. Lower = busier. */
@@ -1062,13 +1117,17 @@ interface TopologyEdgeSpec {
 }
 
 const topologyEdges: TopologyEdgeSpec[] = [
-  // Wrapper-space coordinates (~1000x760): PC bottom 108, blue box top 172,
-  // switch 212-280, trunk rail y=320, grid icon tops 360. Centers:
-  // web app x=212, client1 x=500, client2 x=788.
-  { id: "pc-switch", from: "pc", to: "switch", d: "M 500 108 L 500 212", label: "Gi0/8", duration: 2.2 },
-  { id: "switch-server", from: "switch", to: "server", d: "M 500 280 L 500 320 L 212 320 L 212 360", label: "Gi0/1", duration: 2.6 },
-  { id: "switch-user1", from: "switch", to: "user1", d: "M 500 280 L 500 360", label: "Gi0/2", duration: 2.0 },
-  { id: "switch-user2", from: "switch", to: "user2", d: "M 500 280 L 500 320 L 788 320 L 788 360", label: "Gi0/3", duration: 2.8 },
+  { id: "pc-switch", from: "pc", to: "switch", d: "M 500 110 L 500 205", label: "Gi0/8 · SPAN", duration: 2.2 },
+  { id: "switch-server", from: "switch", to: "server", d: "M 500 269 L 500 337 L 214 337 L 214 410", label: "Gi0/1 · Server", duration: 2.6 },
+  { id: "switch-user1", from: "switch", to: "user1", d: "M 500 269 L 500 410", label: "Gi0/2 · Client", duration: 2.0 },
+  { id: "switch-user2", from: "switch", to: "user2", d: "M 500 269 L 500 337 L 785 337 L 785 410", label: "Gi0/3 · Client", duration: 2.8 },
+]
+
+const logicalEdges: TopologyEdgeSpec[] = [
+  { id: "pc-switch", from: "pc", to: "switch", d: "M 500 110 L 500 205", label: "Mirrored copies", duration: 2.2 },
+  { id: "switch-server", from: "switch", to: "server", d: "M 500 269 L 500 337 L 214 337 L 214 410", label: "HTTPS · Application", duration: 2.6 },
+  { id: "switch-user1", from: "switch", to: "user1", d: "M 500 269 L 500 410", label: "HTTPS · User session", duration: 2.0 },
+  { id: "switch-user2", from: "switch", to: "user2", d: "M 500 269 L 500 337 L 785 337 L 785 410", label: "HTTPS · User session", duration: 2.8 },
 ]
 
 const viewModeLabels: Record<TopologyViewMode, string> = {
@@ -1076,39 +1135,43 @@ const viewModeLabels: Record<TopologyViewMode, string> = {
   logical: "Logical Data Flow",
 }
 
-/** Port-label anchors (1000x760 space) — exactly where the labels belong. */
+const viewModeDescriptions: Record<TopologyViewMode, string> = {
+  physical:
+    "Showing physical infrastructure cabling, managed switch interfaces (Gi0/1–Gi0/8), and dedicated SPAN mirror link.",
+  logical:
+    "Showing how data moves between authorized users, the SECURA application, and the passive monitoring host — flows, not cables.",
+}
+
+/** Port-label anchors in the shared 1000x600 canvas. */
 const edgeLabelPositions: Record<string, { x: number; y: number }> = {
-  "pc-switch": { x: 514, y: 165 },
-  "switch-server": { x: 330, y: 313 },
-  "switch-user1": { x: 514, y: 330 },
-  "switch-user2": { x: 650, y: 313 },
+  "pc-switch": { x: 500, y: 155 },
+  "switch-server": { x: 214, y: 365 },
+  "switch-user1": { x: 500, y: 365 },
+  "switch-user2": { x: 785, y: 365 },
 }
 
 function TopologyNodeButton({
   node,
-  tipOpen,
-  onHover,
   onOpen,
   orientation = "vertical",
+  active,
 }: {
   node: TopologyNodeSpec
-  tipOpen: boolean
-  onHover: (id: string | null) => void
   onOpen: (id: string) => void
   orientation?: "vertical" | "horizontal"
+  active?: boolean
 }) {
   return (
     <button
       type="button"
-      className={`topo-node topo-node-${orientation} network-device network-device-${node.type}`}
-      onMouseEnter={() => onHover(node.id)}
-      onMouseLeave={() => onHover(null)}
-      onFocus={() => onHover(node.id)}
-      onBlur={() => onHover(null)}
+      className={`topo-node topo-node-${orientation} network-device network-device-${node.type} ${
+        active ? "topo-node-active" : ""
+      }`}
       onClick={() => onOpen(node.id)}
       aria-haspopup="dialog"
-      aria-describedby={tipOpen ? `tip-${node.id}` : undefined}
+      aria-label={`${node.label}, ${node.ip}, ${node.role}. Open details`}
     >
+      <span className="topo-node-status" aria-hidden="true" />
       <span className={`topo-node-icon topo-icon-${node.type}`} aria-hidden="true">
         {node.type === "monitor" && (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
@@ -1140,27 +1203,44 @@ function TopologyNodeButton({
       <span className="topo-node-meta">
         <strong>{node.label}</strong>
         <span>{node.ip}</span>
-      </span>
-      <span className="topo-tip" id={`tip-${node.id}`} role="tooltip" data-open={tipOpen}>
-        <strong>{node.label}</strong>
-        <span>{node.ip} · {node.protocol}</span>
-        <span className="topo-tip-role">{node.role}</span>
-        <em>Click for details</em>
+        {node.port && <span className="topo-node-port">{node.port}</span>}
+        <span className="topo-node-role">{node.role}</span>
       </span>
     </button>
   )
 }
 
-function Topology() {
-  const [mode, setMode] = useState<TopologyViewMode>("physical")
+function Topology({
+  mode,
+  onModeChange,
+}: {
+  mode: TopologyViewMode
+  onModeChange: (mode: TopologyViewMode) => void
+}) {
   const [activeNode, setActiveNode] = useState<string | null>(null)
-  const [hoverTip, setHoverTip] = useState<string | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
-  const activeSpec = topologyNodes.find((n) => n.id === activeNode) ?? null
-  const nodeSpec = (id: string) => topologyNodes.find((n) => n.id === id)!
+  const nodeSet = mode === "physical" ? topologyNodes : logicalNodes
+  const edges = mode === "physical" ? topologyEdges : logicalEdges
+  const activeSpec = nodeSet.find((n) => n.id === activeNode) ?? null
+  const nodeSpec = (id: string) => nodeSet.find((n) => n.id === id)!
+
+  useEffect(() => {
+    setActiveNode(null)
+  }, [mode])
+
+  useEffect(() => {
+    if (!activeSpec) return
+    closeButtonRef.current?.focus()
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveNode(null)
+    }
+    window.addEventListener("keydown", closeOnEscape)
+    return () => window.removeEventListener("keydown", closeOnEscape)
+  }, [activeSpec])
 
   return (
-    <div className="topology-wrap topo-mode-logical">
+    <div className={`topology-wrap topo-mode-${mode}`}>
       {/* Navigation — isolated far above the diagram */}
       <div className="topo-mode-toggle" role="tablist" aria-label="Topology view mode">
         {(Object.keys(viewModeLabels) as TopologyViewMode[]).map((m) => (
@@ -1170,21 +1250,28 @@ function Topology() {
             aria-selected={mode === m}
             className={`topo-tab ${mode === m ? "topo-tab-active" : ""}`}
             type="button"
-            onClick={() => setMode(m)}
+            onClick={() => onModeChange(m)}
           >
             {viewModeLabels[m]}
           </button>
         ))}
       </div>
+      <p className="topo-mode-description" role="note">
+        {viewModeDescriptions[mode]}
+      </p>
 
       {/* Main wrapper — flow layout, everything positions naturally */}
       <div
         className="logical-topology"
-        role="img"
-        aria-label="Logical network diagram: a mini PC connects to a network switch inside the Internal LAN, which serves a web application and two client nodes"
+        role="group"
+        aria-label={
+          mode === "physical"
+            ? "Physical network diagram: a mini PC connects to a network switch inside the Internal LAN, which serves a web application and two client nodes"
+            : "Logical data flow diagram: authorized user flows reach the SECURA application, while monitoring observes passively"
+        }
       >
         {/* SVG spanning the whole component — behind everything */}
-        <svg className="logical-edges" viewBox="0 0 1000 760" preserveAspectRatio="none" aria-hidden="true">
+        <svg className="logical-edges" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
           <defs>
             <radialGradient id="topo-particle" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
@@ -1192,7 +1279,7 @@ function Topology() {
               <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
             </radialGradient>
           </defs>
-          {topologyEdges.map((edge) => {
+          {edges.map((edge) => {
             const mid = edgeLabelPositions[edge.id]
             return (
               <g key={edge.id}>
@@ -1203,15 +1290,25 @@ function Topology() {
                   style={{ animationDuration: `${edge.duration}s` }}
                 />
                 {mid && (
-                  <text x={mid.x} y={mid.y} className="topo-edge-label">
-                    {edge.label}
-                  </text>
+                  <g>
+                    <rect
+                      x={mid.x - (edge.id === "pc-switch" ? 57 : 48)}
+                      y={mid.y - 12}
+                      width={edge.id === "pc-switch" ? 114 : 96}
+                      height="24"
+                      rx="12"
+                      className="topo-edge-label-bg"
+                    />
+                    <text x={mid.x} y={mid.y + 4} className="topo-edge-label">
+                      {edge.label}
+                    </text>
+                  </g>
                 )}
               </g>
             )
           })}
           <g className="topo-particle-group" aria-hidden="true">
-            {topologyEdges.map((edge) => (
+            {edges.map((edge) => (
               <circle key={`p-${edge.id}`} r="5" fill="url(#topo-particle)">
                 <animateMotion dur={`${edge.duration}s`} repeatCount="indefinite" path={edge.d} />
                 <animate
@@ -1226,52 +1323,49 @@ function Topology() {
           </g>
         </svg>
 
-        {/* Tier 1 — Mini PC, horizontal node: icon left, text right */}
+        {/* Tier 1 — Mini PC / IDS, outside the LAN boundary */}
         <div className="logical-node logical-node-pc">
+          <p className="topo-tier-label" aria-hidden="true">
+            External monitoring appliance (passive tap)
+          </p>
           <TopologyNodeButton
             node={nodeSpec("pc")}
-            tipOpen={hoverTip === "pc"}
-            onHover={setHoverTip}
             onOpen={setActiveNode}
+            active={activeNode === "pc"}
             orientation="horizontal"
           />
         </div>
 
-        {/* Blue box — Internal LAN */}
+        {/* Internal LAN — dashed boundary box: switch + endpoints only */}
         <div className="logical-lan">
-          <span className="logical-lan-label">Internal LAN</span>
+          <span className="logical-lan-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z" />
+            </svg>
+            INTERNAL LAN · 192.168.10.0/24
+          </span>
 
-          {/* Tier 2 — switch centered near the top, horizontal node */}
+          {/* Tier 2 — switch centered near the top of the LAN */}
           <div className="logical-node logical-node-switch">
             <TopologyNodeButton
               node={nodeSpec("switch")}
-              tipOpen={hoverTip === "switch"}
-              onHover={setHoverTip}
               onOpen={setActiveNode}
+              active={activeNode === "switch"}
               orientation="horizontal"
             />
           </div>
 
-          {/* Tier 3 — 3-column grid, text centered below icons */}
+          {/* Tier 3 — 3-column grid of endpoints */}
           <div className="logical-grid">
-            <TopologyNodeButton
-              node={nodeSpec("server")}
-              tipOpen={hoverTip === "server"}
-              onHover={setHoverTip}
-              onOpen={setActiveNode}
-            />
-            <TopologyNodeButton
-              node={nodeSpec("user1")}
-              tipOpen={hoverTip === "user1"}
-              onHover={setHoverTip}
-              onOpen={setActiveNode}
-            />
-            <TopologyNodeButton
-              node={nodeSpec("user2")}
-              tipOpen={hoverTip === "user2"}
-              onHover={setHoverTip}
-              onOpen={setActiveNode}
-            />
+            {(["server", "user1", "user2"] as const).map((id) => (
+              <TopologyNodeButton
+                key={id}
+                node={nodeSpec(id)}
+                onOpen={setActiveNode}
+                active={activeNode === id}
+                orientation="horizontal"
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -1286,6 +1380,7 @@ function Topology() {
         {activeSpec && (
           <>
             <button
+              ref={closeButtonRef}
               className="topo-drawer-close"
               type="button"
               aria-label="Close details"
@@ -1298,7 +1393,21 @@ function Topology() {
             <dl className="topo-spec-list">
               <div><dt>IP address</dt><dd>{activeSpec.ip}</dd></div>
               <div><dt>Protocol</dt><dd>{activeSpec.protocol}</dd></div>
-              <div><dt>Segment</dt><dd>Private LAN 192.168.10.0/24</dd></div>
+              {activeSpec.port && (
+                <div><dt>Interface / flow</dt><dd>{activeSpec.port}</dd></div>
+              )}
+              <div>
+                <dt>Segment</dt>
+                <dd>
+                  {mode === "physical"
+                    ? activeSpec.id === "pc"
+                      ? "Outside the Internal LAN · SPAN mirror link"
+                      : "Internal LAN 192.168.10.0/24"
+                    : activeSpec.id === "pc"
+                      ? "Passive monitoring · mirrored copies only"
+                      : "Logical boundary · traffic stays in LAN"}
+                </dd>
+              </div>
             </dl>
             <p className="topo-drawer-doc">{activeSpec.documentation}</p>
           </>
@@ -1376,11 +1485,107 @@ function InterfaceShowcase({
   )
 }
 
+const docSections = [
+  { id: "workflow", label: "Workflow" },
+  { id: "topology", label: "Physical Topology" },
+  { id: "data-flow", label: "Logical Data Flow" },
+  { id: "interface-user", label: "User Interface" },
+  { id: "interface-admin", label: "Admin Interface" },
+  { id: "interface-security", label: "Security Officer" },
+]
+
+function DocTableOfContents({
+  activeSection,
+  onJump,
+}: {
+  activeSection: string | null
+  onJump: (id: string) => void
+}) {
+  return (
+    <nav className="doc-toc" aria-label="Documentation sections">
+      <p className="doc-toc-title">On this page</p>
+      <ul>
+        {docSections.map((section) => (
+          <li key={section.id}>
+            <button
+              type="button"
+              className={`doc-toc-link ${
+                activeSection === section.id ? "doc-toc-link-active" : ""
+              }`}
+              aria-current={activeSection === section.id ? "true" : undefined}
+              onClick={() => onJump(section.id)}
+            >
+              {section.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
 function DocumentationPage({
   onNavigate,
 }: {
   onNavigate: (page: Page) => void
 }) {
+  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [topologyMode, setTopologyMode] =
+    useState<TopologyViewMode>("physical")
+
+  const jumpToSection = (id: string) => {
+    const targetId = id === "data-flow" ? "topology" : id
+    const target = document.getElementById(targetId)
+    if (!target) return
+    if (id === "topology" || id === "data-flow") {
+      setTopologyMode(id === "data-flow" ? "logical" : "physical")
+      setActiveSection(id)
+    }
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches
+    const lenis = (window as any).__lenis
+    if (lenis?.scrollTo && !reducedMotion) {
+      lenis.scrollTo(target, { offset: -96, duration: 1.1 })
+    } else {
+      target.scrollIntoView({
+        behavior: reducedMotion ? "instant" : "smooth",
+        block: "start",
+      })
+    }
+    setActiveSection(id)
+  }
+
+  useEffect(() => {
+    let observer: IntersectionObserver | undefined
+    try {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(
+                entry.target.id === "topology"
+                  ? topologyMode === "physical"
+                    ? "topology"
+                    : "data-flow"
+                  : entry.target.id,
+              )
+            }
+          })
+        },
+        { rootMargin: "-30% 0px -55% 0px" },
+      )
+      docSections.forEach(({ id }) => {
+        const el =
+          id === "data-flow" ? null : document.getElementById(id)
+        if (el) observer?.observe(el)
+      })
+    } catch {
+      observer?.disconnect()
+    }
+    return () => observer?.disconnect()
+  }, [topologyMode])
+
   return (
     <main className="page page-documentation">
       <section className="documentation-hero section-pad">
@@ -1396,10 +1601,28 @@ function DocumentationPage({
         <div className="content-shell">
           <Reveal>
             <SectionHeading
+              eyebrow="System guide"
+              title="SECURA Documentation"
+              description="Explore the document workflow, private network architecture, and role-based interfaces that make up the SECURA concept."
+              light
+            />
+          </Reveal>
+          <DocTableOfContents
+            activeSection={activeSection}
+            onJump={jumpToSection}
+          />
+        </div>
+      </section>
+
+      <MarqueeBand />
+
+      <section id="workflow" className="workflow-anchor-section section-pad">
+        <div className="content-shell">
+          <Reveal>
+            <SectionHeading
               eyebrow="Platform workflow"
               title="How Does It Work?"
               description="SECURA helps organizations protect sensitive information by allowing users to upload documents and identify personal details for anonymization before sharing them. Authorized users can manage, access, and share protected documents, while requests for original files follow a controlled approval process."
-              light
             />
           </Reveal>
           <Workflow />
@@ -1419,28 +1642,33 @@ function DocumentationPage({
         </div>
       </section>
 
-      <MarqueeBand />
-
-      <section className="topology-section section-pad">
+      <section id="topology" className="topology-section section-pad">
         <div className="content-shell">
           <Reveal>
             <SectionHeading
               eyebrow="Private network architecture"
-              title="Our Physical Topology"
-              description="The intended setup keeps document processing within a private local network while separating monitoring, application hosting, and authorized user endpoints."
+              title="Our Network Topology"
+              description="Switch between the physical network layout and a logical view of how SECURA data moves."
             />
           </Reveal>
           <Reveal delay={100}>
-            <Topology />
+              <Topology
+              mode={topologyMode}
+              onModeChange={(mode) => {
+                setTopologyMode(mode)
+                setActiveSection(mode === "physical" ? "topology" : "data-flow")
+              }}
+            />
           </Reveal>
           <p className="topology-caption">
-            The IDS or IDPS device supports monitoring and visibility. It does
-            not imply automatic prevention of every security incident.
+            {topologyMode === "physical"
+              ? "The IDS or IDPS device supports monitoring and visibility. It does not imply automatic prevention of every security incident."
+              : "Monitoring receives mirrored copies and log streams only. It never sits in the request path between users and the application."}
           </p>
         </div>
       </section>
 
-      <section className="interfaces-section section-pad">
+      <section id="interfaces" className="interfaces-section section-pad">
         <div className="content-shell interfaces-shell">
           <Reveal>
             <SectionHeading
@@ -1450,11 +1678,19 @@ function DocumentationPage({
             />
           </Reveal>
           {interfaceData.map((data, index) => (
-            <InterfaceShowcase
-              data={data}
-              reverse={index % 2 === 1}
+            <div
+              id={
+                data.type === "user"
+                  ? "interface-user"
+                  : data.type === "admin"
+                    ? "interface-admin"
+                    : "interface-security"
+              }
               key={data.title}
-            />
+              className="interface-anchor"
+            >
+              <InterfaceShowcase data={data} reverse={index % 2 === 1} />
+            </div>
           ))}
         </div>
       </section>
@@ -1509,6 +1745,7 @@ function ContactForm() {
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState<Partial<Record<FormField, string>>>({})
   const [submitted, setSubmitted] = useState(false)
+  const feedbackRef = useRef<HTMLDivElement>(null)
 
   const validateField = (field: FormField, value: string) => {
     if (!value.trim()) return "This field is required."
@@ -1551,8 +1788,17 @@ function ContactForm() {
       {} as Partial<Record<FormField, string>>,
     )
     setErrors(nextErrors)
-    if (Object.keys(nextErrors).length === 0) setSubmitted(true)
+    if (Object.keys(nextErrors).length === 0) {
+      setSubmitted(true)
+    } else {
+      const firstError = Object.keys(nextErrors)[0] as FormField
+      document.getElementById(firstError)?.focus()
+    }
   }
+
+  useEffect(() => {
+    if (submitted) feedbackRef.current?.focus()
+  }, [submitted])
 
   return (
     <form className="inquiry-form" onSubmit={submitForm} noValidate>
@@ -1604,11 +1850,11 @@ function ContactForm() {
         )}
       </div>
       <div className="form-footer">
-        <ActionButton type="submit">Validate Inquiry</ActionButton>
+        <ActionButton type="submit">Check Form</ActionButton>
         <p>Demonstration form only. No message is transmitted or stored.</p>
       </div>
       {submitted && (
-        <div className="form-feedback" role="status">
+        <div className="form-feedback" role="status" tabIndex={-1} ref={feedbackRef}>
           <span aria-hidden="true">✓</span>
           <p>
             Your details are valid. This is a front-end demonstration, so no
