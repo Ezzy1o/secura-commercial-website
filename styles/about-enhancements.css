@@ -1,0 +1,674 @@
+/* =============================================================================
+   ABOUT PAGE — PREMIUM VISUAL ENHANCEMENTS
+   All motion is gated on prefers-reduced-motion. No endless loops on content.
+   Parallax and geometric backgrounds use CSS custom properties + transform.
+   Palette: derived from the existing brand system (--color-primary, lavender).
+   ============================================================================= */
+
+/* ─── 1. HERO SECTION OVERHAUL ──────────────────────────────────────────────── */
+
+/* Replace the flat grid pattern with angled geometric shapes that carry
+   the security product's identity (precision, structure, boundaries). */
+.hero-section {
+  /* Richer layered background: brand surface → white → lavender fog */
+  background:
+    radial-gradient(ellipse 72% 55% at 80% 60%, color-mix(in srgb, var(--color-lavender) 28%, transparent), transparent),
+    linear-gradient(152deg,
+      var(--color-white) 36%,
+      color-mix(in srgb, var(--color-lavender-soft) 80%, transparent) 68%,
+      color-mix(in srgb, var(--color-lavender-mid) 90%, transparent) 100%
+    );
+}
+
+/* Suppress the existing ::before orb — we replace it with more deliberate shapes */
+.hero-section::before {
+  display: none;
+}
+
+/* Geometric shape layer: three non-overlapping angular planes.
+   Uses clip-path to evoke cut-glass / shield facets — relevant to security identity. */
+.hero-geo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.hero-geo::before {
+  content: "";
+  position: absolute;
+  top: -6%;
+  right: -4%;
+  width: 42rem;
+  height: 42rem;
+  background: color-mix(in srgb, var(--color-lavender) 30%, transparent);
+  clip-path: polygon(30% 0%, 100% 0%, 100% 60%, 70% 100%, 0% 100%, 0% 40%);
+  animation: geo-drift-a 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.hero-geo::after {
+  content: "";
+  position: absolute;
+  bottom: -8%;
+  left: -3%;
+  width: 28rem;
+  height: 28rem;
+  background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  animation: geo-drift-b 22s 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Spotlight: tracks cursor (existing CSS var --spotlight-x/y already set by JS) */
+.hero-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    42rem circle at var(--spotlight-x, 70%) var(--spotlight-y, 30%),
+    color-mix(in srgb, var(--color-lavender) 18%, transparent),
+    transparent 55%
+  );
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* Replace the background-grid with subtle diagonal scan-lines —
+   evokes data security scanning without the "blueprint" cliché. */
+.hero-grid-pattern {
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--color-primary) 4%, transparent),
+      color-mix(in srgb, var(--color-primary) 4%, transparent) 1px,
+      transparent 1px,
+      transparent 3.2rem
+    );
+  mask-image: linear-gradient(to right, transparent 0%, black 20%, black 75%, transparent 100%);
+  animation: scan-drift 28s linear infinite;
+  opacity: 0.6;
+}
+
+/* ─── Hero copy polish ─────────────────────────────────────────────────── */
+
+.hero-copy h1 {
+  /* Slightly tighter leading at large sizes for premium feel */
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+
+/* Eyebrow: brand-derived, no decorative dot state change */
+.hero-copy .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* Hero visual card: deepen the glass effect for premium depth */
+.hero-visual {
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-border-strong) 45%, transparent);
+  box-shadow:
+    0 2px 4px rgba(45, 8, 120, 0.04),
+    0 12px 32px rgba(45, 8, 120, 0.08),
+    0 40px 80px rgba(45, 8, 120, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.hero-visual:hover {
+  box-shadow:
+    0 4px 8px rgba(45, 8, 120, 0.06),
+    0 20px 48px rgba(45, 8, 120, 0.12),
+    0 60px 100px rgba(45, 8, 120, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Scroll hint: more refined micro-animation */
+.hero-scroll-hint span {
+  display: block;
+  width: 1.5px;
+  height: 2.2rem;
+  margin: 0 auto var(--space-2);
+  background: linear-gradient(to bottom, var(--color-primary), transparent);
+  border-radius: var(--radius-pill);
+  animation: scroll-hint-pulse 2s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* ─── 2. STATS SECTION ──────────────────────────────────────────────────────── */
+
+.stats-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-white);
+  padding-block: var(--space-8);
+}
+
+/* Single focused glow under the stat band — 1 element, deliberate accent */
+.stats-section::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36rem;
+  height: 12rem;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--color-primary) 6%, transparent), transparent 70%);
+  pointer-events: none;
+  filter: blur(2rem);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  position: relative;
+}
+
+.stat-item {
+  position: relative;
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.stat-item::after {
+  content: "";
+  position: absolute;
+  inset-inline: var(--space-6);
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border-strong), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.stat-item:hover {
+  background: var(--color-lavender-soft);
+  transform: translateY(-4px);
+}
+
+.stat-item:hover::after {
+  opacity: 1;
+}
+
+.stat-value {
+  display: block;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 720;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--color-primary-deep) 0%, var(--color-primary) 60%, var(--color-purple-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  display: block;
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+/* ─── 3. OVERVIEW SECTION ───────────────────────────────────────────────────── */
+
+.overview-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle ambient shape in the background — one shape, one purpose: anchors the section */
+.overview-section::before {
+  content: "";
+  position: absolute;
+  top: -12rem;
+  right: -8rem;
+  width: 30rem;
+  height: 30rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-lavender-soft) 70%, transparent);
+  pointer-events: none;
+}
+
+/* Process visual mini-steps: give each step a left-accent that marks sequence state */
+.mini-step {
+  border-radius: var(--radius-lg);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.mini-step:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-border-strong);
+  box-shadow: 0 8px 24px rgba(45, 8, 120, 0.08);
+}
+
+/* Trust note: refined border treatment */
+.trust-note {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-lavender-soft),
+    color-mix(in srgb, var(--color-lavender) 12%, var(--color-white))
+  );
+}
+
+/* ─── 4. PROBLEM SECTION (Dark Surface) ─────────────────────────────────────── */
+
+.problem-section {
+  /* Add a second geometric accent — angular cut opposite corner for visual balance.
+     Security aesthetic: layered, precise boundaries. */
+  background: linear-gradient(152deg,
+    var(--color-primary-hover) 0%,
+    var(--color-primary) 45%,
+    var(--color-primary-deep) 100%
+  );
+}
+
+/* Problem section geometric accent (top-right) — replaces the thin ring */
+.problem-section::before {
+  width: 26rem;
+  height: 26rem;
+  top: -10rem;
+  right: -6rem;
+  background: color-mix(in srgb, var(--color-white) 5%, transparent);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  border: none;
+}
+
+/* Bottom-left accent: anchors the dark section */
+.problem-section::after {
+  content: "";
+  position: absolute;
+  bottom: -8rem;
+  left: -4rem;
+  width: 20rem;
+  height: 20rem;
+  background: color-mix(in srgb, var(--color-white) 4%, transparent);
+  clip-path: polygon(30% 0%, 100% 0%, 100% 60%, 70% 100%, 0% 100%, 0% 40%);
+  pointer-events: none;
+}
+
+/* Dark card refinements: sharper borders for high contrast legibility */
+.feature-card-dark {
+  border-color: color-mix(in srgb, var(--color-white) 16%, transparent);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.feature-card-dark:hover {
+  border-color: color-mix(in srgb, var(--color-white) 36%, transparent);
+  background: color-mix(in srgb, var(--color-white) 13%, transparent);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 color-mix(in srgb, var(--color-white) 18%, transparent);
+}
+
+/* Card number on dark surface: lighter lavender for hierarchy */
+.feature-card-dark .card-number {
+  color: color-mix(in srgb, var(--color-lavender) 80%, transparent);
+}
+
+/* ─── 5. OBJECTIVES SECTION ─────────────────────────────────────────────────── */
+
+.objectives-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft directional ambient — bottom-right corner, one element only */
+.objectives-section::after {
+  content: "";
+  position: absolute;
+  bottom: -6rem;
+  right: -6rem;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-lavender) 35%, transparent);
+  pointer-events: none;
+  filter: blur(3rem);
+}
+
+/* Objective icon: refined with border and depth */
+.objective-icon {
+  border: var(--border-thin) solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  box-shadow: 0 4px 12px rgba(45, 8, 120, 0.18);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.objective-card:hover .objective-icon {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 8px 24px rgba(45, 8, 120, 0.28);
+}
+
+/* Objective card: more defined hover */
+.objective-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+  box-shadow: var(--shadow-card-hover), 0 0 0 1px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+/* ─── 6. CLOSING CTA SECTION ─────────────────────────────────────────────────── */
+
+.closing-panel {
+  /* Premium layered depth: gradient + inner highlight + ambient glow */
+  background: linear-gradient(
+    140deg,
+    var(--color-primary-hover) 0%,
+    var(--color-primary) 38%,
+    var(--color-primary-deep) 72%,
+    color-mix(in srgb, var(--color-primary-deep) 80%, #000) 100%
+  );
+  box-shadow:
+    0 2px 4px rgba(45, 8, 120, 0.08),
+    0 12px 40px rgba(45, 8, 120, 0.22),
+    0 40px 80px rgba(45, 8, 120, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.closing-panel:hover {
+  box-shadow:
+    0 2px 4px rgba(45, 8, 120, 0.1),
+    0 16px 48px rgba(45, 8, 120, 0.28),
+    0 48px 96px rgba(45, 8, 120, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Single ambient orb — purposeful, not decorative noise */
+.closing-panel::before {
+  opacity: 0.6;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-white) 10%, transparent), transparent 62%);
+}
+
+/* Reveal animation refinements: add upward translate for premium feel */
+.reveal {
+  transform: translateY(1.5rem);
+  opacity: 0;
+  transition:
+    transform 620ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 620ms cubic-bezier(0.2, 0, 0, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.reveal.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ─── 7. SECTION HEADING REFINEMENTS ────────────────────────────────────────── */
+
+.section-heading h2 {
+  /* Subtle gradient on dark sections preserves readability */
+  color: var(--color-text);
+}
+
+/* Dark section headings already handled by section-heading-light */
+
+/* Eyebrow label: consistent weight across sections */
+.eyebrow {
+  font-weight: 700;
+}
+
+/* ─── 8. MARQUEE BAND ────────────────────────────────────────────────────────── */
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-5);
+  border-block: var(--border-thin) solid var(--color-border);
+  background: linear-gradient(
+    90deg,
+    var(--color-white),
+    color-mix(in srgb, var(--color-lavender-soft) 50%, var(--color-white)) 40%,
+    color-mix(in srgb, var(--color-lavender-soft) 50%, var(--color-white)) 60%,
+    var(--color-white)
+  );
+}
+
+/* Edge fade for clean entry/exit */
+.marquee::before,
+.marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 8rem;
+  pointer-events: none;
+}
+
+.marquee::before {
+  left: 0;
+  background: linear-gradient(to right, var(--color-white), transparent);
+}
+
+.marquee::after {
+  right: 0;
+  background: linear-gradient(to left, var(--color-white), transparent);
+}
+
+.marquee-item {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.marquee-item i {
+  color: var(--color-primary);
+  opacity: 0.5;
+  font-style: normal;
+  margin-inline: var(--space-3);
+}
+
+/* ─── 9. KEYFRAMES ────────────────────────────────────────────────────────────── */
+
+@keyframes geo-drift-a {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-1.2rem) rotate(1.5deg); }
+  66% { transform: translateY(0.6rem) rotate(-0.8deg); }
+}
+
+@keyframes geo-drift-b {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(1rem) rotate(-2deg); }
+  75% { transform: translateY(-0.5rem) rotate(1deg); }
+}
+
+@keyframes scan-drift {
+  from { background-position: 0 0; }
+  to { background-position: 3.2rem 3.2rem; }
+}
+
+@keyframes scroll-hint-pulse {
+  0%, 100% { transform: scaleY(0.6); opacity: 0.4; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* ─── 10. DARK THEME ADJUSTMENTS ─────────────────────────────────────────────── */
+
+:root[data-theme="dark"] .hero-section {
+  background:
+    radial-gradient(ellipse 72% 55% at 80% 60%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent),
+    linear-gradient(152deg,
+      var(--color-primary-deep) 0%,
+      color-mix(in srgb, var(--color-primary-deep) 85%, #0a0614) 60%,
+      #060310 100%
+    );
+}
+
+:root[data-theme="dark"] .hero-geo::before {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+:root[data-theme="dark"] .hero-geo::after {
+  background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+}
+
+:root[data-theme="dark"] .stats-section::before {
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 70%);
+}
+
+:root[data-theme="dark"] .stat-value {
+  background: linear-gradient(135deg, var(--color-lavender) 0%, var(--color-purple-muted) 60%, #c4b0fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:root[data-theme="dark"] .marquee {
+  background: linear-gradient(
+    90deg,
+    var(--color-white),
+    color-mix(in srgb, var(--color-lavender-mid) 20%, var(--color-white)) 40%,
+    color-mix(in srgb, var(--color-lavender-mid) 20%, var(--color-white)) 60%,
+    var(--color-white)
+  );
+}
+
+:root[data-theme="dark"] .marquee::before {
+  background: linear-gradient(to right, var(--color-white), transparent);
+}
+
+:root[data-theme="dark"] .marquee::after {
+  background: linear-gradient(to left, var(--color-white), transparent);
+}
+
+:root[data-theme="dark"] .overview-section::before {
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+:root[data-theme="dark"] .objectives-section::after {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+/* ─── 11. RESPONSIVE ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 64rem) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 48rem) {
+  .hero-geo::before {
+    width: 24rem;
+    height: 24rem;
+    top: -4rem;
+    right: -6rem;
+  }
+
+  .hero-geo::after {
+    width: 16rem;
+    height: 16rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-1);
+  }
+
+  .stat-item {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .closing-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+}
+
+/* ─── 12. MOTION SAFETY ──────────────────────────────────────────────────────── */
+
+/* The global prefers-reduced-motion rule in global.css already disables all
+   animations. This block is an explicit belt-and-suspenders for our new additions. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-geo::before,
+  .hero-geo::after {
+    animation: none;
+  }
+
+  .hero-grid-pattern {
+    animation: none;
+  }
+
+  .scroll-hint-pulse {
+    animation: none;
+  }
+
+  .reveal {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+
+
+/* ─── 13. TEAM MEMBER AVATAR IMAGES (antislop-ui standard) ────────────────── */
+
+.team-avatar {
+  position: relative;
+  overflow: hidden;
+  border: var(--border-medium) solid var(--color-white);
+  box-shadow: 0 4px 16px rgba(45, 8, 120, 0.12);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  background-color: var(--color-lavender-soft);
+}
+
+.team-card:not(.team-card-supervisor) .team-avatar {
+  border-color: color-mix(in srgb, var(--color-lavender) 85%, var(--color-white));
+}
+
+.team-card-supervisor .team-avatar {
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+}
+
+.team-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  border-radius: 50%;
+  transition: transform var(--transition-fast);
+}
+
+.team-card:hover .team-avatar-image {
+  transform: scale(1.06);
+}
+
+.team-card:hover .team-avatar {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(45, 8, 120, 0.22);
+}
+
+.team-card-supervisor:hover .team-avatar {
+  border-color: #ffffff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .team-card:not(.team-card-supervisor) .team-avatar {
+  border-color: var(--color-border-strong);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme="dark"] .team-card:hover .team-avatar {
+  border-color: var(--color-lavender);
+}

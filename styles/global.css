@@ -96,16 +96,16 @@
 
 html {
   scroll-behavior: smooth;
-  background: var(--color-white);
-  color-scheme: light dark;
+  background: #0d0b16;
+  color-scheme: dark;
+}
+
+:root {
+  color-scheme: dark;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
 }
 
 /* Hide native scrollbar — Lenis owns the scroll feel. */

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,19 +17,9 @@
     <meta name="theme-color" content="#2d0878" />
     <link rel="icon" href="/favicon.svg" />
     <script>
-      // Prevent theme flash: apply stored/system theme before first paint.
       ;(function () {
-        var stored = null
-        try {
-          stored = localStorage.getItem("secura-theme")
-        } catch (e) {}
-        var theme =
-          stored === "light" || stored === "dark"
-            ? stored
-            : window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light"
-        document.documentElement.dataset.theme = theme
+        document.documentElement.dataset.theme = "dark"
+        try { localStorage.setItem("secura-theme", "dark") } catch (e) {}
       })()
     </script>
   </head>

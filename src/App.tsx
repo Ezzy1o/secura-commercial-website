@@ -161,26 +161,31 @@ const team = [
     name: "Muhammad Luqman Hakim Bin Mohd Sabani",
     role: "Project Supervisor",
     supervisor: true,
+    image: "/assets/team/luqman-hakim.jpg",
   },
   {
     initials: "MI",
     name: "Muhammad Irfan Hakeem Bin Nizwan Khairis",
     role: "Project Manager and Backend Developer",
+    image: "/assets/team/irfan-hakeem.jpg",
   },
   {
     initials: "AZ",
     name: "Muhammad Irfan Bin Mohd Zaki",
     role: "Security and Network Engineer",
+    image: "/assets/team/irfan-zaki.jpg",
   },
   {
     initials: "AU",
     name: "Adriana Ulfah Binti Mohd Rashdan",
     role: "AI and NLP Engineer",
+    image: "/assets/team/adriana-ulfah.jpg",
   },
   {
     initials: "MA",
     name: "Muhammad Aeman Izzuddin Bin Mohd Yusuff",
     role: "Frontend Developer",
+    image: "/assets/team/aeman-izzuddin.jpg",
   },
 ]
 
@@ -206,57 +211,7 @@ const useReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") return "light"
-    const stored = window.localStorage.getItem("secura-theme")
-    if (stored === "light" || stored === "dark") return stored
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  })
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem("secura-theme", theme)
-  }, [theme])
-
-  const toggleTheme = () => {
-    const next = theme === "light" ? "dark" : "light"
-    const root = document.documentElement
-    root.classList.add("theme-transition")
-    root.dataset.theme = next
-    setTheme(next)
-    window.localStorage.setItem("secura-theme", next)
-    window.setTimeout(() => root.classList.remove("theme-transition"), 320)
-  }
-
-  return { theme, toggleTheme }
-}
-
-function ThemeToggle({ theme, onToggle }: { theme: "light" | "dark"; onToggle: () => void }) {
-  return (
-    <button
-      className="theme-toggle"
-      type="button"
-      onClick={onToggle}
-      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-      aria-pressed={theme === "dark"}
-    >
-      <span className="theme-toggle-track" aria-hidden="true">
-        <span className="theme-toggle-thumb">
-          <span className="theme-toggle-icon theme-toggle-icon-sun">☀</span>
-          <span className="theme-toggle-icon theme-toggle-icon-moon">☾</span>
-        </span>
-        <span className="theme-toggle-stars" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-        </span>
-      </span>
-    </button>
-  )
-}
 
 function useLenis() {
   useEffect(() => {
@@ -549,13 +504,9 @@ function ActionButton({
 function Header({
   page,
   onNavigate,
-  theme,
-  onToggleTheme,
 }: {
   page: Page
   onNavigate: (page: Page) => void
-  theme: "light" | "dark"
-  onToggleTheme: () => void
 }) {
   const [open, setOpen] = useState(false)
 
@@ -608,7 +559,6 @@ function Header({
           ))}
         </div>
         <div className="header-actions">
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <button
             className="menu-button"
             type="button"
@@ -738,6 +688,7 @@ function AboutPage({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
     <main className="page page-about">
       <section className="hero-section" ref={heroRef}>
+        <div className="hero-geo" aria-hidden="true" />
         <div className="hero-grid-pattern" aria-hidden="true" />
         <div className="hero-glow" aria-hidden="true" />
         <div className="hero-particles" aria-hidden="true">
@@ -1725,9 +1676,21 @@ function TeamCard({
     >
       <div
         className="team-avatar"
-        aria-label={`${member.name} initial-based avatar`}
+        aria-label={`${member.name} avatar`}
       >
-        <span>{member.initials}</span>
+        {member.image ? (
+          <img
+            src={member.image}
+            alt={member.name}
+            className="team-avatar-image"
+            width={120}
+            height={120}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <span>{member.initials}</span>
+        )}
       </div>
       <div className="team-card-copy">
         {member.supervisor && (
@@ -2003,7 +1966,10 @@ function scrollToPageTop() {
 
 export default function App() {
   const [page, setPage] = useState<Page>(getPageFromHash)
-  const { theme, toggleTheme } = useTheme()
+  useEffect(() => {
+    document.documentElement.dataset.theme = "dark"
+    try { window.localStorage.setItem("secura-theme", "dark") } catch (e) {}
+  }, [])
 
   useLenis()
 
@@ -2071,7 +2037,7 @@ export default function App() {
         <i className="aurora-blob aurora-blob-three" />
       </div>
       <ScrollProgress />
-      <Header page={page} onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} />
+      <Header page={page} onNavigate={navigate} />
       <div className="page-transition" key={page}>
         {page === "about" && <AboutPage onNavigate={navigate} />}
         {page === "documentation" && (
