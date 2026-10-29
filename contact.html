@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08060e" />
+    <title>Contact Us — SECURA</title>
+    <meta
+      name="description"
+      content="Meet the SECURA Final Year Project team and use the demonstration inquiry form."
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Italiana&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <link rel="stylesheet" href="/styles/site.css" />
+  </head>
+  <body>
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <div class="bg-veil" aria-hidden="true"></div>
+    <div class="interface-grid" aria-hidden="true">
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+    </div>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="brand-lockup" href="/" aria-label="SECURA home">
+        <span class="brand-name">SECURA</span>
+        <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary">
+        <a class="nav-link" href="/about">ABOUT</a>
+        <a class="nav-link" href="/documentation">DOCUMENTATION</a>
+        <a class="nav-link" href="/contact" aria-current="page">CONTACT US</a>
+      </nav>
+      <div class="header-action">
+        <button class="access-button" id="open-access" type="button" aria-haspopup="dialog" aria-controls="access-dialog">
+          ACCESS PLATFORM
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="shell">
+          <p class="eyebrow">03 / The people behind the project</p>
+          <h1 class="page-title" data-split>Meet Our Members</h1>
+          <p class="lead">
+            A multidisciplinary Final Year Project team combining software development, AI and NLP, and network security
+            responsibilities.
+          </p>
+        </div>
+      </section>
+
+      <!-- Team -->
+      <section class="section">
+        <div class="shell">
+          <div class="team-grid">
+            <article class="card team-card is-lead reveal">
+              <div class="avatar"><img src="/assets/team/luqman-hakim.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
+              <div>
+                <span class="badge">Supervisor</span>
+                <h3>Muhammad Luqman Hakim Bin Mohd Sabani</h3>
+                <p>Project Supervisor</p>
+              </div>
+            </article>
+            <article class="card team-card reveal">
+              <div class="avatar"><img src="/assets/team/irfan-hakeem.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
+              <div>
+                <h3>Muhammad Irfan Hakeem Bin Nizwan Khairis</h3>
+                <p>Project Manager and Backend Developer</p>
+              </div>
+            </article>
+            <article class="card team-card reveal" style="--reveal-delay: 70ms">
+              <div class="avatar"><img src="/assets/team/irfan-zaki.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
+              <div>
+                <h3>Muhammad Irfan Bin Mohd Zaki</h3>
+                <p>Security and Network Engineer</p>
+              </div>
+            </article>
+            <article class="card team-card reveal" style="--reveal-delay: 140ms">
+              <div class="avatar"><img src="/assets/team/adriana-ulfah.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
+              <div>
+                <h3>Adriana Ulfah Binti Mohd Rashdan</h3>
+                <p>AI and NLP Engineer</p>
+              </div>
+            </article>
+            <article class="card team-card reveal" style="--reveal-delay: 210ms">
+              <div class="avatar"><img src="/assets/team/aeman-izzuddin.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
+              <div>
+                <h3>Muhammad Aeman Izzuddin Bin Mohd Yusuff</h3>
+                <p>Frontend Developer</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inquiry -->
+      <section class="section">
+        <div class="shell inquiry">
+          <div class="split-copy reveal">
+            <p class="eyebrow">Project inquiries</p>
+            <h2>Any Inquiries?</h2>
+            <p>
+              Interested in the SECURA concept, architecture, or project scope? Use this demonstration form to prepare
+              an inquiry for the team.
+            </p>
+            <div class="note">
+              <span class="note-mark" aria-hidden="true"></span>
+              <p>Public contact details have intentionally not been published. Approved team information can be added later.</p>
+            </div>
+          </div>
+
+          <form class="form reveal" id="inquiry-form" style="--reveal-delay: 100ms" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" aria-describedby="name-error" />
+                <span class="field-error" id="name-error" role="alert" hidden></span>
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" aria-describedby="email-error" />
+                <span class="field-error" id="email-error" role="alert" hidden></span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="subject">Subject</label>
+              <input id="subject" name="subject" type="text" placeholder="What would you like to discuss?" aria-describedby="subject-error" />
+              <span class="field-error" id="subject-error" role="alert" hidden></span>
+            </div>
+            <div class="field">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Write your message here" aria-describedby="message-error"></textarea>
+              <span class="field-error" id="message-error" role="alert" hidden></span>
+            </div>
+            <div class="form-foot">
+              <button class="btn btn-primary" type="submit">CHECK FORM <span class="btn-arrow" aria-hidden="true">→</span></button>
+              <p>Demonstration form only. No message is transmitted or stored.</p>
+            </div>
+            <div class="form-status" id="form-status" role="status" tabindex="-1" hidden>
+              <span aria-hidden="true">✓</span>
+              <p>Your details are valid. This is a front-end demonstration, so no message has been sent.</p>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div class="footer-brand">
+          <a class="brand-lockup" href="/" aria-label="SECURA home">
+            <span class="brand-name">SECURA</span>
+            <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+          </a>
+          <p>
+            A secure web platform concept for AI-assisted document anonymization and controlled cross-department
+            collaboration.
+          </p>
+          <span class="footer-tag">Cybersecurity Final Year Project</span>
+        </div>
+        <nav class="footer-nav" aria-label="Footer">
+          <p>Navigate</p>
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/documentation">Documentation</a>
+          <a href="/contact">Contact Us</a>
+        </nav>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© <span id="year">2026</span> SECURA. Academic project showcase.</span>
+        <span>Designed for presentation and review.</span>
+      </div>
+    </footer>
+
+    <dialog class="access-dialog" id="access-dialog" aria-labelledby="dialog-title">
+      <p class="dialog-kicker">SECURA / PLATFORM ACCESS</p>
+      <h2 id="dialog-title">Access by deployment</h2>
+      <p>
+        This page is a project showcase, not a live sign-in. Platform access depends on an organization's configured
+        SECURA deployment.
+      </p>
+      <button class="btn" id="close-access" type="button">CLOSE</button>
+    </dialog>
+
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <script type="module" src="/scripts/site.js"></script>
+    <script type="module" src="/scripts/contact.js"></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

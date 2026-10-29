@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08060e" />
+    <title>Documentation — SECURA</title>
+    <meta
+      name="description"
+      content="Explore the SECURA document workflow, private network architecture, and the three role-based interfaces."
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Italiana&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <link rel="stylesheet" href="/styles/site.css" />
+  </head>
+  <body>
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <div class="bg-veil" aria-hidden="true"></div>
+    <div class="interface-grid" aria-hidden="true">
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+    </div>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="brand-lockup" href="/" aria-label="SECURA home">
+        <span class="brand-name">SECURA</span>
+        <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary">
+        <a class="nav-link" href="/about">ABOUT</a>
+        <a class="nav-link" href="/documentation" aria-current="page">DOCUMENTATION</a>
+        <a class="nav-link" href="/contact">CONTACT US</a>
+      </nav>
+      <div class="header-action">
+        <button class="access-button" id="open-access" type="button" aria-haspopup="dialog" aria-controls="access-dialog">
+          ACCESS PLATFORM
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="shell">
+          <p class="eyebrow">02 / System guide</p>
+          <h1 class="page-title" data-split>SECURA Documentation</h1>
+          <p class="lead">
+            Explore the document workflow, private network architecture, and role-based interfaces that make up the
+            SECURA concept.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell doc-layout">
+          <nav class="doc-toc" aria-label="On this page">
+            <p>On this page</p>
+            <ul>
+              <li><a href="#workflow">Workflow</a></li>
+              <li><a href="#topology">Network Topology</a></li>
+              <li><a href="#interface-user">User Interface</a></li>
+              <li><a href="#interface-admin">Admin Interface</a></li>
+              <li><a href="#interface-security">Security Officer</a></li>
+            </ul>
+          </nav>
+
+          <div class="doc-content">
+            <!-- Workflow -->
+            <section class="doc-section" id="workflow">
+              <div class="section-head reveal">
+                <p class="eyebrow">Platform workflow</p>
+                <h2>How Does It Work?</h2>
+                <p>
+                  SECURA helps organizations protect sensitive information by allowing users to upload documents and
+                  identify personal details for anonymization before sharing them. Authorized users can manage, access,
+                  and share protected documents, while requests for original files follow a controlled approval process.
+                </p>
+              </div>
+              <div class="workflow">
+                <article class="card reveal">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" /></svg>
+                  </span>
+                  <span class="card-num">01</span>
+                  <h3>Upload a Document</h3>
+                  <p>An authorized user uploads a supported document.</p>
+                </article>
+                <article class="card reveal" style="--reveal-delay: 70ms">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5zM8 9h8M8 12h5M8 15h3" />
+                      <circle cx="17" cy="16" r="3" />
+                    </svg>
+                  </span>
+                  <span class="card-num">02</span>
+                  <h3>Detect Sensitive Information</h3>
+                  <p>NLP-based processing identifies supported sensitive information.</p>
+                </article>
+                <article class="card reveal" style="--reveal-delay: 140ms">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.5-2.9 8.2-7 10-4.1-1.8-7-5.5-7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>
+                  </span>
+                  <span class="card-num">03</span>
+                  <h3>Review and Anonymize</h3>
+                  <p>Sensitive details are anonymized according to the application workflow.</p>
+                </article>
+                <article class="card reveal" style="--reveal-delay: 210ms">
+                  <span class="workflow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5M3 12l7-7m0 0H5m5 0v5" /></svg>
+                  </span>
+                  <span class="card-num">04</span>
+                  <h3>Share Securely</h3>
+                  <p>Protected documents are shared within permitted department boundaries.</p>
+                </article>
+              </div>
+              <div class="note reveal">
+                <span class="note-mark" aria-hidden="true"></span>
+                <div>
+                  <h3 style="color: var(--paper); font-size: 16px">Original-file access remains controlled</h3>
+                  <p style="margin-top: 4px">
+                    Access to an original document is not automatically available to every department. Requests follow
+                    a defined review and approval process.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Topology -->
+            <section class="doc-section" id="topology">
+              <div class="section-head reveal">
+                <p class="eyebrow">Private network architecture</p>
+                <h2>Our Network Topology</h2>
+                <p>Switch between the physical network layout and a logical view of how SECURA data moves.</p>
+              </div>
+
+              <div class="topo reveal" id="topology-root">
+                <div class="topo-bar">
+                  <div class="topo-tabs" role="tablist" aria-label="Topology view mode">
+                    <button class="topo-tab" type="button" role="tab" data-mode="physical" aria-selected="true">Physical Topology</button>
+                    <button class="topo-tab" type="button" role="tab" data-mode="logical" aria-selected="false" tabindex="-1">Logical Data Flow</button>
+                  </div>
+                  <p class="topo-desc" role="note"></p>
+                </div>
+                <div class="topo-canvas">
+                  <svg class="topo-svg" viewBox="0 0 1000 540" role="group"></svg>
+                </div>
+                <p class="topo-hint" aria-hidden="true">← Scroll sideways to see the full diagram →</p>
+                <div class="topo-chips" aria-label="Devices"></div>
+                <div class="topo-detail" aria-live="polite"></div>
+              </div>
+              <p class="topo-caption" id="topo-caption"></p>
+              <noscript><p class="topo-caption">Enable JavaScript to explore the interactive topology diagram.</p></noscript>
+            </section>
+
+            <!-- Interfaces -->
+            <section class="doc-section" id="interface-user">
+              <div class="section-head reveal">
+                <p class="eyebrow">Role-based experiences</p>
+                <h2>Designed around clear responsibilities</h2>
+                <p>
+                  Actual SECURA dashboard screenshots show the platform's three primary roles. These are static
+                  promotional visuals, not interactive application screens.
+                </p>
+              </div>
+              <article class="interface">
+                <div class="browser reveal">
+                  <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span><small>SECURA / User Interface</small></div>
+                  <img src="/assets/user-dashboard.png" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA User Interface dashboard. Static promotional screenshot." />
+                </div>
+                <div class="interface-copy reveal" style="--reveal-delay: 100ms">
+                  <p class="eyebrow">Authorized employee workspace</p>
+                  <h2>User Interface</h2>
+                  <p>A focused workspace for processing documents and collaborating with permitted departments.</p>
+                  <div class="feature-list">
+                    <div class="feature-row"><span>01</span><div><h3>Document Anonymization</h3><p>Identify and anonymize supported sensitive personal information.</p></div></div>
+                    <div class="feature-row"><span>02</span><div><h3>Document Management</h3><p>Upload, organize, archive, and restore documents according to implemented functionality.</p></div></div>
+                    <div class="feature-row"><span>03</span><div><h3>Secure Document Sharing</h3><p>Share protected documents with authorized users or departments.</p></div></div>
+                    <div class="feature-row"><span>04</span><div><h3>Original File Access</h3><p>Request original documents through the controlled approval process.</p></div></div>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <section class="doc-section" id="interface-admin">
+              <article class="interface is-reverse">
+                <div class="browser reveal">
+                  <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span><small>SECURA / Admin Interface</small></div>
+                  <img src="/assets/admin-dashboard.png" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA Admin Interface dashboard. Static promotional screenshot." />
+                </div>
+                <div class="interface-copy reveal" style="--reveal-delay: 100ms">
+                  <p class="eyebrow">Platform administration</p>
+                  <h2>Admin Interface</h2>
+                  <p>A structured administrative view for maintaining users, roles, and organizational departments.</p>
+                  <div class="feature-list">
+                    <div class="feature-row"><span>01</span><div><h3>User Management</h3><p>Manage registered users and assigned roles.</p></div></div>
+                    <div class="feature-row"><span>02</span><div><h3>Department Management</h3><p>Create and manage organizational departments.</p></div></div>
+                    <div class="feature-row"><span>03</span><div><h3>Account Control</h3><p>Activate, deactivate, and manage user accounts.</p></div></div>
+                    <div class="feature-row"><span>04</span><div><h3>System Overview</h3><p>Review relevant platform activity and system information.</p></div></div>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <section class="doc-section" id="interface-security">
+              <article class="interface">
+                <div class="browser reveal">
+                  <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span><small>SECURA / Security Officer Interface</small></div>
+                  <img src="/assets/security-officer-dashboard.png" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA Security Officer Interface dashboard. Static promotional screenshot." />
+                </div>
+                <div class="interface-copy reveal" style="--reveal-delay: 100ms">
+                  <p class="eyebrow">Review and monitoring</p>
+                  <h2>Security Officer Interface</h2>
+                  <p>A security-oriented workspace for controlled approvals, integrity checks, and event review.</p>
+                  <div class="feature-list">
+                    <div class="feature-row"><span>01</span><div><h3>Access Request Review</h3><p>Approve or reject original-file requests according to the implemented workflow.</p></div></div>
+                    <div class="feature-row"><span>02</span><div><h3>File Integrity Verification</h3><p>Check protected originals using the implemented verification mechanism.</p></div></div>
+                    <div class="feature-row"><span>03</span><div><h3>Security Alert Monitoring</h3><p>Review suspicious activity and relevant security alerts.</p></div></div>
+                    <div class="feature-row"><span>04</span><div><h3>Security Log Review</h3><p>Inspect application events and relevant IDS or network monitoring events.</p></div></div>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell">
+          <div class="cta-panel reveal">
+            <div>
+              <p class="eyebrow">Project questions</p>
+              <h2>Want to discuss the SECURA concept?</h2>
+              <p>Meet the project team and use the demonstration inquiry form.</p>
+            </div>
+            <a class="btn btn-primary" href="/contact">CONTACT US <span class="btn-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div class="footer-brand">
+          <a class="brand-lockup" href="/" aria-label="SECURA home">
+            <span class="brand-name">SECURA</span>
+            <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+          </a>
+          <p>
+            A secure web platform concept for AI-assisted document anonymization and controlled cross-department
+            collaboration.
+          </p>
+          <span class="footer-tag">Cybersecurity Final Year Project</span>
+        </div>
+        <nav class="footer-nav" aria-label="Footer">
+          <p>Navigate</p>
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/documentation">Documentation</a>
+          <a href="/contact">Contact Us</a>
+        </nav>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© <span id="year">2026</span> SECURA. Academic project showcase.</span>
+        <span>Designed for presentation and review.</span>
+      </div>
+    </footer>
+
+    <dialog class="access-dialog" id="access-dialog" aria-labelledby="dialog-title">
+      <p class="dialog-kicker">SECURA / PLATFORM ACCESS</p>
+      <h2 id="dialog-title">Access by deployment</h2>
+      <p>
+        This page is a project showcase, not a live sign-in. Platform access depends on an organization's configured
+        SECURA deployment.
+      </p>
+      <button class="btn" id="close-access" type="button">CLOSE</button>
+    </dialog>
+
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <script type="module" src="/scripts/site.js"></script>
+    <script type="module" src="/scripts/documentation.js"></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

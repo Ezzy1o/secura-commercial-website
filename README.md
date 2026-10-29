@@ -1,74 +1,67 @@
 # SECURA commercial website
 
-A standalone React + Vite + TypeScript presentation website with three
-hash-routed views: About, Documentation, and Contact Us.
+A static HTML/CSS/JS showcase for SECURA, a secure web platform concept for
+AI-assisted document anonymization. Built with Vite as the dev server and
+bundler only; there is no framework.
+
+## Pages
+
+| File | Page |
+| --- | --- |
+| `index.html` | 3D landing (Three.js, scroll-driven story). Header links to the pages below. |
+| `about.html` | About: anonymization simulation, overview, problems and objectives, technology used |
+| `documentation.html` | Documentation: workflow, interactive network topology, role-based interfaces |
+| `contact.html` | Contact Us: team and a demonstration inquiry form |
 
 ## Scope
 
-This is a frontend-only academic product showcase. Interface previews use the supplied SECURA dashboard screenshots as static
-promotional visuals, not working application dashboards. The inquiry form
-validates locally in React memory; it sends no messages and persists no data.
-There is no backend, database, authentication, file upload, or AI processing.
+Frontend-only academic product showcase. Interface previews are static
+screenshots, not working dashboards. The inquiry form validates locally in the
+browser; it sends no messages and stores no data. There is no backend,
+database, authentication, file upload, or AI processing.
 
-## Local setup and checks
+## Structure
 
-Use Node.js 22.12 or later (Node.js 22 LTS recommended) and pnpm 10.
-The pinned development versions are recorded in `.mise.toml`.
+- `styles/site.css`: shared styles for About, Documentation and Contact (same
+  palette, fonts and header as the landing; the landing keeps its own inline CSS).
+- `scripts/site.js`: shared behaviour (WebGL background using the landing's
+  obsidian shader, cursor, access dialog, reveal and count-up animations).
+- `scripts/about.js`: the About page's "Simulation Anonymize Document" demo and
+  the Technology Used filter. The sample document, its entities and the
+  replacement values live in `DOCUMENT` at the top; edit them to change the demo.
+  Everything is fictional and runs locally.
+- `scripts/documentation.js`: table of contents and the topology diagram.
+  Edit the `MODES` and `LAYOUT` objects to change devices, IPs or links.
+- `scripts/contact.js`: inquiry form validation.
+- `public/`: logo, dashboard screenshots, team photos and favicon.
+
+New pages must be added to `build.rollupOptions.input` in `vite.config.js`.
+
+## Local setup
+
+Node.js 22.12 or later and pnpm 10 (see `.mise.toml`).
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm run typecheck
-pnpm run build
+pnpm dev        # local development
+pnpm build      # production output in dist/
+pnpm preview    # serve dist/
 ```
 
-The production output is `dist/`. Outside Figma Make, use `pnpm dev` to start
-local development or `pnpm preview` to inspect a production build.
-Inside Figma Make, use the supervised preview rather than starting another server.
-
-## Complete source export
-
-Keep `src/`, `styles/`, `public/`, `index.html`, `package.json`,
-`pnpm-lock.yaml`, `tsconfig.json`, `vite.config.ts`, and `.mise.toml`.
-**Include the hidden `.figma/make/site.json` file**: the existing Vite config
-imports it to populate the HTML metadata. Exporting only visible files will
-omit that build dependency.
-
-The existing `.figma/make/` scripts may remain in the export. They are not
-required by the standalone `pnpm run build` command, and Figma-specific
-development plugins are not included in the production website.
-
-Do not include `node_modules/`, temporary browser checks, or local secrets.
+`pnpm typecheck` only runs a JavaScript syntax check on `scripts/`. It is kept
+so an existing `typecheck && build` command in Vercel keeps working.
 
 ## Vercel
 
-Import the complete repository into Vercel and select:
-
 - Framework preset: **Vite**
-- Node.js: **22.x**
 - Install command: `pnpm install --frozen-lockfile`
-- Build command: `pnpm run typecheck && pnpm run build`
+- Build command: `pnpm run build`
 - Output directory: `dist`
 
-No environment variables, server functions, or external API credentials are
-required. Hash routes (`#/about`, `#/documentation`, `#/contact`) work on a
-static host without custom rewrite rules.
+No environment variables or server functions are required. Pages use clean URLs
+(`/about`, `/documentation`, `/contact`): `vercel.json` sets `cleanUrls` for
+production, and a small plugin in `vite.config.js` does the same for `pnpm dev`
+and `pnpm preview`. Link to pages as `/about`, not `about.html`.
 
-## Styling and publication notes
-
-Shared design tokens and responsive styles live in `styles/global.css`.
-`src/index.css` loads Tailwind, the global stylesheet, and the existing
-Instrument Sans Google Fonts import. If that external font is unavailable,
-the defined sans-serif fallback remains readable.
-
-The existing site configuration intentionally disables search indexing.
-Review `.figma/make/site.json` metadata and indexing preferences before a
-public launch. No live Vercel deployment is performed by the build checks.
-
-## Official local assets
-
-`public/assets/secura-logo.png` is the supplied `secura-logo-dark.png`, copied
-without modification. Header, footer, and documentation branding use this PNG.
-The three role previews use the supplied `user-dashboard.png`,
-`admin-dashboard.png`, and `security-officer-dashboard.png` from the same folder.
-Images retain their original proportions and contents inside responsive browser
-frames; the screens do not provide application functionality.
+The landing loads Three.js from `unpkg.com` and Google Fonts at runtime, so
+those need to be reachable for the 3D scene and fonts to appear.

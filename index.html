@@ -9,6 +9,7 @@
       content="SECURA is a cybersecurity showcase exploring AI-assisted privacy protection, neural detection, access protocols, and data integrity."
     />
     <title>SECURA — Obsidian &amp; Zero-Trust Intelligence</title>
+    <link rel="icon" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -295,9 +296,14 @@
           color 180ms ease;
       }
 
-      .access-button:hover {
+      .access-button:hover,
+      .access-button:focus-visible {
         border-color: var(--cyan);
         background: rgba(56, 189, 248, 0.12);
+        box-shadow:
+          0 0 0 1px rgba(56, 189, 248, 0.85),
+          0 0 22px rgba(56, 189, 248, 0.38),
+          0 0 54px rgba(139, 92, 246, 0.28);
       }
 
       .access-button:active,
@@ -917,11 +923,10 @@
         <span class="brand-name">SECURA</span>
         <span class="brand-badge">[DEFENSE CORE 2.4]</span>
       </a>
-      <nav class="main-nav" aria-label="Story navigation">
-        <a class="nav-link" href="#slide-1" data-slide="0">SHIELD</a>
-        <a class="nav-link" href="#slide-2" data-slide="1">DETECTION</a>
-        <a class="nav-link" href="#slide-3" data-slide="2">PROTOCOL</a>
-        <a class="nav-link" href="#slide-4" data-slide="3">COMPLIANCE</a>
+      <nav class="main-nav" aria-label="Primary">
+        <a class="nav-link" href="/about">ABOUT</a>
+        <a class="nav-link" href="/documentation">DOCUMENTATION</a>
+        <a class="nav-link" href="/contact">CONTACT US</a>
       </nav>
       <div class="header-action">
         <button
@@ -1019,7 +1024,6 @@
       const stateLabel = document.querySelector("#scene-state");
       const errorNotice = document.querySelector("#webgl-error");
       const slides = [...document.querySelectorAll("[data-slide-panel]")];
-      const navLinks = [...document.querySelectorAll(".nav-link")];
       const progressDashes = [...document.querySelectorAll(".progress-dash")];
       const slideAnchors = [...document.querySelectorAll("[data-slide]")];
       const cursorDot = document.querySelector(".cursor-dot");
@@ -1513,14 +1517,7 @@
       function updateStory(progress) {
         const storyPosition = progress * (slides.length - 1);
         const nextIndex = Math.round(storyPosition);
-        if (nextIndex !== activeIndex) {
-          activeIndex = nextIndex;
-          navLinks[activeIndex]?.scrollIntoView({
-            block: "nearest",
-            inline: "nearest",
-            behavior: reducedMotion ? "auto" : "smooth",
-          });
-        }
+        if (nextIndex !== activeIndex) activeIndex = nextIndex;
 
         slides.forEach((slide, index) => {
           const distance = Math.abs(storyPosition - index);
@@ -1530,11 +1527,6 @@
           slide.classList.toggle("is-current", isCurrent);
           slide.setAttribute("aria-hidden", String(!isCurrent));
           slide.style.visibility = opacity > 0.01 ? "visible" : "hidden";
-        });
-
-        navLinks.forEach((link, index) => {
-          if (index === activeIndex) link.setAttribute("aria-current", "page");
-          else link.removeAttribute("aria-current");
         });
 
         progressDashes.forEach((dash, index) => {
