@@ -316,8 +316,10 @@
       .nav-link {
         position: relative;
         display: inline-flex;
+        min-width: 44px;
         min-height: 44px;
         align-items: center;
+        justify-content: center;
         padding-block: 8px;
         color: #bdb6cb;
         font-family: var(--mono);
@@ -742,6 +744,7 @@
 
         .js .nav-link {
           min-height: 54px;
+          justify-content: flex-start;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
           font-size: 13px;
         }
