@@ -16,23 +16,8 @@ const TYPES = {
   date: { label: "Date" },
 }
 
-const METHODS = {
-  redact: {
-    name: "Redact",
-    action: "Redacted",
-    note: "Replaces the value with solid blocks. Nothing about the original can be recovered from the copy.",
-  },
-  mask: {
-    name: "Mask",
-    action: "Masked",
-    note: "Hides most characters but keeps the shape, such as the last four digits of an ID number.",
-  },
-  pseudonym: {
-    name: "Pseudonym",
-    action: "Replaced",
-    note: "Swaps the value for a realistic synthetic one so the document still reads naturally.",
-  },
-}
+// SECURA uses a single anonymization method: synthetic data replacement.
+const METHOD_NAME = "synthetic data replacement"
 
 const FILE_NAME = "hr_case_summary_0417.pdf"
 
@@ -86,46 +71,10 @@ const DOCUMENT = [
   { kind: "text", parts: ["This summary is restricted to the authorised review group."] },
 ]
 
-/* ── Output formats ────────────────────────────────────────────────────── */
+/* ── Helpers ───────────────────────────────────────────────────────────── */
 
 const esc = (value) =>
   String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c])
-
-// Keeps the first letter or digit and hides the rest; punctuation stays.
-function maskWord(word) {
-  let seen = false
-  return word.replace(/[\p{L}\p{N}]/gu, (char) => {
-    if (seen) return "*"
-    seen = true
-    return char
-  })
-}
-
-function maskValue({ type, value }) {
-  if (type === "id") return value.replace(/\d(?=.*\d{4}$)/g, "*")
-  if (type === "phone") {
-    const [code, ...rest] = value.split(" ")
-    return `${code} ${rest.join(" ").replace(/\d(?=.*\d{2}$)/g, "*")}`
-  }
-  if (type === "email") {
-    const [local, domain] = value.split("@")
-    const dot = domain.lastIndexOf(".")
-    return `${maskWord(local)}@${maskWord(domain.slice(0, dot))}${domain.slice(dot)}`
-  }
-  if (type === "date") {
-    const words = value.split(" ")
-    return words.map((word, i) => (i === words.length - 1 ? word : "*".repeat(word.length))).join(" ")
-  }
-  return value.split(" ").map(maskWord).join(" ")
-}
-
-function outputFor(entity, mode) {
-  if (mode === "mask") return maskValue(entity)
-  if (mode === "pseudonym") return entity.fake
-  return "█".repeat(Math.min(Math.max(entity.value.length, 6), 20))
-}
-
-/* ── Helpers ───────────────────────────────────────────────────────────── */
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -160,10 +109,7 @@ function initSimulation() {
   const requestButton = $("#sim-request")
   const requestNote = $("#sim-request-note")
   const result = $("#sim-result")
-  const methodNote = $("#sim-method-note")
-  const methodSample = $("#sim-method-sample")
   const steps = [...root.querySelectorAll(".sim-steps li")]
-  const modeButtons = [...root.querySelectorAll("[data-mode]")]
   const viewButtons = [...root.querySelectorAll("[data-view]")]
 
   const state = {
@@ -172,7 +118,6 @@ function initSimulation() {
     running: false,
     runId: 0,
     view: "original",
-    mode: "redact",
     enabled: new Set(Object.keys(TYPES)),
     found: new Set(),
     converted: new Set(),
@@ -231,12 +176,12 @@ function initSimulation() {
   /* Painting */
 
   function paintEntity(entity) {
-    const converted = state.view === "anonymized" && state.converted.has(entity.index)
-    const safe = converted && state.enabled.has(entity.type)
-    const kept = converted && !state.enabled.has(entity.type)
-    const found = state.found.has(entity.index)
+    // A category switched off in the policy is stripped back to plain text.
+    const enabled = state.enabled.has(entity.type)
+    const safe = enabled && state.view === "anonymized" && state.converted.has(entity.index)
+    const found = enabled && state.found.has(entity.index)
     const el = entity.el
-    const text = safe ? outputFor(entity, state.mode) : entity.value
+    const text = safe ? entity.fake : entity.value
     if (el.textContent !== text) {
       el.textContent = text
       el.classList.remove("is-swap")
@@ -245,7 +190,6 @@ function initSimulation() {
     }
     el.classList.toggle("is-found", found && !safe)
     el.classList.toggle("is-safe", safe)
-    el.classList.toggle("is-kept", kept)
     el.classList.toggle("is-active", state.selected === entity.index)
     if (found) {
       el.tabIndex = 0
@@ -269,6 +213,7 @@ function initSimulation() {
   }
 
   function paintSteps() {
+    root.classList.toggle("is-complete", state.complete)
     steps.forEach((li, i) => {
       li.classList.toggle("is-done", state.complete || i < state.stage)
       const button = li.querySelector("button")
@@ -290,15 +235,6 @@ function initSimulation() {
       button.setAttribute("aria-pressed", String(button.dataset.view === state.view))
       if (button.dataset.view === "anonymized") button.disabled = state.stage < 2
     }
-  }
-
-  function paintMethod() {
-    const method = METHODS[state.mode]
-    root.dataset.mode = state.mode
-    for (const button of modeButtons) button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode))
-    methodNote.textContent = method.note
-    const sample = ENTITIES.find((e) => e.type === "person")
-    methodSample.innerHTML = `<span>${esc(sample.value)}</span><i aria-hidden="true">→</i><strong>${esc(outputFor(sample, state.mode))}</strong>`
   }
 
   function paintResult() {
@@ -337,7 +273,7 @@ function initSimulation() {
     }
     if (state.stage === 2) {
       if (state.running && state.converted.size < total) {
-        return `Stage 3 of 4 · Applying policy (${METHODS[state.mode].name.toLowerCase()})…`
+        return `Stage 3 of 4 · Applying ${METHOD_NAME}…`
       }
       return safe === 0
         ? "Stage 3 of 4 · No categories selected, so the copy is unchanged."
@@ -365,16 +301,16 @@ function initSimulation() {
       }</p>`
       return
     }
+    // Only items from enabled categories can be selected, so the policy is always "Protect" here.
     const converted = state.converted.has(entity.index)
-    const enabled = state.enabled.has(entity.type)
-    const hidden = state.view === "anonymized" && converted && enabled
-    const outcome = !converted ? "Pending" : enabled ? METHODS[state.mode].action : "Left visible"
+    const hidden = state.view === "anonymized" && converted
     inspector.innerHTML = `
       <div class="insp-head"><span class="insp-type" data-type="${entity.type}">${esc(TYPES[entity.type].label)}</span></div>
       <dl class="insp-list">
         <div><dt>Confidence</dt><dd><span class="insp-meter" aria-hidden="true"><i style="width:${entity.confidence}%"></i></span>${entity.confidence}%</dd></div>
-        <div><dt>Policy</dt><dd>${enabled ? "Protect" : "Leave visible"}</dd></div>
-        <div><dt>Result</dt><dd>${outcome}</dd></div>
+        <div><dt>Policy</dt><dd>Protect</dd></div>
+        <div><dt>Result</dt><dd>${converted ? "Replaced with synthetic data" : "Pending"}</dd></div>
+        ${converted ? `<div><dt>Synthetic</dt><dd>${esc(entity.fake)}</dd></div>` : ""}
         <div><dt>Original</dt><dd>${hidden ? "Hidden in the shared copy" : esc(entity.value)}</dd></div>
       </dl>`
   }
@@ -394,6 +330,7 @@ function initSimulation() {
   /* State changes */
 
   function select(index) {
+    if (index !== null && !state.enabled.has(ENTITIES[index].type)) return
     if (state.selected === index) return
     const previous = state.selected
     state.selected = index
@@ -517,32 +454,25 @@ function initSimulation() {
     })
   }
 
-  for (const button of modeButtons) {
-    button.addEventListener("click", () => {
-      state.mode = button.dataset.mode
-      paintMethod()
-      paintAll()
-    })
-  }
-
   for (const chip of chips) {
     chip.addEventListener("click", () => {
       const key = chip.dataset.type
       if (state.enabled.has(key)) state.enabled.delete(key)
       else state.enabled.add(key)
+      if (state.selected !== null && !state.enabled.has(ENTITIES[state.selected].type)) state.selected = null
       paintAll()
     })
   }
 
   const pick = (event) => {
     const target = event.target instanceof Element ? event.target.closest(".ent") : null
-    if (target && state.found.has(Number(target.dataset.index))) select(Number(target.dataset.index))
+    const index = target ? Number(target.dataset.index) : -1
+    if (state.found.has(index)) select(index)
   }
   paper.addEventListener("pointerover", pick)
   paper.addEventListener("focusin", pick)
   paper.addEventListener("click", pick)
 
-  paintMethod()
   paintAll()
 
   // Play once when the demo first comes into view.

@@ -9,13 +9,11 @@
       name="description"
       content="Explore the SECURA document workflow, private network architecture, and the three role-based interfaces."
     />
-    <link rel="icon" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Italiana&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles/fonts.css" />
     <script>
       document.documentElement.classList.add("js");
     </script>
@@ -35,19 +33,16 @@
 
     <header class="site-header">
       <a class="brand-lockup" href="/" aria-label="SECURA home">
-        <span class="brand-name">SECURA</span>
-        <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+        <img class="brand-logo" src="/assets/secura-logo-sm.png" width="180" height="66" alt="" />
       </a>
-      <nav class="main-nav" aria-label="Primary">
+      <nav class="main-nav" id="primary-nav" aria-label="Primary">
         <a class="nav-link" href="/about">ABOUT</a>
         <a class="nav-link" href="/documentation" aria-current="page">DOCUMENTATION</a>
         <a class="nav-link" href="/contact">CONTACT US</a>
       </nav>
-      <div class="header-action">
-        <button class="access-button" id="open-access" type="button" aria-haspopup="dialog" aria-controls="access-dialog">
-          ACCESS PLATFORM
-        </button>
-      </div>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
     </header>
 
     <main id="main">
@@ -90,38 +85,35 @@
               <div class="workflow">
                 <article class="card reveal">
                   <span class="workflow-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" /></svg>
+                    <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5" /><path class="acc" d="M12 17.5v-6m0 0-2.5 2.5m2.5-2.5 2.5 2.5" /></svg>
                   </span>
                   <span class="card-num">01</span>
                   <h3>Upload a Document</h3>
-                  <p>An authorized user uploads a supported document.</p>
+                  <p>Authorized users upload supported documents to start controlled processing.</p>
                 </article>
                 <article class="card reveal" style="--reveal-delay: 70ms">
                   <span class="workflow-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5zM8 9h8M8 12h5M8 15h3" />
-                      <circle cx="17" cy="16" r="3" />
-                    </svg>
+                    <svg viewBox="0 0 24 24"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5.5M13 3l5 5v2.5M13 3v5h5" /><path d="M8.5 12h4M8.5 15.5h2" /><circle class="acc" cx="16.5" cy="16.5" r="3" /><path class="acc" d="m18.7 18.7 2 2" /></svg>
                   </span>
                   <span class="card-num">02</span>
                   <h3>Detect Sensitive Information</h3>
-                  <p>NLP-based processing identifies supported sensitive information.</p>
+                  <p>NLP pinpoints supported sensitive information across each uploaded document.</p>
                 </article>
                 <article class="card reveal" style="--reveal-delay: 140ms">
                   <span class="workflow-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.5-2.9 8.2-7 10-4.1-1.8-7-5.5-7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5.5c0 4.4-2.9 7.9-7 9.5-4.1-1.6-7-5.1-7-9.5V6z" /><path class="acc" d="M8.8 12.2s1.2-2.2 3.2-2.2 3.2 2.2 3.2 2.2-1.2 2.2-3.2 2.2-3.2-2.2-3.2-2.2zM9.5 16l5-7.5" /></svg>
                   </span>
                   <span class="card-num">03</span>
                   <h3>Review and Anonymize</h3>
-                  <p>Sensitive details are anonymized according to the application workflow.</p>
+                  <p>Flagged details are reviewed and anonymized under policy, ready for sharing.</p>
                 </article>
                 <article class="card reveal" style="--reveal-delay: 210ms">
                   <span class="workflow-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5M3 12l7-7m0 0H5m5 0v5" /></svg>
+                    <svg viewBox="0 0 24 24"><rect x="3.5" y="11" width="11" height="9.5" rx="2" /><path d="M6 11V8.5a3 3 0 0 1 6 0V11" /><path class="acc" d="M16.5 7.5H21m0 0-2-2m2 2-2 2" /><path d="M9 14.5v2.5" /></svg>
                   </span>
                   <span class="card-num">04</span>
                   <h3>Share Securely</h3>
-                  <p>Protected documents are shared within permitted department boundaries.</p>
+                  <p>Protected copies reach only departments authorized to receive them.</p>
                 </article>
               </div>
               <div class="note reveal">
@@ -141,25 +133,54 @@
               <div class="section-head reveal">
                 <p class="eyebrow">Private network architecture</p>
                 <h2>Our Network Topology</h2>
-                <p>Switch between the physical network layout and a logical view of how SECURA data moves.</p>
+                <p>
+                  How the SECURA private network fits together: which devices take part, how they connect, and how
+                  traffic is observed. Hover or select a device to trace its link.
+                </p>
               </div>
 
               <div class="topo reveal" id="topology-root">
                 <div class="topo-bar">
-                  <div class="topo-tabs" role="tablist" aria-label="Topology view mode">
-                    <button class="topo-tab" type="button" role="tab" data-mode="physical" aria-selected="true">Physical Topology</button>
-                    <button class="topo-tab" type="button" role="tab" data-mode="logical" aria-selected="false" tabindex="-1">Logical Data Flow</button>
+                  <div class="topo-bar-title">
+                    <p class="topo-kicker">Physical Topology</p>
+                    <p class="topo-desc">Devices, links and the passive monitoring path.</p>
                   </div>
-                  <p class="topo-desc" role="note"></p>
+                  <ul class="topo-legend" aria-label="Diagram legend">
+                    <li><i class="lg-line is-access" aria-hidden="true"></i>Secure access (HTTPS)</li>
+                    <li><i class="lg-line is-span" aria-hidden="true"></i>Mirrored traffic (monitoring)</li>
+                    <li><i class="lg-box" aria-hidden="true"></i>Internal LAN boundary</li>
+                  </ul>
                 </div>
                 <div class="topo-canvas">
-                  <svg class="topo-svg" viewBox="0 0 1000 540" role="group"></svg>
+                  <svg class="topo-svg" viewBox="0 0 1000 540" role="group" aria-label="Physical network diagram: a mini PC with IDS receives mirrored traffic from a network switch, which connects a web application and two client workstations inside the Internal LAN."></svg>
                 </div>
                 <p class="topo-hint" aria-hidden="true">← Scroll sideways to see the full diagram →</p>
+
                 <div class="topo-chips" aria-label="Devices"></div>
                 <div class="topo-detail" aria-live="polite"></div>
+
+                <ul class="topo-logic" aria-label="How the network works">
+                  <li>
+                    <span class="topo-logic-n" aria-hidden="true">01</span>
+                    <h3>Private by design</h3>
+                    <p>The application lives on an internal network with no direct internet exposure.</p>
+                  </li>
+                  <li>
+                    <span class="topo-logic-n" aria-hidden="true">02</span>
+                    <h3>One controlled path</h3>
+                    <p>Authorized workstations reach it only through the managed switch, over HTTPS.</p>
+                  </li>
+                  <li>
+                    <span class="topo-logic-n" aria-hidden="true">03</span>
+                    <h3>Passive visibility</h3>
+                    <p>A mirrored copy of traffic feeds the IDS without sitting in the forwarding path.</p>
+                  </li>
+                </ul>
               </div>
-              <p class="topo-caption" id="topo-caption"></p>
+              <p class="topo-caption" id="topo-caption">
+                The IDS or IDPS device supports monitoring and visibility. It does not imply automatic prevention of
+                every security incident.
+              </p>
               <noscript><p class="topo-caption">Enable JavaScript to explore the interactive topology diagram.</p></noscript>
             </section>
 
@@ -169,64 +190,192 @@
                 <p class="eyebrow">Role-based experiences</p>
                 <h2>Designed around clear responsibilities</h2>
                 <p>
-                  Actual SECURA dashboard screenshots show the platform's three primary roles. These are static
-                  promotional visuals, not interactive application screens.
+                  Actual SECURA dashboard screenshots show the platform's three primary roles. Use the tour to zoom into
+                  each area, or open a screenshot at full size. These are static visuals, not interactive application
+                  screens.
                 </p>
               </div>
-              <article class="interface">
-                <div class="browser reveal">
-                  <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span><small>SECURA / User Interface</small></div>
-                  <img src="/assets/user-dashboard.png" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA User Interface dashboard. Static promotional screenshot." />
-                </div>
-                <div class="interface-copy reveal" style="--reveal-delay: 100ms">
+              <article class="role">
+                <header class="role-head reveal">
                   <p class="eyebrow">Authorized employee workspace</p>
                   <h2>User Interface</h2>
                   <p>A focused workspace for processing documents and collaborating with permitted departments.</p>
-                  <div class="feature-list">
-                    <div class="feature-row"><span>01</span><div><h3>Document Anonymization</h3><p>Identify and anonymize supported sensitive personal information.</p></div></div>
-                    <div class="feature-row"><span>02</span><div><h3>Document Management</h3><p>Upload, organize, archive, and restore documents according to implemented functionality.</p></div></div>
-                    <div class="feature-row"><span>03</span><div><h3>Secure Document Sharing</h3><p>Share protected documents with authorized users or departments.</p></div></div>
-                    <div class="feature-row"><span>04</span><div><h3>Original File Access</h3><p>Request original documents through the controlled approval process.</p></div></div>
+                </header>
+
+                <figure class="viewer reveal" data-viewer>
+                  <div class="viewer-bar">
+                    <span class="viewer-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="viewer-title">SECURA / User Interface</span>
+                    <button class="viewer-open" type="button" data-full="/assets/user-dashboard.webp" data-alt="User Interface dashboard at full size" data-title="User Interface">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+                      <span>Full size</span>
+                    </button>
+                  </div>
+                  <div class="viewer-stage" data-w="1853" data-h="993">
+                    <div class="viewer-pan">
+                      <img src="/assets/user-dashboard.webp" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA User Interface dashboard. Static screenshot." />
+                      <span class="viewer-spot" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                  <div class="viewer-tour" role="group" aria-label="User interface tour">
+                    <button class="chip viewer-chip" type="button" aria-pressed="true" data-title="Full dashboard">Full view</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="0,0,930,330" data-title="Navigation and search" data-text="A compact sidebar, a global search for documents and access requests, and a personal greeting.">Navigation and search</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="112,325,930,335" data-title="Quick actions" data-text="Counters for documents, shared files and pending requests, with quick actions such as protecting a document.">Quick actions</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="112,678,700,315" data-title="Recent documents" data-text="Recent documents with ownership and upload history, one click from the full library.">Recent documents</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="823,678,700,315" data-title="Original access" data-text="Original-access requests with their current status, such as Approved.">Original access</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="1538,100,300,893" data-title="Request progress" data-text="A calendar of request dates and an approval tracker: Submitted, Owner, Security, Ready.">Request progress</button>
+                  </div>
+                  <figcaption class="viewer-caption" aria-live="polite">
+                    <strong>Full dashboard</strong>
+                    <span>Pick an area above to zoom in and see what each part of the User interface does.</span>
+                  </figcaption>
+                </figure>
+
+                <div class="role-features">
+                  <div class="role-feature reveal">
+                    <span>01</span>
+                    <h3>Document Anonymization</h3>
+                    <p>Identify and anonymize supported sensitive personal information.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 70ms">
+                    <span>02</span>
+                    <h3>Document Management</h3>
+                    <p>Upload, organize, archive, and restore documents according to implemented functionality.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 140ms">
+                    <span>03</span>
+                    <h3>Secure Document Sharing</h3>
+                    <p>Share protected documents with authorized users or departments.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 210ms">
+                    <span>04</span>
+                    <h3>Original File Access</h3>
+                    <p>Request original documents through the controlled approval process.</p>
                   </div>
                 </div>
               </article>
             </section>
 
             <section class="doc-section" id="interface-admin">
-              <article class="interface is-reverse">
-                <div class="browser reveal">
-                  <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span><small>SECURA / Admin Interface</small></div>
-                  <img src="/assets/admin-dashboard.png" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA Admin Interface dashboard. Static promotional screenshot." />
-                </div>
-                <div class="interface-copy reveal" style="--reveal-delay: 100ms">
+              <article class="role">
+                <header class="role-head reveal">
                   <p class="eyebrow">Platform administration</p>
                   <h2>Admin Interface</h2>
                   <p>A structured administrative view for maintaining users, roles, and organizational departments.</p>
-                  <div class="feature-list">
-                    <div class="feature-row"><span>01</span><div><h3>User Management</h3><p>Manage registered users and assigned roles.</p></div></div>
-                    <div class="feature-row"><span>02</span><div><h3>Department Management</h3><p>Create and manage organizational departments.</p></div></div>
-                    <div class="feature-row"><span>03</span><div><h3>Account Control</h3><p>Activate, deactivate, and manage user accounts.</p></div></div>
-                    <div class="feature-row"><span>04</span><div><h3>System Overview</h3><p>Review relevant platform activity and system information.</p></div></div>
+                </header>
+
+                <figure class="viewer reveal" data-viewer>
+                  <div class="viewer-bar">
+                    <span class="viewer-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="viewer-title">SECURA / Admin Interface</span>
+                    <button class="viewer-open" type="button" data-full="/assets/admin-dashboard.webp" data-alt="Admin Interface dashboard at full size" data-title="Admin Interface">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+                      <span>Full size</span>
+                    </button>
+                  </div>
+                  <div class="viewer-stage" data-w="1853" data-h="993">
+                    <div class="viewer-pan">
+                      <img src="/assets/admin-dashboard.webp" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA Admin Interface dashboard. Static screenshot." />
+                      <span class="viewer-spot" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                  <div class="viewer-tour" role="group" aria-label="Admin interface tour">
+                    <button class="chip viewer-chip" type="button" aria-pressed="true" data-title="Full dashboard">Full view</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="0,0,640,420" data-title="Navigation" data-text="Overview, User management, Departments and My profile in one sidebar.">Navigation</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="374,455,1366,280" data-title="Platform at a glance" data-text="Managed, active and inactive accounts and departments as four counters.">Platform at a glance</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="374,750,780,243" data-title="Account insights" data-text="Account insights break accounts down by role or by account status.">Account insights</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="1175,750,565,243" data-title="Access overview" data-text="An access overview shows how many managed accounts are enabled.">Access overview</button>
+                  </div>
+                  <figcaption class="viewer-caption" aria-live="polite">
+                    <strong>Full dashboard</strong>
+                    <span>Pick an area above to zoom in and see what each part of the Admin interface does.</span>
+                  </figcaption>
+                </figure>
+
+                <div class="role-features">
+                  <div class="role-feature reveal">
+                    <span>01</span>
+                    <h3>User Management</h3>
+                    <p>Manage registered users and assigned roles.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 70ms">
+                    <span>02</span>
+                    <h3>Department Management</h3>
+                    <p>Create and manage organizational departments.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 140ms">
+                    <span>03</span>
+                    <h3>Account Control</h3>
+                    <p>Activate, deactivate, and manage user accounts.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 210ms">
+                    <span>04</span>
+                    <h3>System Overview</h3>
+                    <p>Review relevant platform activity and system information.</p>
                   </div>
                 </div>
               </article>
             </section>
 
             <section class="doc-section" id="interface-security">
-              <article class="interface">
-                <div class="browser reveal">
-                  <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span><small>SECURA / Security Officer Interface</small></div>
-                  <img src="/assets/security-officer-dashboard.png" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA Security Officer Interface dashboard. Static promotional screenshot." />
-                </div>
-                <div class="interface-copy reveal" style="--reveal-delay: 100ms">
+              <article class="role">
+                <header class="role-head reveal">
                   <p class="eyebrow">Review and monitoring</p>
                   <h2>Security Officer Interface</h2>
                   <p>A security-oriented workspace for controlled approvals, integrity checks, and event review.</p>
-                  <div class="feature-list">
-                    <div class="feature-row"><span>01</span><div><h3>Access Request Review</h3><p>Approve or reject original-file requests according to the implemented workflow.</p></div></div>
-                    <div class="feature-row"><span>02</span><div><h3>File Integrity Verification</h3><p>Check protected originals using the implemented verification mechanism.</p></div></div>
-                    <div class="feature-row"><span>03</span><div><h3>Security Alert Monitoring</h3><p>Review suspicious activity and relevant security alerts.</p></div></div>
-                    <div class="feature-row"><span>04</span><div><h3>Security Log Review</h3><p>Inspect application events and relevant IDS or network monitoring events.</p></div></div>
+                </header>
+
+                <figure class="viewer reveal" data-viewer>
+                  <div class="viewer-bar">
+                    <span class="viewer-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="viewer-title">SECURA / Security Officer Interface</span>
+                    <button class="viewer-open" type="button" data-full="/assets/security-officer-dashboard.webp" data-alt="Security Officer Interface dashboard at full size" data-title="Security Officer Interface">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+                      <span>Full size</span>
+                    </button>
+                  </div>
+                  <div class="viewer-stage" data-w="1853" data-h="993">
+                    <div class="viewer-pan">
+                      <img src="/assets/security-officer-dashboard.webp" width="1853" height="993" loading="lazy" decoding="async" alt="SECURA Security Officer Interface dashboard. Static screenshot." />
+                      <span class="viewer-spot" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                  <div class="viewer-tour" role="group" aria-label="Security Officer interface tour">
+                    <button class="chip viewer-chip" type="button" aria-pressed="true" data-title="Full dashboard">Full view</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="160,0,980,180" data-title="Command navigation" data-text="Overview, Access reviews, Alerts and Audit logs in one top bar, next to the theme switch and account menu.">Command navigation</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="242,195,970,175" data-title="Review queue and alerts" data-text="Pending original-access requests and active security alerts, each with a clear empty state.">Review queue and alerts</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="1215,195,400,175" data-title="Login signals" data-text="Failed logins and unauthorized access, counted over the latest 200 records in 24 hours.">Login signals</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="242,380,860,322" data-title="Activity timeline" data-text="Hourly event counts for the last 24 hours, filterable by failed logins or unauthorized access.">Activity timeline</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="1118,380,494,322" data-title="Network status" data-text="Sensor integration status with network events, audit logs and the last received event.">Network status</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="242,714,845,279" data-title="Recent events" data-text="Recent failed-login events from the last 24 hours, with a shortcut to open the logs.">Recent events</button>
+                    <button class="chip viewer-chip" type="button" aria-pressed="false" data-region="1099,714,513,279" data-title="Operations" data-text="Shortcuts to review requests, investigate alerts and open audit trails.">Operations</button>
+                  </div>
+                  <figcaption class="viewer-caption" aria-live="polite">
+                    <strong>Full dashboard</strong>
+                    <span>Pick an area above to zoom in and see what each part of the Security Officer interface does.</span>
+                  </figcaption>
+                </figure>
+
+                <div class="role-features">
+                  <div class="role-feature reveal">
+                    <span>01</span>
+                    <h3>Access Request Review</h3>
+                    <p>Approve or reject original-file requests according to the implemented workflow.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 70ms">
+                    <span>02</span>
+                    <h3>File Integrity Verification</h3>
+                    <p>Check protected originals using the implemented verification mechanism.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 140ms">
+                    <span>03</span>
+                    <h3>Security Alert Monitoring</h3>
+                    <p>Review suspicious activity and relevant security alerts.</p>
+                  </div>
+                  <div class="role-feature reveal" style="--reveal-delay: 210ms">
+                    <span>04</span>
+                    <h3>Security Log Review</h3>
+                    <p>Inspect application events and relevant IDS or network monitoring events.</p>
                   </div>
                 </div>
               </article>
@@ -253,8 +402,7 @@
       <div class="shell footer-grid">
         <div class="footer-brand">
           <a class="brand-lockup" href="/" aria-label="SECURA home">
-            <span class="brand-name">SECURA</span>
-            <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+            <img class="brand-logo" src="/assets/secura-logo-sm.png" width="180" height="66" alt="" />
           </a>
           <p>
             A secure web platform concept for AI-assisted document anonymization and controlled cross-department
@@ -276,14 +424,17 @@
       </div>
     </footer>
 
-    <dialog class="access-dialog" id="access-dialog" aria-labelledby="dialog-title">
-      <p class="dialog-kicker">SECURA / PLATFORM ACCESS</p>
-      <h2 id="dialog-title">Access by deployment</h2>
-      <p>
-        This page is a project showcase, not a live sign-in. Platform access depends on an organization's configured
-        SECURA deployment.
-      </p>
-      <button class="btn" id="close-access" type="button">CLOSE</button>
+    <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title" data-lenis-prevent>
+      <div class="lightbox-bar">
+        <h2 id="lightbox-title">Screenshot</h2>
+        <div class="lightbox-actions">
+          <button class="btn" id="lightbox-zoom" type="button" aria-pressed="false">ACTUAL SIZE</button>
+          <button class="btn" id="lightbox-close" type="button">CLOSE</button>
+        </div>
+      </div>
+      <div class="lightbox-scroll" id="lightbox-scroll" data-lenis-prevent tabindex="0">
+        <img id="lightbox-img" alt="" width="1853" height="993" />
+      </div>
     </dialog>
 
     <div class="cursor-dot" aria-hidden="true"></div>

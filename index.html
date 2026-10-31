@@ -6,22 +6,16 @@
     <meta name="theme-color" content="#08060e" />
     <meta
       name="description"
-      content="SECURA is a cybersecurity showcase exploring AI-assisted privacy protection, neural detection, access protocols, and data integrity."
+      content="SECURA is a secure web platform that detects sensitive details in documents, replaces them with synthetic data, and keeps original files behind a controlled approval."
     />
-    <title>SECURA — Obsidian &amp; Zero-Trust Intelligence</title>
-    <link rel="icon" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Italiana&display=swap"
-      rel="stylesheet"
-    />
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-        }
-      }
+    <title>SECURA — Secure AI Document Anonymization</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles/fonts.css" />
+    <script>
+      document.documentElement.classList.add("js");
     </script>
     <style>
       :root {
@@ -31,9 +25,9 @@
         --cyan: #38bdf8;
         --paper: #f4f0ff;
         --muted: #aaa4b9;
-        --mono: "IBM Plex Mono", monospace;
-        --sans: "Instrument Sans", sans-serif;
-        --serif: "Italiana", serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --sans: "Inter", system-ui, sans-serif;
+        --display: "Space Grotesk", "Inter", system-ui, sans-serif;
       }
 
       /* Design read: user-set cybersecurity palette and gimbal motif; ENERGY 3 / RHYTHM 2 / MOTION 3. */
@@ -190,7 +184,60 @@
         box-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
       }
 
+      @view-transition {
+        navigation: auto;
+      }
+
+      ::view-transition-old(root) {
+        animation: 260ms ease both vt-out;
+      }
+
+      ::view-transition-new(root) {
+        animation: 520ms cubic-bezier(0.16, 0.75, 0.22, 1) both vt-in;
+      }
+
+      @keyframes vt-out {
+        to {
+          opacity: 0;
+          transform: translateY(-12px);
+        }
+      }
+
+      @keyframes vt-in {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-group(*),
+        ::view-transition-old(*),
+        ::view-transition-new(*) {
+          animation: none;
+        }
+      }
+
+      body {
+        transition: opacity 260ms ease;
+      }
+
+      body.is-leaving {
+        opacity: 0;
+      }
+
+      html.no-vt body {
+        animation: page-in 520ms ease both;
+      }
+
+      @keyframes page-in {
+        from {
+          opacity: 0;
+        }
+      }
+
       .site-header {
+        view-transition-name: site-header;
         position: fixed;
         z-index: 5;
         top: 0;
@@ -213,21 +260,48 @@
         pointer-events: auto;
       }
 
-      .brand-name {
-        color: var(--paper);
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 0.32em;
+      .brand-logo {
+        display: block;
+        width: auto;
+        height: 46px;
       }
 
-      .brand-badge {
-        padding: 5px 7px;
-        border: 1px solid rgba(244, 240, 255, 0.2);
-        color: #c8c0d8;
-        font-family: var(--mono);
-        font-size: 9px;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
+      .nav-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0;
+        border: 1px solid rgba(236, 231, 248, 0.4);
+        border-radius: 50%;
+        background: rgba(8, 6, 14, 0.5);
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 300ms ease;
+      }
+
+      .nav-toggle:hover {
+        border-color: var(--cyan);
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+      }
+
+      .nav-toggle span {
+        display: block;
+        width: 18px;
+        height: 1.5px;
+        background: #e2e8f0;
+        transition: transform 300ms ease;
+      }
+
+      .is-open .nav-toggle span:nth-child(1) {
+        transform: translateY(3.75px) rotate(45deg);
+      }
+
+      .is-open .nav-toggle span:nth-child(2) {
+        transform: translateY(-3.75px) rotate(-45deg);
       }
 
       .main-nav {
@@ -246,7 +320,7 @@
         padding-block: 8px;
         color: #bdb6cb;
         font-family: var(--mono);
-        font-size: 9px;
+        font-size: 11px;
         letter-spacing: 0.12em;
         text-decoration: none;
         transition: color 180ms ease;
@@ -274,52 +348,16 @@
         transform: scaleX(1);
       }
 
-      .header-action {
-        justify-self: end;
-        pointer-events: auto;
-      }
-
-      .access-button {
-        min-height: 44px;
-        padding: 0 17px;
-        border: 1px solid rgba(236, 231, 248, 0.68);
-        border-radius: 999px;
-        background: rgba(8, 6, 14, 0.52);
-        color: #f6f2ff;
-        font-family: var(--mono);
-        font-size: 9px;
-        letter-spacing: 0.09em;
-        cursor: pointer;
-        transition:
-          background-color 180ms ease,
-          border-color 180ms ease,
-          color 180ms ease;
-      }
-
-      .access-button:hover,
-      .access-button:focus-visible {
-        border-color: var(--cyan);
-        background: rgba(56, 189, 248, 0.12);
-        box-shadow:
-          0 0 0 1px rgba(56, 189, 248, 0.85),
-          0 0 22px rgba(56, 189, 248, 0.38),
-          0 0 54px rgba(139, 92, 246, 0.28);
-      }
-
-      .access-button:active,
-      .dialog-close:active {
-        background: rgba(139, 92, 246, 0.18);
-      }
-
       .story-slide {
         position: fixed;
         z-index: 3;
-        top: 51%;
-        left: 12.5vw;
+        top: 50%;
+        left: 8.3vw;
         width: min(42vw, 570px);
         visibility: hidden;
         opacity: 0;
         pointer-events: none;
+        translate: 0 -50%;
         transform: translate3d(0, 20px, 0);
         transition:
           opacity 420ms ease,
@@ -330,12 +368,12 @@
       .story-slide::before {
         position: absolute;
         z-index: -1;
-        inset: -18px -28px -18px -20px;
-        background: linear-gradient(
-          90deg,
-          rgba(8, 6, 14, 0.94) 0%,
-          rgba(8, 6, 14, 0.88) 70%,
-          rgba(8, 6, 14, 0.8) 100%
+        inset: -40px -64px -40px -40px;
+        background: radial-gradient(
+          ellipse 72% 68% at 38% 50%,
+          rgba(8, 6, 14, 0.9) 0%,
+          rgba(8, 6, 14, 0.84) 58%,
+          rgba(8, 6, 14, 0) 100%
         );
         content: "";
         pointer-events: none;
@@ -355,7 +393,7 @@
         margin: 0 0 23px;
         color: #c9c1d8;
         font-family: var(--mono);
-        font-size: 9px;
+        font-size: 11px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
       }
@@ -371,11 +409,11 @@
         max-width: 680px;
         margin: 0;
         color: #f7f3ff;
-        font-family: var(--serif);
-        font-size: clamp(58px, 7.3vw, 112px);
-        font-weight: 400;
+        font-family: var(--display);
+        font-size: clamp(44px, 5.4vw, 88px);
+        font-weight: 700;
         letter-spacing: -0.035em;
-        line-height: 0.88;
+        line-height: 0.98;
         text-wrap: balance;
       }
 
@@ -384,27 +422,19 @@
         white-space: nowrap;
       }
 
-      .title-space {
-        display: inline-block;
-        width: 0.28em;
-      }
-
       .title-letter {
         display: inline-block;
         opacity: 0;
-        filter: blur(12px);
         transform: translate3d(0, 0.28em, 0);
         transition:
-          opacity 700ms ease,
-          filter 700ms ease,
-          transform 850ms cubic-bezier(0.16, 0.75, 0.22, 1);
+          opacity 600ms ease,
+          transform 750ms cubic-bezier(0.16, 0.75, 0.22, 1);
         transition-delay: var(--letter-delay, 0ms);
-        will-change: opacity, filter, transform;
+        will-change: opacity, transform;
       }
 
       .is-current .title-letter {
         opacity: 1;
-        filter: blur(0);
         transform: translate3d(0, 0, 0);
       }
 
@@ -417,6 +447,109 @@
         text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
       }
 
+      .story-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+        pointer-events: none;
+      }
+
+      .story-slide.is-current .story-actions {
+        pointer-events: auto;
+      }
+
+      .btn {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 22px;
+        border: 1px solid #475569;
+        border-radius: 999px;
+        background: transparent;
+        color: #e2e8f0;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: all 300ms ease;
+      }
+
+      .btn:hover,
+      .btn:focus-visible {
+        border-color: var(--cyan);
+        background: rgba(56, 189, 248, 0.08);
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.35);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+
+      .btn-primary {
+        border-color: transparent;
+        background: #6d28d9;
+        box-shadow: 0 4px 14px rgba(109, 40, 217, 0.4);
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .btn-primary:hover,
+      .btn-primary:focus-visible {
+        border-color: transparent;
+        background: #6d28d9;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+        filter: brightness(1.12);
+      }
+
+      .btn-arrow {
+        transition: transform 300ms ease;
+      }
+
+      .btn:hover .btn-arrow {
+        transform: translateX(4px);
+      }
+
+      .slide-count {
+        position: fixed;
+        z-index: 3;
+        right: 8.3vw;
+        bottom: 36px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        font-family: var(--mono);
+        letter-spacing: 0.1em;
+        pointer-events: none;
+      }
+
+      .slide-count-now {
+        color: #f7f3ff;
+        font-family: var(--display);
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .slide-count-total {
+        color: #8b8aa3;
+        font-size: 11px;
+      }
+
+      .slide-count-label {
+        min-width: 11ch;
+        margin-left: 6px;
+        padding-left: 14px;
+        border-left: 1px solid rgba(220, 213, 235, 0.28);
+        color: #c9c2d7;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
       .story-note {
         display: flex;
         align-items: center;
@@ -424,7 +557,7 @@
         margin-top: 25px;
         color: #c4bbd2;
         font-family: var(--mono);
-        font-size: 9px;
+        font-size: 11px;
         letter-spacing: 0.06em;
       }
 
@@ -435,38 +568,18 @@
         transform: rotate(45deg);
       }
 
-      .scene-label {
-        position: fixed;
-        z-index: 3;
-        right: 8.3vw;
-        bottom: 42px;
-        color: #c8c0d7;
-        font-family: var(--mono);
-        font-size: 9px;
-        letter-spacing: 0.1em;
-        text-align: right;
-        pointer-events: none;
-      }
-
-      .scene-label strong {
-        display: block;
-        margin-top: 7px;
-        color: rgba(242, 238, 251, 0.9);
-        font-weight: 400;
-      }
-
       .motion-toggle {
         position: fixed;
         z-index: 4;
         right: 8.3vw;
-        bottom: 88px;
+        bottom: 84px;
         min-height: 44px;
         padding: 8px 0;
         border: 0;
         background: transparent;
         color: #c9c2d7;
         font-family: var(--mono);
-        font-size: 8px;
+        font-size: 11px;
         letter-spacing: 0.1em;
         cursor: pointer;
       }
@@ -489,7 +602,7 @@
         gap: 12px;
         color: #c9c2d7;
         font-family: var(--mono);
-        font-size: 9px;
+        font-size: 11px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
         pointer-events: none;
@@ -567,57 +680,12 @@
         display: none;
       }
 
-      .access-dialog {
-        width: min(470px, calc(100vw - 32px));
-        padding: 34px;
-        border: 1px solid rgba(196, 181, 222, 0.3);
-        background: #100d18;
-        color: var(--paper);
-      }
-
-      .access-dialog::backdrop {
-        background: rgba(4, 3, 8, 0.78);
-      }
-
-      .dialog-kicker {
-        margin: 0 0 16px;
-        color: var(--cyan);
-        font-family: var(--mono);
-        font-size: 9px;
-        letter-spacing: 0.14em;
-      }
-
-      .access-dialog h2 {
-        margin: 0;
-        font-family: var(--serif);
-        font-size: 42px;
-        font-weight: 400;
-      }
-
-      .access-dialog p:not(.dialog-kicker) {
-        margin: 14px 0 25px;
-        color: var(--muted);
-        font-size: 14px;
-        line-height: 1.7;
-      }
-
-      .dialog-close {
-        min-height: 44px;
-        padding: 0 17px;
-        border: 1px solid rgba(236, 231, 248, 0.58);
-        border-radius: 999px;
-        background: transparent;
-        font-family: var(--mono);
-        font-size: 9px;
-        letter-spacing: 0.1em;
-        cursor: pointer;
-      }
-
-      .dialog-close:hover {
-        border-color: var(--cyan);
-      }
-
       @media (max-width: 900px) {
+        .slide-count {
+          right: 7vw;
+          bottom: 82px;
+        }
+
         .site-header {
           grid-template-columns: 1fr auto;
           row-gap: 22px;
@@ -631,20 +699,61 @@
           gap: clamp(14px, 4vw, 32px);
         }
 
-        .nav-link {
-          font-size: 8px;
+        .js .site-header {
+          grid-template-columns: minmax(0, 1fr) auto;
+          padding: 14px 7vw;
+        }
+
+        .js .nav-toggle {
+          display: inline-flex;
+        }
+
+        .js .main-nav {
+          position: absolute;
+          grid-column: auto;
+          grid-row: auto;
+          top: 100%;
+          right: 0;
+          left: 0;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: flex-start;
+          gap: 0;
+          padding: 6px 7vw 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          background: #08060e;
+          opacity: 0;
+          transform: translateY(-8px);
+          visibility: hidden;
+          transition:
+            opacity 250ms ease,
+            transform 250ms ease,
+            visibility 250ms;
+        }
+
+        .js .site-header.is-open .main-nav {
+          opacity: 1;
+          transform: none;
+          visibility: visible;
+        }
+
+        .js .nav-link {
+          min-height: 54px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          font-size: 13px;
         }
 
         .brand-lockup {
           gap: 10px;
         }
 
-        .brand-name {
-          letter-spacing: 0.24em;
+        .brand-logo {
+          height: 38px;
         }
 
         .story-slide {
           top: auto;
+          translate: none;
           bottom: 14vh;
           left: 8vw;
           width: min(69vw, 530px);
@@ -658,13 +767,6 @@
           max-width: 390px;
           margin-top: 19px;
           font-size: 14px;
-        }
-
-        .scene-label {
-          right: 7vw;
-          bottom: 34px;
-          max-width: 150px;
-          font-size: 8px;
         }
 
         .motion-toggle {
@@ -683,42 +785,16 @@
       }
 
       @media (max-width: 600px) {
-        .site-header {
-          padding: 18px 7vw 0;
-          row-gap: 20px;
-        }
-
-        .brand-name {
-          font-size: 11px;
-        }
-
-        .brand-badge {
-          padding: 4px 5px;
-          font-size: 7px;
-        }
-
-        .access-button {
-          min-height: 44px;
-          padding-inline: 11px;
-          font-size: 8px;
-        }
-
-        .main-nav {
-          gap: 17px;
-          overflow-x: auto;
-          padding: 0 0 7px;
-          scrollbar-width: none;
-        }
-
-        .main-nav::-webkit-scrollbar {
+        .slide-count,
+        .story-actions .btn:not(.btn-primary) {
           display: none;
         }
 
-        .nav-link {
-          flex: 0 0 auto;
-          font-size: 7px;
-          letter-spacing: 0.08em;
+        .js .site-header {
+          padding: 12px 7vw;
         }
+
+
 
         .story-slide {
           bottom: 13vh;
@@ -728,7 +804,7 @@
 
         .story-index {
           margin-bottom: 15px;
-          font-size: 8px;
+          font-size: 11px;
         }
 
         .story-title {
@@ -746,17 +822,32 @@
         .story-note {
           max-width: 34ch;
           margin-top: 16px;
-          font-size: 8px;
+          font-size: 11px;
           line-height: 1.55;
         }
 
-        .scene-label {
+        .story-actions {
+          margin-top: 18px;
+        }
+
+        .btn {
+          min-height: 44px;
+          padding: 0 18px;
+          font-size: 11px;
+        }
+
+        .slide-count {
+          right: 7vw;
+          bottom: 78px;
+        }
+
+        .slide-count-label {
           display: none;
         }
 
         .scroll-cue {
           bottom: 31px;
-          font-size: 8px;
+          font-size: 11px;
         }
 
         .progress-stack {
@@ -774,6 +865,10 @@
 
         .brand-lockup {
           gap: 7px;
+        }
+
+        .brand-logo {
+          height: 32px;
         }
 
         .story-slide::before {
@@ -804,20 +899,6 @@
           overflow: visible;
         }
 
-        .header-action {
-          grid-column: 1;
-          justify-self: start;
-        }
-
-        .brand-badge {
-          padding: 3px 4px;
-          font-size: 6px;
-        }
-
-        .access-button {
-          min-height: 44px;
-        }
-
         .story-slide {
           bottom: 50px;
           left: 7vw;
@@ -826,7 +907,7 @@
 
         .story-index {
           margin-bottom: 10px;
-          font-size: 7px;
+          font-size: 11px;
         }
 
         .story-title {
@@ -840,7 +921,9 @@
         }
 
         .story-note,
-        .scroll-cue {
+        .scroll-cue,
+        .slide-count,
+        .story-actions .btn:not(.btn-primary) {
           display: none;
         }
 
@@ -910,86 +993,94 @@
       <div class="grid-column">
         <span class="grid-status" aria-hidden="true"></span>
         <div class="progress-stack">
-          <a class="progress-dash" href="#slide-1" data-slide="0" aria-label="Go to Autonomous Privacy"></a>
-          <a class="progress-dash" href="#slide-2" data-slide="1" aria-label="Go to Neural Recognition"></a>
-          <a class="progress-dash" href="#slide-3" data-slide="2" aria-label="Go to Access Protocol"></a>
-          <a class="progress-dash" href="#slide-4" data-slide="3" aria-label="Go to Compliance Assurance"></a>
+          <a class="progress-dash" href="#slide-1" data-slide="0" aria-label="Go to The Challenge"></a>
+          <a class="progress-dash" href="#slide-2" data-slide="1" aria-label="Go to Detection"></a>
+          <a class="progress-dash" href="#slide-3" data-slide="2" aria-label="Go to Replacement"></a>
+          <a class="progress-dash" href="#slide-4" data-slide="3" aria-label="Go to Control"></a>
         </div>
       </div>
     </div>
 
     <header class="site-header">
       <a class="brand-lockup" href="#slide-1" data-slide="0" aria-label="SECURA home">
-        <span class="brand-name">SECURA</span>
-        <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+        <img class="brand-logo" src="/assets/secura-logo-sm.png" width="180" height="66" alt="" />
       </a>
-      <nav class="main-nav" aria-label="Primary">
+      <nav class="main-nav" id="primary-nav" aria-label="Primary">
         <a class="nav-link" href="/about">ABOUT</a>
         <a class="nav-link" href="/documentation">DOCUMENTATION</a>
         <a class="nav-link" href="/contact">CONTACT US</a>
       </nav>
-      <div class="header-action">
-        <button
-          class="access-button"
-          id="open-access"
-          type="button"
-          aria-haspopup="dialog"
-          aria-controls="access-dialog"
-        >
-          ACCESS PLATFORM
-        </button>
-      </div>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
     </header>
 
     <main>
       <article class="story-slide is-current" id="slide-1" data-slide-panel="0" aria-labelledby="title-1">
-        <p class="story-index">01 / Autonomous Privacy</p>
+        <p class="story-index">01 / The Challenge</p>
         <h1 class="story-title" id="title-1" data-title="The Invisible Shield">The Invisible Shield</h1>
         <p class="story-copy">
-          Sensitive details are identified and redacted before a document moves beyond its intended audience.
-          SECURA explores an NLP-assisted layer of privacy protection that keeps review in the workflow.
+          Every shared document can carry names, ID numbers and contact details it was never meant to expose.
+          SECURA protects them before a file leaves its department.
         </p>
-        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> NLP-assisted detection and redaction concept</p>
+        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> Secure web platform for AI document anonymization</p>
+        <div class="story-actions">
+          <a class="btn btn-primary" href="/about#simulation">Try the simulation <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="/documentation">Explore documentation <span class="btn-arrow" aria-hidden="true">→</span></a>
+        </div>
       </article>
 
       <article class="story-slide" id="slide-2" data-slide-panel="1" aria-labelledby="title-2" aria-hidden="true">
-        <p class="story-index">02 / Neural Recognition</p>
-        <h2 class="story-title" id="title-2" data-title="Neural Detection">Neural Detection</h2>
+        <p class="story-index">02 / Detection</p>
+        <h2 class="story-title" id="title-2" data-title="Smart Detection">Smart Detection</h2>
         <p class="story-copy">
-          Context-aware entity parsing looks beyond isolated keywords to help distinguish sensitive information
-          from ordinary text, with people kept in control of the final review.
+          Once a document is uploaded, AI and NLP read it in context and flag people, IDs, emails, phone numbers,
+          addresses, organizations and dates, with no manual searching.
         </p>
-        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> Contextual entity recognition</p>
+        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> AI and NLP entity detection</p>
+        <div class="story-actions">
+          <a class="btn btn-primary" href="/about#simulation">See detection in action <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="/about#tech">Technology used <span class="btn-arrow" aria-hidden="true">→</span></a>
+        </div>
       </article>
 
       <article class="story-slide" id="slide-3" data-slide-panel="2" aria-labelledby="title-3" aria-hidden="true">
-        <p class="story-index">03 / Access Protocol</p>
-        <h2 class="story-title" id="title-3" data-title="Zero-Trust Matrix">Zero-Trust Matrix</h2>
+        <p class="story-index">03 / Replacement</p>
+        <h2 class="story-title" id="title-3" data-title="Synthetic Data">Synthetic Data</h2>
         <p class="story-copy">
-          Role-based permissions shape each document action, while an auditable workflow governs requests for
-          originals and helps preserve a clear chain of responsibility.
+          Each detected detail is swapped for realistic synthetic data. The document stays readable and useful,
+          and the real values never travel with it.
         </p>
-        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> Role-based access and traceable actions</p>
+        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> One method: synthetic data replacement</p>
+        <div class="story-actions">
+          <a class="btn btn-primary" href="/about#simulation">Run the simulation <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="/documentation#workflow">How it works <span class="btn-arrow" aria-hidden="true">→</span></a>
+        </div>
       </article>
 
       <article class="story-slide" id="slide-4" data-slide-panel="3" aria-labelledby="title-4" aria-hidden="true">
-        <p class="story-index">04 / Compliance Assurance</p>
-        <h2 class="story-title" id="title-4" data-title="Immutable Trust">Immutable Trust</h2>
+        <p class="story-index">04 / Control</p>
+        <h2 class="story-title" id="title-4" data-title="Controlled Access">Controlled Access</h2>
         <p class="story-copy">
-          Integrity checks and controlled access are part of the SECURA project direction: make document
-          handling reviewable, and make changes easier to account for.
+          The original file stays locked. A request goes to its owner, then to a Security Officer, on a private
+          network built for review.
         </p>
-        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> Data-integrity workflow concept</p>
+        <p class="story-note"><span class="note-mark" aria-hidden="true"></span> Role-based access and an approval workflow</p>
+        <div class="story-actions">
+          <a class="btn btn-primary" href="/documentation#topology">Explore the network <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="/contact">Meet the team <span class="btn-arrow" aria-hidden="true">→</span></a>
+        </div>
       </article>
     </main>
 
+    <div class="slide-count" aria-hidden="true">
+      <span class="slide-count-now" id="slide-now">01</span>
+      <span class="slide-count-total">/ 04</span>
+      <span class="slide-count-label" id="slide-label">The Challenge</span>
+    </div>
     <div class="scroll-cue" aria-hidden="true">
       <span class="scroll-cue-line"></span>
       <span>Scroll to explore</span>
-    </div>
-    <div class="scene-label" aria-hidden="true">
-      SECURA / SECURITY CONCEPT SHOWCASE
-      <strong id="scene-state">INITIALIZING VISUAL CORE</strong>
     </div>
     <button
       class="motion-toggle"
@@ -1008,27 +1099,20 @@
       The 3D scene could not start in this browser. The SECURA story remains available above.
     </p>
 
-    <dialog class="access-dialog" id="access-dialog" aria-labelledby="dialog-title">
-      <p class="dialog-kicker">SECURA / PLATFORM ACCESS</p>
-      <h2 id="dialog-title">Access by deployment</h2>
-      <p>
-        This page is a project showcase, not a live sign-in. Platform access depends on an organization's
-        configured SECURA deployment.
-      </p>
-      <button class="dialog-close" id="close-access" type="button">CLOSE</button>
-    </dialog>
-
+    <script type="module" src="/scripts/transitions.js"></script>
+    <script type="module" src="/scripts/nav.js"></script>
     <script type="module">
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const canvas = document.querySelector("#webgl");
-      const stateLabel = document.querySelector("#scene-state");
       const errorNotice = document.querySelector("#webgl-error");
       const slides = [...document.querySelectorAll("[data-slide-panel]")];
+      const slideNow = document.querySelector("#slide-now");
+      const slideLabel = document.querySelector("#slide-label");
+      const slideNames = ["The Challenge", "Detection", "Replacement", "Control"];
       const progressDashes = [...document.querySelectorAll(".progress-dash")];
       const slideAnchors = [...document.querySelectorAll("[data-slide]")];
       const cursorDot = document.querySelector(".cursor-dot");
       const cursorRing = document.querySelector(".cursor-ring");
-      const accessDialog = document.querySelector("#access-dialog");
       const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
       const milestones = [0, 1 / 3, 2 / 3, 1];
@@ -1056,10 +1140,8 @@
             }),
           );
           if (wordIndex === words.length - 1) return [wordElement];
-          const space = document.createElement("span");
-          space.className = "title-space";
-          space.setAttribute("aria-hidden", "true");
-          return [wordElement, space];
+          // A real space, so a wrapped line starts flush with the left edge.
+          return [wordElement, document.createTextNode(" ")];
         });
         title.replaceChildren(...titleContent);
       }
@@ -1127,39 +1209,6 @@
         }
       });
 
-      document.querySelector("#open-access").addEventListener("click", () => {
-        accessDialog.showModal();
-        document.querySelector("#close-access").focus();
-      });
-
-      document.querySelector("#close-access").addEventListener("click", () => {
-        accessDialog.close();
-        document.querySelector("#open-access").focus();
-      });
-
-      accessDialog.addEventListener("click", (event) => {
-        if (event.target === accessDialog) accessDialog.close();
-      });
-
-      accessDialog.addEventListener("close", () => {
-        document.querySelector("#open-access").focus();
-      });
-
-      accessDialog.addEventListener("cancel", (event) => {
-        event.preventDefault();
-        accessDialog.close();
-      });
-
-      document.addEventListener(
-        "keydown",
-        (event) => {
-          if (event.key !== "Escape" || !accessDialog.open) return;
-          event.preventDefault();
-          accessDialog.close();
-        },
-        true,
-      );
-
       const motionToggle = document.querySelector("#motion-toggle");
       motionToggle.hidden = reducedMotion;
       let ambientMotionPaused = false;
@@ -1181,11 +1230,10 @@
       });
 
       try {
-        THREE = await import("https://unpkg.com/three@0.160.0/build/three.module.js");
+        THREE = await import("three");
       } catch (error) {
         console.error("SECURA could not load the Three.js visual core.", error);
         errorNotice.hidden = false;
-        stateLabel.textContent = "VISUAL CORE UNAVAILABLE";
       }
 
       let renderer;
@@ -1490,7 +1538,7 @@
           alpha: false,
           powerPreference: "high-performance",
         });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.65));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 900 ? 1.25 : 1.5));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1511,7 +1559,6 @@
         createParticles();
         createEnvironment();
         initialized = true;
-        stateLabel.textContent = "VISUAL CORE READY";
       }
 
       function updateStory(progress) {
@@ -1528,6 +1575,9 @@
           slide.setAttribute("aria-hidden", String(!isCurrent));
           slide.style.visibility = opacity > 0.01 ? "visible" : "hidden";
         });
+
+        slideNow.textContent = String(activeIndex + 1).padStart(2, "0");
+        slideLabel.textContent = slideNames[activeIndex];
 
         progressDashes.forEach((dash, index) => {
           if (index === activeIndex) dash.setAttribute("aria-current", "step");
@@ -1639,13 +1689,11 @@
           canvas.addEventListener("webglcontextlost", (event) => {
             event.preventDefault();
             errorNotice.hidden = false;
-            stateLabel.textContent = "VISUAL CORE INTERRUPTED";
           });
           animate();
         } catch (error) {
           console.error("SECURA WebGL initialization failed.", error);
           errorNotice.hidden = false;
-          stateLabel.textContent = "VISUAL CORE UNAVAILABLE";
         }
       }
     </script>

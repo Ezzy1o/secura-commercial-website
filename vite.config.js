@@ -29,6 +29,7 @@ const cleanUrls = () => {
 export default defineConfig({
   plugins: [cleanUrls()],
   build: {
+    chunkSizeWarningLimit: 700, // the lazily loaded Three.js chunk (landing only)
     rollupOptions: {
       input: {
         index: page("./index.html"),

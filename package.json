@@ -6,10 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "typecheck": "node --check scripts/site.js && node --check scripts/about.js && node --check scripts/documentation.js && node --check scripts/contact.js",
+    "typecheck": "node --check scripts/site.js && node --check scripts/about.js && node --check scripts/documentation.js && node --check scripts/transitions.js && node --check scripts/nav.js",
     "preview": "vite preview"
   },
   "devDependencies": {
     "vite": "^8.0.5"
+  },
+  "dependencies": {
+    "lenis": "1.3.27",
+    "three": "0.160.0"
   }
 }

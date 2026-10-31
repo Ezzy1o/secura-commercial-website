@@ -7,15 +7,13 @@
     <title>Contact Us — SECURA</title>
     <meta
       name="description"
-      content="Meet the SECURA Final Year Project team and use the demonstration inquiry form."
+      content="Meet the SECURA Final Year Project team and continue exploring the project."
     />
-    <link rel="icon" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Italiana&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles/fonts.css" />
     <script>
       document.documentElement.classList.add("js");
     </script>
@@ -35,26 +33,23 @@
 
     <header class="site-header">
       <a class="brand-lockup" href="/" aria-label="SECURA home">
-        <span class="brand-name">SECURA</span>
-        <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+        <img class="brand-logo" src="/assets/secura-logo-sm.png" width="180" height="66" alt="" />
       </a>
-      <nav class="main-nav" aria-label="Primary">
+      <nav class="main-nav" id="primary-nav" aria-label="Primary">
         <a class="nav-link" href="/about">ABOUT</a>
         <a class="nav-link" href="/documentation">DOCUMENTATION</a>
         <a class="nav-link" href="/contact" aria-current="page">CONTACT US</a>
       </nav>
-      <div class="header-action">
-        <button class="access-button" id="open-access" type="button" aria-haspopup="dialog" aria-controls="access-dialog">
-          ACCESS PLATFORM
-        </button>
-      </div>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
     </header>
 
     <main id="main">
       <section class="page-hero">
         <div class="shell">
-          <p class="eyebrow">03 / The people behind the project</p>
-          <h1 class="page-title" data-split>Meet Our Members</h1>
+          <p class="eyebrow">03 / Contact</p>
+          <h1 class="page-title" data-split>Meet the Team Behind SECURA</h1>
           <p class="lead">
             A multidisciplinary Final Year Project team combining software development, AI and NLP, and network security
             responsibilities.
@@ -62,98 +57,93 @@
         </div>
       </section>
 
-      <!-- Team -->
-      <section class="section">
+      <!-- Supervisor -->
+      <section class="section" style="padding-top: 0">
         <div class="shell">
+          <article class="card supervisor reveal">
+            <div class="supervisor-photo"><img src="/assets/team/luqman-hakim.webp" alt="Portrait of Muhammad Luqman Hakim Bin Mohd Sabani" width="320" height="320" decoding="async" /></div>
+            <div class="supervisor-body">
+              <p class="member-role is-lead">Project Supervisor</p>
+              <h2>Muhammad Luqman Hakim Bin Mohd Sabani</h2>
+              <p>Provides academic guidance and review for the SECURA Final Year Project.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Team -->
+      <section class="section" style="padding-top: 0" aria-labelledby="team-title">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow">Project team</p>
+            <h2 id="team-title">Four roles, one platform</h2>
+          </div>
           <div class="team-grid">
-            <article class="card team-card is-lead reveal">
-              <div class="avatar"><img src="/assets/team/luqman-hakim.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
-              <div>
-                <span class="badge">Supervisor</span>
-                <h3>Muhammad Luqman Hakim Bin Mohd Sabani</h3>
-                <p>Project Supervisor</p>
-              </div>
-            </article>
-            <article class="card team-card reveal">
-              <div class="avatar"><img src="/assets/team/irfan-hakeem.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
-              <div>
+            <article class="card member reveal">
+              <div class="member-photo"><img src="/assets/team/irfan-hakeem.webp" alt="Portrait of Muhammad Irfan Hakeem Bin Nizwan Khairis" width="320" height="400" loading="lazy" decoding="async" /></div>
+              <div class="member-body">
+                <p class="member-role">Project Manager &amp; Backend Developer</p>
                 <h3>Muhammad Irfan Hakeem Bin Nizwan Khairis</h3>
-                <p>Project Manager and Backend Developer</p>
+                <p class="member-focus">Project coordination, server logic and document processing.</p>
               </div>
             </article>
-            <article class="card team-card reveal" style="--reveal-delay: 70ms">
-              <div class="avatar"><img src="/assets/team/irfan-zaki.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
-              <div>
+            <article class="card member reveal" style="--reveal-delay: 70ms">
+              <div class="member-photo"><img src="/assets/team/irfan-zaki.webp" alt="Portrait of Muhammad Irfan Bin Mohd Zaki" width="320" height="400" loading="lazy" decoding="async" /></div>
+              <div class="member-body">
+                <p class="member-role">Security &amp; Network Engineer</p>
                 <h3>Muhammad Irfan Bin Mohd Zaki</h3>
-                <p>Security and Network Engineer</p>
+                <p class="member-focus">The private network, monitoring and security testing.</p>
               </div>
             </article>
-            <article class="card team-card reveal" style="--reveal-delay: 140ms">
-              <div class="avatar"><img src="/assets/team/adriana-ulfah.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
-              <div>
+            <article class="card member reveal" style="--reveal-delay: 140ms">
+              <div class="member-photo"><img src="/assets/team/adriana-ulfah.webp" alt="Portrait of Adriana Ulfah Binti Mohd Rashdan" width="320" height="400" loading="lazy" decoding="async" /></div>
+              <div class="member-body">
+                <p class="member-role">AI &amp; NLP Engineer</p>
                 <h3>Adriana Ulfah Binti Mohd Rashdan</h3>
-                <p>AI and NLP Engineer</p>
+                <p class="member-focus">Sensitive-entity detection and synthetic data replacement.</p>
               </div>
             </article>
-            <article class="card team-card reveal" style="--reveal-delay: 210ms">
-              <div class="avatar"><img src="/assets/team/aeman-izzuddin.jpg" alt="" width="76" height="76" loading="lazy" decoding="async" /></div>
-              <div>
-                <h3>Muhammad Aeman Izzuddin Bin Mohd Yusuff</h3>
-                <p>Frontend Developer</p>
+            <article class="card member reveal" style="--reveal-delay: 210ms">
+              <div class="member-photo"><img src="/assets/team/aeman-izzuddin.webp" alt="Portrait of Muhammad Aeman Izzuddin Bin Mohd Yusoff" width="320" height="400" loading="lazy" decoding="async" /></div>
+              <div class="member-body">
+                <p class="member-role">Frontend Developer</p>
+                <h3>Muhammad Aeman Izzuddin Bin Mohd Yusoff</h3>
+                <p class="member-focus">The user interfaces, interaction design and this website.</p>
               </div>
             </article>
           </div>
         </div>
       </section>
 
-      <!-- Inquiry -->
-      <section class="section">
-        <div class="shell inquiry">
-          <div class="split-copy reveal">
-            <p class="eyebrow">Project inquiries</p>
-            <h2>Any Inquiries?</h2>
-            <p>
-              Interested in the SECURA concept, architecture, or project scope? Use this demonstration form to prepare
-              an inquiry for the team.
-            </p>
-            <div class="note">
-              <span class="note-mark" aria-hidden="true"></span>
-              <p>Public contact details have intentionally not been published. Approved team information can be added later.</p>
-            </div>
+      <!-- Continue exploring -->
+      <section class="section next-stage" aria-labelledby="next-title">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow">Continue exploring</p>
+            <h2 id="next-title">See the project in action</h2>
+            <p>The best way to understand SECURA is to try it. Start with the demo, or read how the system is built.</p>
           </div>
-
-          <form class="form reveal" id="inquiry-form" style="--reveal-delay: 100ms" novalidate>
-            <div class="form-row">
-              <div class="field">
-                <label for="name">Name</label>
-                <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" aria-describedby="name-error" />
-                <span class="field-error" id="name-error" role="alert" hidden></span>
-              </div>
-              <div class="field">
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" aria-describedby="email-error" />
-                <span class="field-error" id="email-error" role="alert" hidden></span>
-              </div>
-            </div>
-            <div class="field">
-              <label for="subject">Subject</label>
-              <input id="subject" name="subject" type="text" placeholder="What would you like to discuss?" aria-describedby="subject-error" />
-              <span class="field-error" id="subject-error" role="alert" hidden></span>
-            </div>
-            <div class="field">
-              <label for="message">Message</label>
-              <textarea id="message" name="message" placeholder="Write your message here" aria-describedby="message-error"></textarea>
-              <span class="field-error" id="message-error" role="alert" hidden></span>
-            </div>
-            <div class="form-foot">
-              <button class="btn btn-primary" type="submit">CHECK FORM <span class="btn-arrow" aria-hidden="true">→</span></button>
-              <p>Demonstration form only. No message is transmitted or stored.</p>
-            </div>
-            <div class="form-status" id="form-status" role="status" tabindex="-1" hidden>
-              <span aria-hidden="true">✓</span>
-              <p>Your details are valid. This is a front-end demonstration, so no message has been sent.</p>
-            </div>
-          </form>
+          <div class="next-grid">
+            <a class="card next-card reveal" href="/about#simulation">
+              <span class="next-n" aria-hidden="true">01</span>
+              <h3>Try the simulation</h3>
+              <p>Watch a sample document be scanned, detected and anonymized with synthetic data.</p>
+              <span class="next-go">Open demo <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="card next-card reveal" href="/documentation#topology" style="--reveal-delay: 70ms">
+              <span class="next-n" aria-hidden="true">02</span>
+              <h3>Explore the network</h3>
+              <p>See how the private network, switch and monitoring device fit together.</p>
+              <span class="next-go">View topology <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="card next-card reveal" href="/documentation#interface-user" style="--reveal-delay: 140ms">
+              <span class="next-n" aria-hidden="true">03</span>
+              <h3>Browse the interfaces</h3>
+              <p>Walk through the User, Admin and Security Officer dashboards in full size.</p>
+              <span class="next-go">See interfaces <span aria-hidden="true">→</span></span>
+            </a>
+          </div>
+          <p class="next-note reveal"><span class="note-mark" aria-hidden="true"></span>Public contact details are not published on this showcase.</p>
         </div>
       </section>
     </main>
@@ -162,8 +152,7 @@
       <div class="shell footer-grid">
         <div class="footer-brand">
           <a class="brand-lockup" href="/" aria-label="SECURA home">
-            <span class="brand-name">SECURA</span>
-            <span class="brand-badge">[DEFENSE CORE 2.4]</span>
+            <img class="brand-logo" src="/assets/secura-logo-sm.png" width="180" height="66" alt="" />
           </a>
           <p>
             A secure web platform concept for AI-assisted document anonymization and controlled cross-department
@@ -185,21 +174,10 @@
       </div>
     </footer>
 
-    <dialog class="access-dialog" id="access-dialog" aria-labelledby="dialog-title">
-      <p class="dialog-kicker">SECURA / PLATFORM ACCESS</p>
-      <h2 id="dialog-title">Access by deployment</h2>
-      <p>
-        This page is a project showcase, not a live sign-in. Platform access depends on an organization's configured
-        SECURA deployment.
-      </p>
-      <button class="btn" id="close-access" type="button">CLOSE</button>
-    </dialog>
-
     <div class="cursor-dot" aria-hidden="true"></div>
     <div class="cursor-ring" aria-hidden="true"></div>
 
     <script type="module" src="/scripts/site.js"></script>
-    <script type="module" src="/scripts/contact.js"></script>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>

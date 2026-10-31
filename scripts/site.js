@@ -1,5 +1,9 @@
 // Shared behaviour for About / Documentation / Contact.
 
+import Lenis from "lenis"
+import { settled } from "./transitions.js"
+import "./nav.js"
+
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 const finePointer = window.matchMedia("(pointer: fine)").matches
 
@@ -150,6 +154,8 @@ function initBackground() {
   }
 
   resize()
+  draw(0)
+  canvas.classList.add("is-ready")
 
   if (reducedMotion) {
     draw(0)
@@ -163,9 +169,13 @@ function initBackground() {
 
   window.addEventListener("resize", resize)
   const start = performance.now()
+  // The shader is slow-moving, so 30fps looks identical and halves the GPU work.
+  let last = 0
   const frame = (now) => {
-    draw((now - start) / 1000)
     requestAnimationFrame(frame)
+    if (now - last < 32) return
+    last = now
+    draw((now - start) / 1000)
   }
   requestAnimationFrame(frame)
 }
@@ -218,23 +228,32 @@ function initCursor() {
   })
 }
 
-/* ── Access dialog ─────────────────────────────────────────────────────── */
+/* ── Smooth scroll (Lenis) ─────────────────────────────────────────────── */
 
-function initDialog() {
-  const dialog = document.getElementById("access-dialog")
-  const open = document.getElementById("open-access")
-  const close = document.getElementById("close-access")
-  if (!dialog || !open || !close) return
+// Wheel scrolling is eased; touch, keyboard and scrollbar-less dragging stay native.
+// Skipped for reduced motion. The landing page has its own scroll-driven scene and does not use this.
+let lenis = null
 
-  open.addEventListener("click", () => {
-    dialog.showModal()
-    close.focus()
+function initSmoothScroll() {
+  if (reducedMotion) return
+  lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, autoRaf: true })
+
+  // Any page dialog can pause page scrolling by dispatching `secura:modal` with `detail: true | false`.
+  window.addEventListener("secura:modal", (event) => (event.detail ? lenis.stop() : lenis.start()))
+
+  // In-page links glide to the target and stop below the fixed header (or the target's scroll-margin).
+  document.addEventListener("click", (event) => {
+    const link = event.target instanceof Element ? event.target.closest('a[href^="#"]') : null
+    const id = link ? decodeURIComponent(link.getAttribute("href").slice(1)) : ""
+    const target = id ? document.getElementById(id) : null
+    if (!target) return
+    event.preventDefault()
+    // Lenis already honours the target's CSS scroll-margin; only add a header offset when there is none.
+    const hasMargin = Number.parseFloat(getComputedStyle(target).scrollMarginTop) > 0
+    const header = document.querySelector(".site-header")?.offsetHeight ?? 0
+    lenis.scrollTo(target, { offset: hasMargin ? 0 : -(header + 16), duration: 1.3 })
+    history.replaceState(null, "", `#${id}`)
   })
-  close.addEventListener("click", () => dialog.close())
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) dialog.close()
-  })
-  dialog.addEventListener("close", () => open.focus())
 }
 
 /* ── Headline letter animation (same effect as the landing) ────────────── */
@@ -269,6 +288,17 @@ function initTitles() {
 
 /* ── Scroll reveal ─────────────────────────────────────────────────────── */
 
+// Once an element has finished revealing, drop the reveal styles. They would otherwise keep
+// overriding the element's own hover transform and transition (the lift and glow on cards).
+function settle(item) {
+  const done = () => item.classList.remove("reveal")
+  item.addEventListener("transitionend", (event) => {
+    if (event.target === item && event.propertyName === "transform") done()
+  })
+  const delay = Number.parseFloat(getComputedStyle(item).transitionDelay) * 1000 || 0
+  setTimeout(done, delay + 1300) // in case the transition never fires (hidden tab)
+}
+
 function initReveal() {
   const items = document.querySelectorAll(".reveal")
   if (reducedMotion || typeof IntersectionObserver !== "function") {
@@ -281,6 +311,7 @@ function initReveal() {
         if (!entry.isIntersecting) continue
         entry.target.classList.add("is-visible")
         observer.unobserve(entry.target)
+        settle(entry.target)
       }
     },
     { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
@@ -321,9 +352,9 @@ function initStats() {
   })
 }
 
-initBackground()
+initSmoothScroll()
+settled.then(initBackground)
 initCursor()
-initDialog()
 initTitles()
 initReveal()
 initStats()
