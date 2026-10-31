@@ -187,10 +187,23 @@ function initCursor() {
   const ring = document.querySelector(".cursor-ring")
   if (!dot || !ring || !finePointer || reducedMotion) return
 
-  let x = window.innerWidth / 2
-  let y = window.innerHeight / 2
+  // Start where the pointer was on the previous page, so the ring does not fly in from the middle of the screen
+  // after every navigation.
+  let saved = null
+  try {
+    saved = JSON.parse(sessionStorage.getItem("secura:pointer") ?? "null")
+  } catch {}
+  let x = Number.isFinite(saved?.[0]) ? saved[0] : window.innerWidth / 2
+  let y = Number.isFinite(saved?.[1]) ? saved[1] : window.innerHeight / 2
   let ringX = x
   let ringY = y
+  dot.style.translate = `${x}px ${y}px`
+  ring.style.translate = `${x}px ${y}px`
+  window.addEventListener("pagehide", () => {
+    try {
+      sessionStorage.setItem("secura:pointer", JSON.stringify([x, y]))
+    } catch {}
+  })
 
   window.addEventListener(
     "pointermove",
@@ -200,8 +213,7 @@ function initCursor() {
       }
       x = event.clientX
       y = event.clientY
-      dot.style.left = `${x}px`
-      dot.style.top = `${y}px`
+      dot.style.translate = `${x}px ${y}px`
     },
     { passive: true },
   )
@@ -209,8 +221,7 @@ function initCursor() {
   const follow = () => {
     ringX += (x - ringX) * 0.2
     ringY += (y - ringY) * 0.2
-    ring.style.left = `${ringX}px`
-    ring.style.top = `${ringY}px`
+    ring.style.translate = `${ringX}px ${ringY}px`
     requestAnimationFrame(follow)
   }
   requestAnimationFrame(follow)

@@ -35,3 +35,15 @@ if (header && toggle && nav) {
     if (event.matches) setOpen(false)
   })
 }
+
+// Keep --header-h equal to the real header height, so the sticky contents bar always sits flush
+// beneath it. The CSS values already match; this only corrects them if the header ever changes.
+if (header) {
+  const sync = () => {
+    const height = Math.round(header.getBoundingClientRect().height)
+    if (height !== Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h"))) {
+      document.documentElement.style.setProperty("--header-h", `${height}px`)
+    }
+  }
+  new ResizeObserver(sync).observe(header)
+}

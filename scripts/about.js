@@ -157,6 +157,18 @@ function initSimulation() {
     paper.append(row)
   }
 
+  // Original and synthetic values differ in length, so the document wraps differently in each view. Reserve
+  // the taller of the two so the sections below do not jump when the text is swapped.
+  function lockHeight() {
+    paper.style.minHeight = ""
+    const shown = ENTITIES.map((e) => e.el.textContent)
+    let tallest = paper.offsetHeight
+    for (const e of ENTITIES) e.el.textContent = e.fake
+    tallest = Math.max(tallest, paper.offsetHeight)
+    ENTITIES.forEach((e, i) => (e.el.textContent = shown[i]))
+    paper.style.minHeight = `${tallest}px`
+  }
+
   const chips = Object.entries(TYPES).map(([key, type]) => {
     const chip = document.createElement("button")
     chip.type = "button"
@@ -357,7 +369,7 @@ function initSimulation() {
     state.upload = stage >= 0 ? 1 : 0
     if (stage < 1) state.selected = null
     root.style.setProperty("--upload", String(state.upload))
-    doc.style.setProperty("--beam", "0")
+    doc.style.setProperty("--beam-y", "0px")
     paintAll()
   }
 
@@ -404,7 +416,7 @@ function initSimulation() {
     await tween(
       2600,
       (p) => {
-        doc.style.setProperty("--beam", p.toFixed(4))
+        doc.style.setProperty("--beam-y", `${(p * doc.clientHeight).toFixed(1)}px`)
         for (const e of ENTITIES) if (!state.found.has(e.index) && p >= marks[e.index]) foundEntity(e)
       },
       alive,
@@ -472,6 +484,15 @@ function initSimulation() {
   paper.addEventListener("pointerover", pick)
   paper.addEventListener("focusin", pick)
   paper.addEventListener("click", pick)
+
+  lockHeight()
+  document.fonts?.ready.then(lockHeight) // the web fonts change how the text wraps
+  let lastWidth = paper.clientWidth
+  new ResizeObserver(() => {
+    if (paper.clientWidth === lastWidth) return
+    lastWidth = paper.clientWidth
+    lockHeight()
+  }).observe(paper)
 
   paintAll()
 
