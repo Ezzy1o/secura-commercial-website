@@ -76,16 +76,16 @@
                 <span class="hc-v"><span class="hc-old">Aisyah binti Rahman</span><span class="hc-new">Nurul Izzati binti Hamid</span></span>
               </div>
               <div class="hc-row" style="--c: 167 139 250; --d: 0.8s">
-                <span class="hc-k">ID number</span>
+                <span class="hc-k">IC number</span>
                 <span class="hc-v"><span class="hc-old">900214-14-5566</span><span class="hc-new">880731-10-4412</span></span>
               </div>
-              <div class="hc-row" style="--c: 251 191 36; --d: 1.3s">
+              <div class="hc-row" style="--c: 251 113 133; --d: 1.3s">
+                <span class="hc-k">Email</span>
+                <span class="hc-v"><span class="hc-old">aisyah.rahman@example.com</span><span class="hc-new">izzati.hamid@example.org</span></span>
+              </div>
+              <div class="hc-row" style="--c: 251 191 36; --d: 1.8s">
                 <span class="hc-k">Phone</span>
                 <span class="hc-v"><span class="hc-old">+60 12-345 6789</span><span class="hc-new">+60 17-882 4410</span></span>
-              </div>
-              <div class="hc-row" style="--c: 52 211 153; --d: 1.8s">
-                <span class="hc-k">Address</span>
-                <span class="hc-v"><span class="hc-old">12, Jalan Mawar 3, Petaling Jaya</span><span class="hc-new">88, Jalan Kenanga 5, Shah Alam</span></span>
               </div>
             </div>
             <div class="hero-card-foot"><i></i>Replaced with synthetic data before sharing</div>
@@ -122,8 +122,9 @@
             <p class="eyebrow">Interactive demo</p>
             <h2 id="sim-title">Simulation Anonymize Document</h2>
             <p>
-              Run a fictional HR document through SECURA's four-stage workflow. Choose which categories to protect,
-              then compare the original with the copy where sensitive values are replaced by synthetic data.
+              Run a fictional HR document through SECURA's four-stage workflow. It protects four kinds of personal
+              data: names, IC numbers, email addresses and phone numbers. Choose which to protect, then compare the
+              original with the copy where they are replaced by synthetic data.
             </p>
           </div>
 
@@ -204,6 +205,7 @@
 
                 <section class="sim-panel sim-inspector" aria-labelledby="sim-inspect-title">
                   <h3 id="sim-inspect-title">Inspector</h3>
+                  <p class="sim-help">Hover or tap a detected item to see how it was classified.</p>
                   <div id="sim-inspector" aria-live="polite"></div>
                 </section>
               </div>
@@ -213,7 +215,7 @@
               <dl class="sim-metrics">
                 <div><dt>Detected</dt><dd id="m-found">0</dd></div>
                 <div><dt>Protected</dt><dd id="m-safe">0</dd></div>
-                <div><dt>Left visible</dt><dd id="m-kept">0</dd></div>
+                <div><dt>Exposed</dt><dd id="m-kept">0</dd></div>
               </dl>
               <div class="sim-share">
                 <div class="sim-share-copy">

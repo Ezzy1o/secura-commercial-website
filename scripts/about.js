@@ -6,14 +6,12 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matc
 
 /* ── Sample data ───────────────────────────────────────────────────────── */
 
+// The four categories SECURA protects: names, IC numbers, email addresses and phone numbers.
 const TYPES = {
-  person: { label: "Person" },
-  id: { label: "ID number" },
+  person: { label: "Name" },
+  id: { label: "IC number" },
   email: { label: "Email" },
   phone: { label: "Phone" },
-  address: { label: "Address" },
-  org: { label: "Organization" },
-  date: { label: "Date" },
 }
 
 // SECURA uses a single anonymization method: synthetic data replacement.
@@ -30,38 +28,17 @@ const ent = (type, value, fake, confidence) => {
 
 const DOCUMENT = [
   { kind: "title", parts: ["HR case summary"] },
-  { kind: "meta", parts: ["Ref. HR-2026-0417 · Filed ", ent("date", "14 April 2026", "02 June 2026", 96)] },
+  { kind: "meta", parts: ["Ref. HR-2026-0417 · Filed 14 April 2026"] },
   { kind: "field", label: "Employee", parts: [ent("person", "Aisyah binti Rahman", "Nurul Izzati binti Hamid", 99)] },
-  { kind: "field", label: "ID number", parts: [ent("id", "900214-14-5566", "880731-10-4412", 99)] },
-  { kind: "field", label: "Employer", parts: [ent("org", "Meridian Logistics Sdn Bhd", "Harbor Freight Sdn Bhd", 94)] },
-  {
-    kind: "field",
-    label: "Contact",
-    parts: [
-      ent("email", "aisyah.rahman@example.com", "izzati.hamid@example.org", 100),
-      " · ",
-      ent("phone", "+60 12-345 6789", "+60 17-882 4410", 98),
-    ],
-  },
-  {
-    kind: "field",
-    label: "Address",
-    parts: [
-      ent(
-        "address",
-        "12, Jalan Mawar 3, Taman Bunga, 47000 Petaling Jaya, Selangor",
-        "88, Jalan Kenanga 5, Taman Indah, 40000 Shah Alam, Selangor",
-        93,
-      ),
-    ],
-  },
+  { kind: "field", label: "IC number", parts: [ent("id", "900214-14-5566", "880731-10-4412", 99)] },
+  { kind: "field", label: "Email", parts: [ent("email", "aisyah.rahman@example.com", "izzati.hamid@example.org", 100)] },
+  { kind: "field", label: "Phone", parts: [ent("phone", "+60 12-345 6789", "+60 17-882 4410", 98)] },
+  { kind: "field", label: "Department", parts: ["Payroll"] },
   { kind: "heading", parts: ["Summary"] },
   {
     kind: "text",
     parts: [
-      "On ",
-      ent("date", "3 March 2026", "21 May 2026", 95),
-      ", ",
+      "On 3 March 2026, ",
       ent("person", "Aisyah", "Nurul", 97),
       " reported a payroll discrepancy to her line manager, ",
       ent("person", "Daniel Lim", "Farid Hakim", 98),
@@ -256,7 +233,7 @@ function initSimulation() {
     requestNote.textContent = !state.complete
       ? "Unlocks once the anonymized copy is shared."
       : state.requested
-        ? "Sent to the Security Officer for review. Simulation only, nothing was sent."
+        ? "Sent to the Security Officer. Simulation only."
         : "Access needs an approved request from the Security Officer."
   }
 
@@ -292,8 +269,8 @@ function initSimulation() {
         : `Stage 3 of 4 · ${safe} of ${total} items protected.`
     }
     return safe === 0
-      ? "Stage 4 of 4 · No categories are protected, so the shared copy still exposes everything."
-      : "Stage 4 of 4 · The anonymized copy is ready for authorized departments. The original stays locked."
+      ? "Stage 4 of 4 · Nothing is protected, so the shared copy exposes everything."
+      : "Stage 4 of 4 · Anonymized copy shared. The original stays locked."
   }
 
   function paintStatus() {
@@ -303,28 +280,49 @@ function initSimulation() {
     fileEl.textContent = `${FILE_NAME} · ${suffix}`
   }
 
+  // An empty inspector keeps the shape of a filled one, so the panel does not change height.
+  const emptyInspector = (label) => `
+    <div class="insp-head"><span class="insp-type is-empty">${label}</span></div>
+    <dl class="insp-list is-empty" aria-hidden="true">
+      ${["Confidence", "Policy", "Result", "Synthetic", "Original"].map((name) => `<div><dt>${name}</dt><dd>—</dd></div>`).join("")}
+    </dl>`
+
+  const filledInspector = (entity, converted, hidden) => `
+    <div class="insp-head"><span class="insp-type" data-type="${entity.type}">${esc(TYPES[entity.type].label)}</span></div>
+    <dl class="insp-list">
+      <div><dt>Confidence</dt><dd><span class="insp-meter" aria-hidden="true"><i style="width:${entity.confidence}%"></i></span>${entity.confidence}%</dd></div>
+      <div><dt>Policy</dt><dd>Protect</dd></div>
+      <div><dt>Result</dt><dd>${converted ? "Replaced with synthetic data" : "Pending"}</dd></div>
+      ${converted ? `<div><dt>Synthetic</dt><dd>${esc(entity.fake)}</dd></div>` : ""}
+      <div><dt>Original</dt><dd>${hidden ? "Hidden in the shared copy" : esc(entity.value)}</dd></div>
+    </dl>`
+
   function paintInspector() {
     const entity = ENTITIES[state.selected]
     if (!entity) {
-      inspector.innerHTML = `<p class="sim-hint">${
-        state.stage < 1
-          ? "Run the simulation to detect sensitive information. Detected items become selectable."
-          : "Hover or focus a highlighted item to see how it was classified."
-      }</p>`
+      inspector.innerHTML = emptyInspector(state.stage < 1 ? "Nothing detected yet" : "No item selected")
       return
     }
     // Only items from enabled categories can be selected, so the policy is always "Protect" here.
     const converted = state.converted.has(entity.index)
     const hidden = state.view === "anonymized" && converted
-    inspector.innerHTML = `
-      <div class="insp-head"><span class="insp-type" data-type="${entity.type}">${esc(TYPES[entity.type].label)}</span></div>
-      <dl class="insp-list">
-        <div><dt>Confidence</dt><dd><span class="insp-meter" aria-hidden="true"><i style="width:${entity.confidence}%"></i></span>${entity.confidence}%</dd></div>
-        <div><dt>Policy</dt><dd>Protect</dd></div>
-        <div><dt>Result</dt><dd>${converted ? "Replaced with synthetic data" : "Pending"}</dd></div>
-        ${converted ? `<div><dt>Synthetic</dt><dd>${esc(entity.fake)}</dd></div>` : ""}
-        <div><dt>Original</dt><dd>${hidden ? "Hidden in the shared copy" : esc(entity.value)}</dd></div>
-      </dl>`
+    inspector.innerHTML = filledInspector(entity, converted, hidden)
+  }
+
+  // Long values (an email address) wrap in a narrow column, which would make the panel grow and push the
+  // content below it. Measure the tallest case, a fully filled row with the original shown, and reserve it.
+  function lockInspector() {
+    const shown = inspector.innerHTML
+    inspector.style.minHeight = ""
+    let tallest = 0
+    for (const entity of ENTITIES) {
+      inspector.innerHTML = filledInspector(entity, true, false)
+      tallest = Math.max(tallest, inspector.offsetHeight)
+    }
+    inspector.innerHTML = emptyInspector("Nothing detected yet")
+    tallest = Math.max(tallest, inspector.offsetHeight)
+    inspector.innerHTML = shown
+    inspector.style.minHeight = `${tallest}px`
   }
 
   function paintAll() {
@@ -485,16 +483,20 @@ function initSimulation() {
   paper.addEventListener("focusin", pick)
   paper.addEventListener("click", pick)
 
-  lockHeight()
-  document.fonts?.ready.then(lockHeight) // the web fonts change how the text wraps
+  paintAll()
+
+  const lockLayout = () => {
+    lockHeight()
+    lockInspector()
+  }
+  lockLayout()
+  document.fonts?.ready.then(lockLayout) // the web fonts change how the text wraps
   let lastWidth = paper.clientWidth
   new ResizeObserver(() => {
     if (paper.clientWidth === lastWidth) return
     lastWidth = paper.clientWidth
-    lockHeight()
+    lockLayout()
   }).observe(paper)
-
-  paintAll()
 
   // Play once when the demo first comes into view.
   if (!reducedMotion && typeof IntersectionObserver === "function") {

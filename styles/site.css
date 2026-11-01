@@ -1121,18 +1121,6 @@ main {
   --c: 251 191 36;
 }
 
-.sim [data-type="address"] {
-  --c: 52 211 153;
-}
-
-.sim [data-type="org"] {
-  --c: 251 146 60;
-}
-
-.sim [data-type="date"] {
-  --c: 232 121 249;
-}
-
 /* Stage tracker */
 .sim-steps {
   display: flex;
@@ -1582,7 +1570,9 @@ main {
 }
 
 .sim-status {
-  min-height: 5.3em; /* up to three lines, so the text changing never moves what is below */
+  /* Two lines of text plus the bottom padding (border-box), so the text changing never moves what is below.
+     The narrowest phones need a third line, see the max-width: 360px block. */
+  min-height: calc(3.4em + 18px);
   padding: 0 clamp(14px, 2vw, 22px) 18px;
   color: #d6cfe4;
   font-family: var(--mono);
@@ -1623,9 +1613,10 @@ main {
   line-height: 1.5;
 }
 
+/* Four categories sit in an even 2 x 2 grid, with each count pushed to the chip's right edge. */
 .sim-chips {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -1646,6 +1637,7 @@ main {
 }
 
 .sim-chip b {
+  margin-left: auto;
   font-family: var(--mono);
   font-size: var(--fs-label);
 }
@@ -1723,17 +1715,17 @@ main {
   line-height: 1.6;
 }
 
-/* The details list varies in height with the selected value (a long address wraps). Reserve the tallest
-   case so the panels below never jump while the demo runs or the pointer moves over the text. */
-#sim-inspector {
-  min-height: 20rem;
+/* An empty inspector shows the same rows as a filled one, and about.js reserves the tallest filled height
+   (set inline as min-height), so the panel keeps its size while the demo runs or the pointer moves over text. */
+.insp-type.is-empty {
+  border-color: var(--line-strong);
+  background: transparent;
+  color: var(--muted);
 }
 
-.sim-hint {
+.insp-list.is-empty dd {
   color: var(--muted);
-  font-size: var(--fs-small);
-  line-height: 1.6;
-  margin-top: 8px;
+  opacity: 0.55;
 }
 
 .insp-head {
@@ -1907,6 +1899,13 @@ main {
 .sim-share-orig span {
   color: var(--muted);
   font-size: var(--fs-small);
+}
+
+/* The note changes with the state; two lines are reserved so the button and disclaimer never move. */
+.sim-share-orig #sim-request-note {
+  display: block;
+  min-height: 3.1em;
+  line-height: 1.55;
 }
 
 .sim-lock {
@@ -3769,6 +3768,36 @@ html.lenis body {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* Stacked: the inspector sits right under the document, so tapping a value shows its details in view. */
+  .sim-side {
+    display: contents;
+  }
+
+  .sim-viewer {
+    order: 1;
+  }
+
+  .sim-inspector {
+    order: 2;
+  }
+
+  .sim-panel[aria-labelledby="sim-policy-title"] {
+    order: 3;
+  }
+
+  .sim-panel[aria-labelledby="sim-method-title"] {
+    order: 4;
+  }
+
+  .sim-panel,
+  .sim-panel:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sim-result {
+    border-top: 0;
+  }
+
   .sim-viewer {
     border-right: 0;
     border-bottom: 1px solid var(--line);
@@ -4175,6 +4204,12 @@ html.lenis body {
 @media (max-width: 380px) {
   .js .brand-logo {
     height: 34px;
+  }
+}
+
+@media (max-width: 360px) {
+  .sim-status {
+    min-height: calc(5.1em + 18px);
   }
 }
 
