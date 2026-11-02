@@ -28,6 +28,13 @@ const cleanUrls = () => {
 
 export default defineConfig({
   plugins: [cleanUrls()],
+  server: {
+    watch: {
+      // Only the 300 MB 4K master is ignored. Never ignore public/: Vite learns about new public files
+      // through the watcher, so an ignored folder makes new videos come back as HTML (a blank player).
+      ignored: ["**/assets-src/video/**"],
+    },
+  },
   build: {
     chunkSizeWarningLimit: 700, // the lazily loaded Three.js chunk (landing only)
     rollupOptions: {

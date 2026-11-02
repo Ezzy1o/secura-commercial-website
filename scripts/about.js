@@ -544,5 +544,41 @@ function initTech() {
   }
 }
 
+/* ── Commercial video ──────────────────────────────────────────────────── */
+
+const VIDEO_FILES = {
+  // 1080p60, about 28 MB
+  full: { src: "/video/video_secura_commercial.web.mp4", poster: "/video/video_secura_poster.jpg", preload: "metadata" },
+  // 720p30, about 7 MB, and nothing but the small poster loads until play is pressed
+  light: { src: "/video/video_secura_commercial.mobile.mp4", poster: "/video/video_secura_poster.mobile.jpg", preload: "none" },
+}
+
+// Picks the file that suits the device, and if it is missing or cannot be played, swaps the player for a
+// short message instead of a dead black box.
+function initVideo() {
+  const frame = document.getElementById("about-video")
+  const video = frame?.querySelector(":scope > video")
+  if (!frame || !video) return
+  const markMissing = () => frame.classList.add("is-missing")
+  video.addEventListener("error", markMissing)
+
+  // Phones, tablets, slow connections and "Data Saver" get the light copy.
+  const connection = navigator.connection
+  const constrained =
+    window.matchMedia("(max-width: 768px)").matches ||
+    Boolean(connection && (connection.saveData || /^(slow-2g|2g|3g)$/.test(connection.effectiveType || "")))
+  const file = VIDEO_FILES[constrained ? "light" : "full"]
+
+  const source = document.createElement("source")
+  source.type = "video/mp4"
+  source.src = file.src
+  source.addEventListener("error", markMissing)
+  video.poster = file.poster
+  video.preload = file.preload
+  video.append(source)
+  video.load()
+}
+
 initSimulation()
 initTech()
+initVideo()

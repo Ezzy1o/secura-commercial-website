@@ -23,7 +23,7 @@
   --accent: #c084fc; /* technical labels */
   --gutter: 8.3vw;
   --maxw: 1180px;
-  --header-h: 93px; /* the real header height: 20px padding x2 + 52px logo + 1px border */
+  --header-h: 101px; /* the real header height: 18px padding x2 + 64px logo + 1px border */
 
   /* Type scale. Display > H2 > lead > body > small > label; each step is
      visibly distinct so hero headings never compete with supporting text. */
@@ -182,7 +182,7 @@ img {
   grid-template-columns: minmax(190px, 1fr) auto minmax(190px, 1fr);
   align-items: center;
   width: 100%;
-  padding: 20px var(--gutter);
+  padding: 18px var(--gutter);
   border-bottom: 1px solid var(--line);
   background: linear-gradient(180deg, rgba(8, 6, 14, 0.97), rgba(8, 6, 14, 0.9));
   backdrop-filter: blur(14px);
@@ -214,6 +214,11 @@ img {
   display: block;
   width: auto;
   height: 52px;
+}
+
+/* The header logo is the largest mark on the page. The served PNG is 360x132, sharp up to 2x at this size. */
+.site-header .brand-logo {
+  height: 64px;
 }
 
 .main-nav {
@@ -694,6 +699,124 @@ main {
 .stat:nth-child(4n) .stat-tip {
   right: 0;
   left: auto;
+}
+
+/* ── About: commercial video ────────────────────────────────────────────── */
+
+.video-section {
+  padding-bottom: clamp(48px, 7vw, 88px);
+}
+
+.video-frame {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 14px;
+  background: #0a0811;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* Outer glow: a blurred gradient behind the frame that breathes slowly. Only opacity animates. */
+.video-frame::before {
+  position: absolute;
+  z-index: -1;
+  inset: -14px;
+  border-radius: 24px;
+  background: linear-gradient(110deg, #38bdf8, #8b5cf6 55%, #6d28d9);
+  content: "";
+  filter: blur(34px);
+  opacity: 0.32;
+  pointer-events: none;
+  animation: video-glow 6s ease-in-out infinite;
+  will-change: opacity;
+}
+
+@keyframes video-glow {
+  50% {
+    opacity: 0.58;
+  }
+}
+
+.video-frame .hero-card-bar {
+  border-radius: 13px 13px 0 0;
+}
+
+.video-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.video-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: var(--cyan);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.video-tag i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+.video-frame video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0 0 13px 13px;
+  background: #000;
+  object-fit: contain;
+}
+
+.video-missing {
+  display: none;
+  aspect-ratio: 16 / 9;
+  place-items: center;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.video-frame.is-missing video {
+  display: none;
+}
+
+/* Without JavaScript the empty player is hidden and the <noscript> player (with its own source) shows. */
+html:not(.js) .video-frame > video {
+  display: none;
+}
+
+.video-frame.is-missing .video-missing {
+  display: grid;
+}
+
+@media (max-width: 640px) {
+  .video-tag {
+    display: none;
+  }
+
+  .video-frame::before {
+    inset: -8px;
+    filter: blur(24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-frame::before {
+    animation: none;
+  }
 }
 
 /* ── About: hero ────────────────────────────────────────────────────────── */
@@ -3863,7 +3986,11 @@ html.lenis body {
 @media (max-width: 900px) {
   :root {
     --gutter: 6vw;
-    --header-h: 114px;
+    --header-h: 118px; /* without JavaScript: logo row + links row */
+  }
+
+  .site-header .brand-logo {
+    height: 56px;
   }
 
   .site-header {
@@ -3881,7 +4008,7 @@ html.lenis body {
 
   /* With JavaScript the header is one slim row and the links open from a menu button. */
   .js {
-    --header-h: 65px; /* slim header: 10px padding x2 + 44px menu button + 1px border */
+    --header-h: 77px; /* slim header: 10px padding x2 + 56px logo + 1px border */
   }
 
   .js .site-header {
@@ -4112,7 +4239,15 @@ html.lenis body {
     width: 84px;
   }
 
-  .brand-logo {
+  .site-header .brand-logo {
+    height: 46px;
+  }
+
+  .js {
+    --header-h: 67px; /* 10px padding x2 + 46px logo + 1px border */
+  }
+
+  .footer-brand .brand-logo {
     height: 38px;
   }
 
@@ -4202,8 +4337,12 @@ html.lenis body {
 }
 
 @media (max-width: 380px) {
-  .js .brand-logo {
-    height: 34px;
+  .js .site-header .brand-logo {
+    height: 42px;
+  }
+
+  .js {
+    --header-h: 65px; /* the 44px menu button is now the tallest item in the row */
   }
 }
 

@@ -47,6 +47,21 @@ authentication, file upload, form submission, or AI processing.
 - `public/`: web-sized logo (`secura-logo-sm.png`), `favicon.png`, fonts, and the dashboard
   screenshots and team photos as WebP. The lossless originals live in `assets-src/` and are not
   served; re-export them to WebP (quality about 0.92 for the screenshots) if they change.
+- `public/video/`: the About page's commercial video as a web copy (1080p, 60fps, H.264 High @ 4.2,
+  about 28 MB, `faststart`) plus its poster frame. The 4K master (about 300 MB) stays in
+  `assets-src/video/`, which is git-ignored because GitHub rejects files over 100 MB. The page has
+  dark purple gradients, so the encode uses a low CRF with `-tune film` and `aq-mode=3`; a higher
+  CRF shows visible blocks in the glow. To replace the video, re-encode it, for example
+  `ffmpeg -i master.mp4 -vf "scale=1920:-2:flags=lanczos+accurate_rnd+full_chroma_int" -c:v libx264 -preset slow -crf 17 -tune film -x264-params aq-mode=3 -g 120 -pix_fmt yuv420p -profile:v high -level:v 4.2 -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -movflags +faststart -c:a aac -b:a 160k public/video/video_secura_commercial.web.mp4`,
+  and refresh the poster with `-ss 2 -frames:v 1`. Phones and tablets (up to 768px), "Data Saver"
+  and slow connections (2G/3G) get a lighter copy instead, picked in `initVideo()` in
+  `scripts/about.js`: `video_secura_commercial.mobile.mp4` (720p, 30fps, level 3.1, about 7 MB, made
+  with `-vf "scale=1280:-2,fps=30" -crf 22 -level:v 3.1 -b:a 96k`) and a 960px poster, with
+  `preload="none"` so only the poster downloads until play is pressed. The `<video>` in
+  `about.html` deliberately has no `src` or `poster`, otherwise phones would start fetching the large
+  file before the script runs; a `<noscript>` player covers visitors without JavaScript. If the
+  file is missing the page shows a short message instead of an empty player. If the player is blank in `npm run dev`, restart the dev
+  server: Vite lists `public/` files once at start and a file added later is answered with HTML.
 
 New pages must be added to `build.rollupOptions.input` in `vite.config.js`.
 

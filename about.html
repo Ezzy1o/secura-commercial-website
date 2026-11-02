@@ -93,6 +93,26 @@
         </div>
       </section>
 
+      <!-- Commercial video -->
+      <section class="shell reveal video-section" aria-label="SECURA platform overview video">
+        <figure class="video-frame" id="about-video">
+          <div class="hero-card-bar">
+            <span class="sim-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="video-title">SECURA // Platform overview</span>
+            <span class="video-tag" aria-hidden="true"><i></i>Secure</span>
+          </div>
+          <!-- No src or poster here on purpose: about.js picks the 1080p file or the 720p phone file, so a
+               phone never starts downloading the large one. -->
+          <video controls playsinline preload="none">Your browser does not support the video tag.</video>
+          <noscript>
+            <video controls playsinline preload="none" poster="/video/video_secura_poster.jpg">
+              <source src="/video/video_secura_commercial.web.mp4" type="video/mp4" />
+            </video>
+          </noscript>
+          <p class="video-missing" role="status">The overview video is not available right now.</p>
+        </figure>
+      </section>
+
       <!-- Stats -->
       <section class="shell reveal" aria-label="SECURA at a glance" style="padding-bottom: clamp(56px, 8vw, 104px)">
         <div class="stats">

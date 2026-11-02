@@ -19,3 +19,7 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
+
+# The 4K master of the commercial video (~300 MB) is above GitHub's 100 MB limit. Keep it locally only;
+# the web version in public/video/ is the compressed 1080p copy.
+/assets-src/video/
