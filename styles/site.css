@@ -3638,16 +3638,6 @@ html:not(.js) .video-frame > video {
   font-size: 14px;
 }
 
-.footer-tag {
-  display: inline-block;
-  margin-top: 16px;
-  color: var(--cyan);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .footer-nav {
   display: grid;
   align-content: start;
