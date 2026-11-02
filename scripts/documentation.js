@@ -79,15 +79,26 @@ function initToc() {
 
 // A small floating card anchored above (or below, near the top edge) an element. `host` must be a
 // positioned ancestor that does not clip overflow.
+//
+// `show` takes structured `{ label, role }` data and escapes it here at the sink, so no caller can
+// regress into an injection by passing a pre-built HTML string. Every field is rendered through
+// textContent (no innerHTML), keeping the tooltip safe by construction.
 function createTooltip(host) {
   const el = document.createElement("div")
   el.className = "topo-tip"
   el.setAttribute("aria-hidden", "true") // the anchors already carry an accessible label
   host.append(el)
 
+  const strong = document.createElement("strong")
+  const em = document.createElement("em")
+  const small = document.createElement("small")
+  small.textContent = "Click for details"
+  el.append(strong, em, small)
+
   return {
-    show(anchor, html) {
-      el.innerHTML = html
+    show(anchor, { label, role }) {
+      strong.textContent = label
+      em.textContent = role
       const a = anchor.getBoundingClientRect()
       const h = host.getBoundingClientRect()
       // Flip below the anchor when there is no room above, inside the host or under the fixed header.
@@ -352,10 +363,7 @@ function initTopology() {
 
   function previewNode(node) {
     const spec = NODES[node.dataset.node]
-    tooltip.show(
-      node,
-      `<strong>${escapeHtml(spec.label)}</strong><em>${escapeHtml(spec.role)}</em><small>Click for details</small>`,
-    )
+    tooltip.show(node, { label: spec.label, role: spec.role })
   }
 
   /* Events */
