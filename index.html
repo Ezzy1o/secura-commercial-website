@@ -8,14 +8,28 @@
       name="description"
       content="SECURA is a secure web platform that detects sensitive details in documents, replaces them with synthetic data, and keeps original files behind a controlled approval."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SECURA" />
+    <meta property="og:title" content="SECURA — Secure AI Document Anonymization" />
+    <meta property="og:description" content="SECURA is a secure web platform that detects sensitive details in documents, replaces them with synthetic data, and keeps original files behind a controlled approval." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SECURA — Secure AI Document Anonymization" />
+    <meta name="twitter:description" content="SECURA is a secure web platform that detects sensitive details in documents, replaces them with synthetic data, and keeps original files behind a controlled approval." />
     <title>SECURA — Secure AI Document Anonymization</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles/fonts.css" />
+    <link rel="stylesheet" href="/styles/preloader.css" />
     <script>
       document.documentElement.classList.add("js");
+      // The intro preloader plays once per browser session. If storage is blocked it simply plays.
+      try {
+        if (!sessionStorage.getItem("secura:intro")) document.documentElement.classList.add("has-preloader");
+      } catch (error) {
+        document.documentElement.classList.add("has-preloader");
+      }
     </script>
     <style>
       :root {
@@ -1000,6 +1014,17 @@
     </style>
   </head>
   <body>
+    <!-- Intro preloader: hidden unless the head script marked this as the first visit of the session. -->
+    <div class="preloader" id="preloader" role="status">
+      <div class="preloader-rain" aria-hidden="true"></div>
+      <div class="preloader-sweep" aria-hidden="true"></div>
+      <p class="preloader-text">
+        <span>[ INITIALISING SCAN ENVIRONMENT ]</span><span class="preloader-cursor" aria-hidden="true">_</span>
+      </p>
+      <button class="preloader-skip" type="button" aria-label="Skip the intro">Skip</button>
+      <span class="preloader-progress" aria-hidden="true"></span>
+    </div>
+
     <canvas id="webgl" aria-hidden="true"></canvas>
 
     <div class="page-depth" aria-hidden="true"></div>
@@ -1021,7 +1046,7 @@
 
     <header class="site-header">
       <a class="brand-lockup" href="#slide-1" data-slide="0" aria-label="SECURA home">
-        <img class="brand-logo" src="/assets/secura-logo-sm.png" width="180" height="66" alt="" />
+        <img class="brand-logo" src="/assets/secura-logo-sm.webp" width="180" height="66" alt="" />
       </a>
       <nav class="main-nav" id="primary-nav" aria-label="Primary">
         <a class="nav-link" href="/about">ABOUT</a>
@@ -1100,15 +1125,9 @@
       <span class="scroll-cue-line"></span>
       <span>Scroll to explore</span>
     </div>
-    <button
-      class="motion-toggle"
-      id="motion-toggle"
-      type="button"
-      aria-pressed="false"
-      aria-label="Pause ambient scene motion"
-    >
-      PAUSE MOTION
-    </button>
+    <!-- The visible text is the accessible name and already says which state a press leads to, so there is
+         no aria-label (it must contain the visible text) and no aria-pressed (it would state it twice). -->
+    <button class="motion-toggle" id="motion-toggle" type="button">PAUSE MOTION</button>
 
     <div class="cursor-dot" aria-hidden="true"></div>
     <div class="cursor-ring" aria-hidden="true"></div>
@@ -1117,6 +1136,7 @@
       The 3D scene could not start in this browser. The SECURA story remains available above.
     </p>
 
+    <script type="module" src="/scripts/preloader.js"></script>
     <script type="module" src="/scripts/transitions.js"></script>
     <script type="module" src="/scripts/nav.js"></script>
     <script type="module">
@@ -1250,11 +1270,6 @@
       motionToggle.addEventListener("click", () => {
         ambientMotionPaused = !ambientMotionPaused;
         if (ambientMotionPaused && clock) pausedAt = clock.elapsedTime;
-        motionToggle.setAttribute("aria-pressed", String(ambientMotionPaused));
-        motionToggle.setAttribute(
-          "aria-label",
-          ambientMotionPaused ? "Resume ambient scene motion" : "Pause ambient scene motion",
-        );
         motionToggle.textContent = ambientMotionPaused ? "RESUME MOTION" : "PAUSE MOTION";
       });
 
@@ -1724,6 +1739,10 @@
           errorNotice.hidden = false;
         }
       }
+
+      // Tell the intro preloader the scene has started (or failed to), so it does not wait for nothing.
+      window.__sceneReady = true;
+      window.dispatchEvent(new Event("secura:scene-ready"));
     </script>
   </body>
 </html>

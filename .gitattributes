@@ -3,3 +3,4 @@
 *.jpg -text
 *.webp -text
 *.woff2 -text
+*.mp4 -text

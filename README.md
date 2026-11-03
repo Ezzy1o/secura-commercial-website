@@ -34,6 +34,14 @@ authentication, file upload, form submission, or AI processing.
   button). Loaded by every page, including the landing.
 - `scripts/transitions.js`: page-change fade for browsers without cross-document view
   transitions (Chrome, Edge and Safari use the native `@view-transition` in the CSS).
+- `scripts/preloader.js` and `styles/preloader.css`: the landing page's intro screen
+  (`[ INITIALISING SCAN ENVIRONMENT ]`, falling lines and a scan line on `#050505`). It plays once per
+  browser session, shows for at least 2.2 s (0.9 s with reduced motion) and until the 3D scene has
+  started, never longer than 3 s, then fades out over 0.7 s. Time is counted from the start of the page
+  load. Click, Escape, Enter, Space or the Skip button leave early. Tune `MIN` and `MAX` at the top of
+  `preloader.js`. The overlay markup is at the top of `index.html`; the head script there decides whether
+  to show it, `site.js` marks the session as seen when any inner page opens, and a CSS timer hides the
+  overlay after 5.5 s even if the script fails.
 - `scripts/about.js`: the About page's "Simulation Anonymize Document" demo and
   the Technology Used filter. The sample document, its entities and the
   replacement values live in `DOCUMENT` at the top; edit them to change the demo.
@@ -44,7 +52,7 @@ authentication, file upload, form submission, or AI processing.
   `WIDE_*` / `COMPACT_*` layouts (desktop and phone) to change devices or links.
   Each screenshot's zoom tour is plain HTML: a `data-region="x,y,w,h"` button per area, in
   screenshot pixels.
-- `public/`: web-sized logo (`secura-logo-sm.png`), `favicon.png`, fonts, and the dashboard
+- `public/`: web-sized logo (`secura-logo-sm.webp`), `favicon.png`, fonts, and the dashboard
   screenshots and team photos as WebP. The lossless originals live in `assets-src/` and are not
   served; re-export them to WebP (quality about 0.92 for the screenshots) if they change.
 - `public/video/`: the About page's commercial video as a web copy (1080p, 60fps, H.264 High @ 4.2,
@@ -62,6 +70,12 @@ authentication, file upload, form submission, or AI processing.
   file before the script runs; a `<noscript>` player covers visitors without JavaScript. If the
   file is missing the page shows a short message instead of an empty player. If the player is blank in `npm run dev`, restart the dev
   server: Vite lists `public/` files once at start and a file added later is answered with HTML.
+
+- `404.html`: the page Vercel shows for any URL that does not exist (dev and preview do the same, with a
+  real 404 status). It is a build entry like the others and is marked `noindex`.
+- `public/robots.txt`: allows crawling. There is no sitemap, canonical URL or `og:image` yet: those need the
+  site's final absolute URL, so add them once the production domain is fixed. Every page already has
+  `og:` and `twitter:` title and description tags copied from its own `<title>` and description.
 
 New pages must be added to `build.rollupOptions.input` in `vite.config.js`.
 
@@ -93,3 +107,16 @@ and `pnpm preview`. Link to pages as `/about`, not `about.html`.
 
 Everything, including Three.js (a lazy chunk on the landing only) and the fonts, is served from
 the site itself; there are no third-party requests.
+
+`vercel.json` also sets security headers (including a same-origin Content-Security-Policy) and caching:
+
+| Path | Cache-Control | Why |
+| --- | --- | --- |
+| HTML pages | Vercel's default (revalidate every time) | a new deploy shows up straight away |
+| `/bundle/*` | one year, `immutable` | the hashed scripts and styles Vite builds (`build.assetsDir`); their name changes whenever they do |
+| `/fonts/*` | 30 days | fixed file names that rarely change |
+| `/assets/*`, `/video/*`, `/favicon.png` | 1 day, then serve-stale for a week | images and video keep their names, so a replaced file reaches visitors within a day |
+
+Keep the hashed build output out of `/assets/`: `/bundle/` is only safe to cache forever because every
+file in it is content-hashed. After a deploy, `curl -I https://<your-domain>/bundle/<file>` should show
+`cache-control: public, max-age=31536000, immutable`.

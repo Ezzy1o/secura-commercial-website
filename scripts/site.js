@@ -205,6 +205,25 @@ function initCursor() {
     } catch {}
   })
 
+  // The ring eases towards the pointer. The loop only runs while it is still moving, so an idle page does
+  // no per-frame work (it used to schedule a frame forever, even with the pointer at rest).
+  let following = false
+  const follow = () => {
+    const dx = x - ringX
+    const dy = y - ringY
+    if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+      ringX = x
+      ringY = y
+      ring.style.translate = `${x}px ${y}px`
+      following = false
+      return
+    }
+    ringX += dx * 0.2
+    ringY += dy * 0.2
+    ring.style.translate = `${ringX}px ${ringY}px`
+    requestAnimationFrame(follow)
+  }
+
   window.addEventListener(
     "pointermove",
     (event) => {
@@ -214,17 +233,13 @@ function initCursor() {
       x = event.clientX
       y = event.clientY
       dot.style.translate = `${x}px ${y}px`
+      if (!following) {
+        following = true
+        requestAnimationFrame(follow)
+      }
     },
     { passive: true },
   )
-
-  const follow = () => {
-    ringX += (x - ringX) * 0.2
-    ringY += (y - ringY) * 0.2
-    ring.style.translate = `${ringX}px ${ringY}px`
-    requestAnimationFrame(follow)
-  }
-  requestAnimationFrame(follow)
 
   const interactive = "a, button, input, textarea, [role='button']"
   document.addEventListener("pointerover", (event) => {
@@ -362,6 +377,12 @@ function initStats() {
     observer.observe(el)
   })
 }
+
+// Opening any inner page counts as having seen the site, so the landing page's intro preloader
+// (scripts/preloader.js) plays once per browser session and never interrupts a return to the landing.
+try {
+  sessionStorage.setItem("secura:intro", "1")
+} catch {}
 
 initSmoothScroll()
 settled.then(initBackground)

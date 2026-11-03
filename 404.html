@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08060e" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found — SECURA</title>
+    <meta name="description" content="This page does not exist. Return to the SECURA home page or explore the project." />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles/fonts.css" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <link rel="stylesheet" href="/styles/site.css" />
+  </head>
+  <body>
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <div class="bg-veil" aria-hidden="true"></div>
+    <div class="interface-grid" aria-hidden="true">
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+      <div class="grid-column"></div>
+    </div>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="brand-lockup" href="/" aria-label="SECURA home">
+        <img class="brand-logo" src="/assets/secura-logo-sm.webp" width="180" height="66" alt="" />
+      </a>
+      <nav class="main-nav" id="primary-nav" aria-label="Primary">
+        <a class="nav-link" href="/about">ABOUT</a>
+        <a class="nav-link" href="/documentation">DOCUMENTATION</a>
+        <a class="nav-link" href="/contact">CONTACT US</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="shell">
+          <p class="eyebrow">Error 404</p>
+          <h1 class="page-title" data-split>Signal lost</h1>
+          <p class="lead">
+            The page you are looking for does not exist, or it has moved. Head back to the start, or pick up where
+            you left off below.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/">BACK TO HOME <span class="btn-arrow" aria-hidden="true">→</span></a>
+            <a class="btn" href="/about">ABOUT SECURA <span class="btn-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" style="padding-top: 0" aria-labelledby="lost-title">
+        <div class="shell">
+          <div class="section-head reveal">
+            <p class="eyebrow">Where to next</p>
+            <h2 id="lost-title">Pages that do exist</h2>
+          </div>
+          <div class="next-grid">
+            <a class="card next-card reveal" href="/about#simulation">
+              <span class="next-n" aria-hidden="true">01</span>
+              <h3>Try the simulation</h3>
+              <p>Watch a sample document be scanned, detected and anonymized with synthetic data.</p>
+              <span class="next-go">Open demo <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="card next-card reveal" href="/documentation" style="--reveal-delay: 70ms">
+              <span class="next-n" aria-hidden="true">02</span>
+              <h3>Read the documentation</h3>
+              <p>See how the system, the private network and the three dashboards are put together.</p>
+              <span class="next-go">Open documentation <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="card next-card reveal" href="/contact" style="--reveal-delay: 140ms">
+              <span class="next-n" aria-hidden="true">03</span>
+              <h3>Meet the team</h3>
+              <p>The supervisor and the four students behind the SECURA Final Year Project.</p>
+              <span class="next-go">View the team <span aria-hidden="true">→</span></span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div class="footer-brand">
+          <a class="brand-lockup" href="/" aria-label="SECURA home">
+            <img class="brand-logo" src="/assets/secura-logo-sm.webp" width="180" height="66" alt="" />
+          </a>
+          <p>
+            A secure web platform concept for AI-assisted document anonymization and controlled cross-department
+            collaboration.
+          </p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer">
+          <p>Navigate</p>
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/documentation">Documentation</a>
+          <a href="/contact">Contact Us</a>
+        </nav>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© <span id="year">2026</span> SECURA. Academic project showcase.</span>
+      </div>
+    </footer>
+
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <script type="module" src="/scripts/site.js"></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
